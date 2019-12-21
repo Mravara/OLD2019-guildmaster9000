@@ -2,6 +2,6 @@
 from django.http import HttpResponse
 
 
-def index(request):
-    return HttpResponse("Hello world!")
+def members(request):
+    return HttpResponse("Here are members")
 

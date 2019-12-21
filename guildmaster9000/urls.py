@@ -20,4 +20,5 @@ urlpatterns = [
     path('', include('home.urls')),
     path('raid/', include('raid.urls')),
     path('admin/', admin.site.urls),
+    path('members/', include('raid.urls')),
 ]
