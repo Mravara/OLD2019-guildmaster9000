@@ -18,7 +18,10 @@ from django.urls import include, path
 
 urlpatterns = [
     path('', include('home.urls')),
-    path('raid/', include('raid.urls')),
+    path('raids/', include('raid.urls')),
+    path('loot/', include('loot.urls')),
+    path('members/', include('members.urls')),
+    path('items/', include('items.urls')),
+    path('dungeons/', include('dungeons.urls')),
     path('admin/', admin.site.urls),
-    path('members/', include('raid.urls')),
 ]

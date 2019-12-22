@@ -3,5 +3,6 @@ from . import views
 
 
 urlpatterns = [
-    path('', views.members, name='members'),
+    path('', views.index, name='index'),
+    path('<int:raid_id>/', views.raid, name='raid'),
 ]

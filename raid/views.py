@@ -1,7 +1,21 @@
-# from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponse
 
 
-def members(request):
-    return HttpResponse("Here are members")
+from raid.models import Raid
 
+
+def index(request):
+    raids = Raid.objects.all().order_by('end')
+    context = {
+        'raids': raids,
+        'breadcrumbs': [
+            'Raids'
+        ]
+    }
+    return render(request, "raid/index.html", context)
+
+
+def raid(request, raid_id):
+    raid = get_object_or_404(Raid, pk=raid_id)
+    return HttpResponse(raid.leader)

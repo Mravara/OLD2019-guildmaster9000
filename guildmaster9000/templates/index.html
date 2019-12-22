@@ -26,7 +26,7 @@
 
   <nav class="navbar navbar-expand navbar-dark bg-dark static-top">
 
-    <a class="navbar-brand mr-1" href="index.html">PRIMAL</a>
+    <a class="navbar-brand mr-1" href="/">PRIMAL</a>
 
     <button class="btn btn-link btn-sm text-white order-1 order-sm-0" id="sidebarToggle" href="#">
       <i class="fas fa-bars"></i>
@@ -96,7 +96,7 @@
     <!-- Sidebar -->
     <ul class="sidebar navbar-nav">
       <li class="nav-item active">
-        <a class="nav-link" href="index.html">
+        <a class="nav-link" href="/">
           <i class="fas fa-fw fa-tachometer-alt"></i>
           <span>Dashboard</span>
         </a>
@@ -136,9 +136,15 @@
         <!-- Breadcrumbs-->
         <ol class="breadcrumb">
           <li class="breadcrumb-item">
-            <a href="#">Dashboard</a>
+            <a href="/">Dashboard</a>
           </li>
-          <li class="breadcrumb-item active">Overview</li>
+          {% for b in breadcrumbs %}
+          {% if not forloop.last %}
+            <li class="breadcrumb-item"><a href="/{{ b|lower }}">{{ b }}</a></li>
+          {% else %}
+            <li class="breadcrumb-item "><a href="{{ request.path }}">{{ b }}</a></li>
+          {% endif %}
+          {% endfor %}
         </ol>
 
         {% block content %}
