@@ -1,0 +1,46 @@
+{% extends 'index.html' %}
+
+{% block content %}
+<!-- DataTables Example -->
+        <div class="card mb-3">
+          <div class="card-header">
+            <i class="fas fa-table"></i>
+            Primal Loot</div>
+          <div class="card-body">
+            <div class="table-responsive">
+              <table class="table table-bordered table-striped" id="dataTable" width="100%" cellspacing="0">
+                <thead>
+                  <tr>
+                    <th>Raid</th>
+                    <th>Member</th>
+                    <th>Item</th>
+                    <th>Given By</th>
+                    <th>Date</th>
+                  </tr>
+                </thead>
+                <tfoot>
+                  <tr>
+                    <th>Raid</th>
+                    <th>Member</th>
+                    <th>Item</th>
+                    <th>Given By</th>
+                    <th>Date</th>
+                  </tr>
+                </tfoot>
+                <tbody>
+                {% for item in loot %}
+                  <tr>
+                    <td>{{ item.raid.dungeon.name }}</td>
+                    <td><a href="">{{ item.member.name }}</a></td>
+                    <td><a href="https://classic.wowhead.com/item={{ item.item.wow_id }}">{{ item.item.name }}</a></td>
+                    <td><a href="">{{ item.given_by.member.name }}</a></td>
+                    <td>{{ item.timestamp|date:"d-m-Y - H:i:s" }}</td>
+                  </tr>
+                {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div class="card-footer small text-muted">Updated {{ timestamp }}</div>
+        </div>
+{% endblock %}

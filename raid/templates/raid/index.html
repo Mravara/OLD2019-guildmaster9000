@@ -1,0 +1,55 @@
+{% extends 'index.html' %}
+
+{% block content %}
+
+
+
+<!--  -->
+
+<ul class="" style="list-style: none; padding-left: 0;">
+  <button type="button auto" class="btn btn-warning btn-lg btn-block" onclick="window.location.href='new/';">New Raid</button>
+</ul>
+
+<!-- DataTables Example -->
+        <div class="card mb-3">
+          <div class="card-header">
+            <i class="fas fa-table"></i>
+            Primal Raids</div>
+          <div class="card-body">
+            <div class="table-responsive">
+              <table class="table table-bordered table-striped" id="dataTable" width="100%" cellspacing="0">
+                <thead>
+                  <tr>
+                    <th>Raid</th>
+                    <th>Raid Leader</th>
+                    <th>Started</th>
+                    <th>Ended</th>
+                    <th>Loot</th>
+                  </tr>
+                </thead>
+                <tfoot>
+                  <tr>
+                    <th>Raid</th>
+                    <th>Raid Leader</th>
+                    <th>Started</th>
+                    <th>Ended</th>
+                    <th>Loot</th>
+                  </tr>
+                </tfoot>
+                <tbody>
+                {% for raid in raids %}
+                  <tr class="{% if raid.state == 0 %}table-primary{% elif raid.state == 1 %}table-warning{% elif raid.state == 2 %}table-danger{% elif raid.state == 3 %}table-success{% endif %}">
+                    <td>{{ raid.dungeon.name }}</td>
+                    <td><a href="{% url 'member' raid.leader.id %}">{{ raid.leader.name }}</a></td>
+                    <td>{{ raid.start|date:"d-m-Y - H:i:s" }}</td>
+                    <td>{% if raid.end is not None %}{{ raid.end|date:"d-m-Y - H:i:s" }}{% else %}In progress...{% endif %}</td>
+                    <td><a href="/loot/{{ raid.id }}/">Loot</a></td>
+                  </tr>
+                {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div class="card-footer small text-muted">Updated {{ timestamp }}</div>
+        </div>
+{% endblock %}

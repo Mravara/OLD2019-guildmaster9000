@@ -32,6 +32,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'crispy_forms',
     'home.apps.HomeConfig',
     'members.apps.MembersConfig',
     'items.apps.ItemsConfig',
@@ -138,3 +139,5 @@ DATE_FORMAT = 'd-m-Y - H:i:s'
 STATICFILES_DIRS = (
     os.path.join(PROJECT_ROOT, 'static'),
 )
+
+CRISPY_TEMPLATE_PACK = 'bootstrap4'

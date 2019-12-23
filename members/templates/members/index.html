@@ -1,0 +1,40 @@
+{% extends 'index.html' %}
+
+{% block content %}
+<!-- DataTables Example -->
+        <div class="card mb-3">
+          <div class="card-header">
+            <i class="fas fa-table"></i>
+            Primal Members</div>
+          <div class="card-body">
+            <div class="table-responsive">
+              <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Rank</th>
+                    <th>Joined</th>
+                  </tr>
+                </thead>
+                <tfoot>
+                  <tr>
+                    <th>Name</th>
+                    <th>Rank</th>
+                    <th>Joined</th>
+                  </tr>
+                </tfoot>
+                <tbody>
+                {% for member in members %}
+                  <tr>
+                    <td><a href="{% url 'member' member.id %}">{{ member.name }}</a></td>
+                    <td>{{ member.get_rank_display }}</td>
+                    <td>{{ member.joined }}</td>
+                  </tr>
+                {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div class="card-footer small text-muted">Updated {{ timestamp }}</div>
+        </div>
+{% endblock %}
