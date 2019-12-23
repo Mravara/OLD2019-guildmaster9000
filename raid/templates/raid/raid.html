@@ -1,28 +1,31 @@
 {% extends 'index.html' %}
 
 {% block content %}
+
+<ul class="" style="list-style: none; padding-left: 0;">
+  <button type="button auto" class="btn btn-primary btn-lg btn-block" data-toggle="modal" data-target="#giveItemModal">Give Item</button>
+</ul>
+
 <!-- DataTables Example -->
         <div class="card mb-3">
           <div class="card-header">
             <i class="fas fa-table"></i>
-            Primal Loot</div>
+            <b>{{ raid.dungeon.name }} Loot</b>  {{ raid.start|date:"d-m-Y - H:i:s" }}</div>
           <div class="card-body">
             <div class="table-responsive">
               <table class="table table-bordered table-striped" id="dataTable" width="100%" cellspacing="0">
                 <thead>
                   <tr>
-                    <th>Raid</th>
-                    <th>Member</th>
                     <th>Item</th>
+                    <th>Given To</th>
                     <th>Date</th>
                     <th>Given By</th>
                   </tr>
                 </thead>
                 <tfoot>
                   <tr>
-                    <th>Raid</th>
-                    <th>Member</th>
                     <th>Item</th>
+                    <th>Given To</th>
                     <th>Date</th>
                     <th>Given By</th>
                   </tr>
@@ -30,7 +33,6 @@
                 <tbody>
                 {% for item in loot %}
                   <tr>
-                    <td><a href="{% url 'raid' item.raid.id %}">{{ item.raid.dungeon.name }}</a></td>
                     <td><a href="">{{ item.member.name }}</a></td>
                     <td><a href="https://classic.wowhead.com/item={{ item.item.wow_id }}" class="q1">{{ item.item.name }}</a></td>
                     <td>{{ item.timestamp|date:"d-m-Y - H:i:s" }}</td>
@@ -43,4 +45,23 @@
           </div>
           {% comment %} <div class="card-footer"><span class="badge badge-success">Success</span> <span class="badge badge-warning">Paused</span> <span class="badge badge-danger">Failed</span></div> {% endcomment %}
         </div>
+
+<!-- Logout Modal-->
+  <div class="modal fade" id="giveItemModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Give item</h5>
+          <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">×</span>
+          </button>
+        </div>
+        <div class="modal-body">Select "Logout" below if you are ready to end your current session.</div>
+        <div class="modal-footer">
+          <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
+          <a class="btn btn-primary" href="login.html">Logout</a>
+        </div>
+      </div>
+    </div>
+  </div>
 {% endblock %}

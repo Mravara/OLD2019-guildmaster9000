@@ -11,7 +11,7 @@ from raid.forms import NewRaidForm
 
 
 def index(request):
-    raids = Raid.objects.all().order_by('end')
+    raids = Raid.objects.all().order_by('start')
     context = {
         'raids': raids,
         'breadcrumbs': [
@@ -25,6 +25,7 @@ def get_raid(request, raid_id):
     raid = get_object_or_404(Raid, pk=raid_id)
     loot = Loot.objects.filter(raid=raid)
     context = {
+        'raid': raid,
         'loot': loot,
         'breadcrumbs': [
             'Raids',
