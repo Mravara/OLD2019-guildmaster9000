@@ -14,8 +14,8 @@
                     <th>Raid</th>
                     <th>Member</th>
                     <th>Item</th>
-                    <th>Given By</th>
                     <th>Date</th>
+                    <th>Given By</th>
                   </tr>
                 </thead>
                 <tfoot>
@@ -23,24 +23,24 @@
                     <th>Raid</th>
                     <th>Member</th>
                     <th>Item</th>
-                    <th>Given By</th>
                     <th>Date</th>
+                    <th>Given By</th>
                   </tr>
                 </tfoot>
                 <tbody>
                 {% for item in loot %}
-                  <tr>
-                    <td>{{ item.raid.dungeon.name }}</td>
+                  <tr class="{% if item.raid.state == 0 %}table-primary{% elif item.raid.state == 1 %}table-warning{% elif item.raid.state == 2 %}table-danger{% elif item.raid.state == 3 %}table-success{% endif %}">
+                    <td><a href="/raids/{{ item.raid.id }}/">{{ item.raid.dungeon.name }}</a></td>
                     <td><a href="">{{ item.member.name }}</a></td>
-                    <td><a href="https://classic.wowhead.com/item={{ item.item.wow_id }}">{{ item.item.name }}</a></td>
-                    <td><a href="">{{ item.given_by.member.name }}</a></td>
+                    <td><a href="https://classic.wowhead.com/item={{ item.item.wow_id }}" class="q1">{{ item.item.name }}</a></td>
                     <td>{{ item.timestamp|date:"d-m-Y - H:i:s" }}</td>
+                    <td><a href="">{{ item.given_by.member.name }}</a></td>
                   </tr>
                 {% endfor %}
                 </tbody>
               </table>
             </div>
           </div>
-          <div class="card-footer small text-muted">Updated {{ timestamp }}</div>
+          <div class="card-footer"><span class="badge badge-success">Success</span> <span class="badge badge-warning">Paused</span> <span class="badge badge-danger">Failed</span></div>
         </div>
 {% endblock %}

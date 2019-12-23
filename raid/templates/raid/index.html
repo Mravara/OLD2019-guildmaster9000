@@ -7,7 +7,7 @@
 <!--  -->
 
 <ul class="" style="list-style: none; padding-left: 0;">
-  <button type="button auto" class="btn btn-warning btn-lg btn-block" onclick="window.location.href='new/';">New Raid</button>
+  <button type="button auto" class="btn btn-primary btn-lg btn-block" onclick="window.location.href='new/';">New Raid</button>
 </ul>
 
 <!-- DataTables Example -->
@@ -24,7 +24,6 @@
                     <th>Raid Leader</th>
                     <th>Started</th>
                     <th>Ended</th>
-                    <th>Loot</th>
                   </tr>
                 </thead>
                 <tfoot>
@@ -33,23 +32,21 @@
                     <th>Raid Leader</th>
                     <th>Started</th>
                     <th>Ended</th>
-                    <th>Loot</th>
                   </tr>
                 </tfoot>
                 <tbody>
                 {% for raid in raids %}
                   <tr class="{% if raid.state == 0 %}table-primary{% elif raid.state == 1 %}table-warning{% elif raid.state == 2 %}table-danger{% elif raid.state == 3 %}table-success{% endif %}">
-                    <td>{{ raid.dungeon.name }}</td>
+                    <td><a href="{% url 'raid' raid.id %}">{{ raid.dungeon.name }}</a></td>
                     <td><a href="{% url 'member' raid.leader.id %}">{{ raid.leader.name }}</a></td>
                     <td>{{ raid.start|date:"d-m-Y - H:i:s" }}</td>
                     <td>{% if raid.end is not None %}{{ raid.end|date:"d-m-Y - H:i:s" }}{% else %}In progress...{% endif %}</td>
-                    <td><a href="/loot/{{ raid.id }}/">Loot</a></td>
                   </tr>
                 {% endfor %}
                 </tbody>
               </table>
             </div>
           </div>
-          <div class="card-footer small text-muted">Updated {{ timestamp }}</div>
+          <div class="card-footer"><span class="badge badge-success">Success</span> <span class="badge badge-warning">Paused</span> <span class="badge badge-danger">Failed</span></div>
         </div>
 {% endblock %}

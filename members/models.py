@@ -19,3 +19,6 @@ class Member(models.Model):
 
     def __str__(self):
         return self.name
+
+    def get_current_member(request):
+        return Member.objects.get(user=request.user)
