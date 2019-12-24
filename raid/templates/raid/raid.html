@@ -15,26 +15,26 @@
 <ul class="" style="list-style: none; padding-left: 0;">
 {% if raid.end is None %}
   
-  <button type="button auto" class="btn btn-success btn-lg btn-block" data-toggle="modal" data-target="#giveItemModal">Give Item</button>
+  <button type="button auto" class="btn btn-primary btn-lg btn-block" data-toggle="modal" data-target="#giveItemModal"><i class="fas fa-gavel" aria-hidden="true"></i> Give Item</button>
   <br>
   <div class="btn-group" role="group">
-    <button type="button" class="btn btn-danger btn" onclick="window.location.href='fail/';" data-toggle="modal" data-target="#failModal">Fail</button>
-    <button type="button" class="btn btn-warning btn text-white" onclick="window.location.href='pause/';" data-toggle="modal" data-target="#pauseModal">Pause</button>
-    <button type="button" class="btn btn-success btn" data-toggle="modal" onclick="window.location.href='complete/';" data-target="#completeModal">Complete</button>
+    <button type="button" class="btn btn-danger btn" onclick="window.location.href='fail/';" data-toggle="modal" data-target="#failModal"><i class="fas fa-ban" aria-hidden="true"></i> Fail</button>
+    <button type="button" class="btn btn-warning btn text-white" onclick="window.location.href='pause/';" data-toggle="modal" data-target="#pauseModal"><i class="fas fa-pause-circle" aria-hidden="true"></i> Pause</button>
+    <button type="button" class="btn btn-success btn" data-toggle="modal" onclick="window.location.href='complete/';" data-target="#completeModal"><i class="fas fa-check-circle" aria-hidden="true"></i> Complete</button>
   </div>
 {% else %}
   <div class="btn-group btn-group-justified" role="group" aria-label="...">
     {% if raid.state == 1 %}
       <div class="btn-group" role="group">
-        <button type="button auto" class="btn btn-group btn-warning" >Paused</button>
+        <button type="button auto" class="btn btn-warning"><i class="fas fa-pause-circle" aria-hidden="true"></i> Paused</button>
       </div>
     {% elif raid.state == 2 %}
       <div class="btn-group" role="group">
-        <button type="button auto" class="btn btn-group btn-danger">Failed</button>
+        <button type="button auto" class="btn btn-danger"><i class="fas fa-ban" aria-hidden="true"></i> Failed</button>
       </div>
     {% elif raid.state == 3 %}
       <div class="btn-group" role="group">
-        <button type="button auto" class="btn btn-group btn-success">Completed</button>
+        <button type="button auto" class="btn btn-success"><i class="fas fa-check-circle" aria-hidden="true"></i> Completed</button>
       </div>
     {% endif %}
   </div>
@@ -106,6 +106,13 @@
             <div class="md-form mb-4">
               <i class="fas fa-gavel prefix grey-text"></i>
               <label data-error="wrong" data-success="right" for="defaultForm-item">Item</label>
+              {{ form.item|as_crispy_field }}
+              {{ form.item_id|as_crispy_field }}
+            </div>
+
+            <div class="md-form mb-4">
+              <i class="fas fa-gavel prefix grey-text"></i>
+              <label data-error="wrong" data-success="right" for="defaultForm-item">Slot</label>
               {{ form.item|as_crispy_field }}
               {{ form.item_id|as_crispy_field }}
             </div>

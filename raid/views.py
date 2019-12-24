@@ -54,7 +54,7 @@ def new_raid(request):
         form = NewRaidForm(request.POST)
 
         if form.is_valid():
-            leader = Member.get_current_member(request)
+            leader = Member.get_member(request)
             dung = form.cleaned_data.get('dungeon')
             raid = Raid(dungeon=dung, leader=leader)
             raid.save()

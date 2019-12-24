@@ -72,3 +72,22 @@ class Item(models.Model):
                 return integer
         
         return None
+
+
+    def get_item_value(self):
+        if self.item_quality == Item.Quality.UNCOMMON:
+            return (self.item_level - 4) / 2
+        elif self.item_quality == Item.Quality.RARE:
+            return (self.item_level - 1.82) / 1.6
+        elif self.item_quality == Item.Quality.EPIC:
+            return (self.item_level - 1.3) / 1.3
+        elif self.item_quality == Item.Quality.LEGENDARY:
+            return (self.item_level - 1.265642857) / 1.0725
+
+
+    def get_slot_value(self):
+        pass
+
+
+    def get_ep(self):
+        return self.get_item_value() * 0.04 * self.get_slot_value()
