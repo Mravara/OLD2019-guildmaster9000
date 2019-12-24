@@ -1,4 +1,5 @@
 from django import forms
+from items.models import Item
 from dungeons.models import Dungeon
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit
@@ -16,3 +17,11 @@ class NewRaidForm(forms.Form):
         self.helper = FormHelper()
         self.helper.add_input(Submit('submit', 'Submit'))
         self.helper.label_class = 'float-left'
+
+
+class GiveItemForm(forms.Form):
+    member = forms.CharField(label='', required=True)
+    member_id = forms.IntegerField(widget=forms.HiddenInput())
+    item = forms.CharField(label='', required=True)
+    item_id = forms.IntegerField(widget=forms.HiddenInput())
+    price = forms.FloatField(label='', initial='100', min_value=0, max_value=100, required=True)

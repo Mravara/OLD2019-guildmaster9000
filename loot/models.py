@@ -9,8 +9,8 @@ class Loot(models.Model):
     member = models.ForeignKey('members.Member', on_delete=models.PROTECT)
     raid = models.ForeignKey('raid.Raid', on_delete=models.PROTECT, null=True)
     item = models.ForeignKey('items.Item', on_delete=models.PROTECT)
-    percentage = models.FloatField()
-    cost = models.IntegerField()
+    price_percentage = models.FloatField(null=True, default=100)
+    gp = models.FloatField()
     given_by = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.SET_NULL,

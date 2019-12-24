@@ -32,19 +32,22 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
-    'crispy_forms',
-    'home.apps.HomeConfig',
-    'members.apps.MembersConfig',
-    'items.apps.ItemsConfig',
-    'raid.apps.RaidConfig',
-    'dungeons.apps.DungeonsConfig',
-    'loot.apps.LootConfig',
+    # django apps
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    # third party apps
+    'crispy_forms',
+    # my apps
+    'home.apps.HomeConfig',
+    'members.apps.MembersConfig',
+    'items.apps.ItemsConfig',
+    'raid.apps.RaidConfig',
+    'dungeons.apps.DungeonsConfig',
+    'loot.apps.LootConfig',
 ]
 
 MIDDLEWARE = [
@@ -127,6 +130,8 @@ USE_L10N = False
 
 USE_TZ = False
 
+DEFAULT_CHARSET = 'utf-8'
+
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
@@ -140,4 +145,4 @@ STATICFILES_DIRS = (
     os.path.join(PROJECT_ROOT, 'static'),
 )
 
-CRISPY_TEMPLATE_PACK = 'bootstrap4'
+CRISPY_TEMPLATE_PACK = 'bootstrap3'
