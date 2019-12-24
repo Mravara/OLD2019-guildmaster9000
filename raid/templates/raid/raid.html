@@ -47,8 +47,8 @@
         </div>
 
 <!-- Logout Modal-->
-  <div class="modal fade" id="giveItemModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
+  <div class="modal fade bd-example-modal-xl" id="giveItemModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl" role="document">
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title" id="exampleModalLabel">Give item</h5>
@@ -56,12 +56,76 @@
             <span aria-hidden="true">×</span>
           </button>
         </div>
-        <div class="modal-body">Select "Logout" below if you are ready to end your current session.</div>
+
+        <div class="modal-body mx-3">
+          <div class="md-form mb-4">
+            <i class="fas fa-user prefix grey-text"></i>
+            <label data-error="wrong" data-success="right" for="defaultForm-email">Member</label>
+            <input type="text" id="defaultForm-email" class="form-control validate">
+          </div>
+
+          <div class="md-form mb-4">
+            <i class="fas fa-gavel prefix grey-text"></i>
+            <label data-error="wrong" data-success="right" for="defaultForm-pass">Item</label>
+            <input type="text" id="defaultForm-pass" class="form-control validate">
+          </div>
+
+          <div class="form-group">
+            <i class="fas fa-candy-cane prefix grey-text"></i>
+            <label for="exampleFormControlSelect1">Item Type</label>
+            <select class="form-control" id="exampleFormControlSelect1">
+              <option>1</option>
+              <option>2</option>
+              <option>3</option>
+              <option>4</option>
+              <option>5</option>
+            </select>
+          </div>
+
+          <div class="md-form mb-4">
+            <i class="fas fa-coins prefix grey-text"></i>
+            <label data-error="wrong" data-success="right" for="defaultForm-pass">Discount</label>
+            <input type="text" id="defaultForm-pass" class="form-control validate">
+          </div>
+        </div>
+
+        <div class="md-form form-sm">
+          <i class="fas fa-tag prefix"></i>
+          <input type="search" id="form-autocomplete-2" class="form-control mdb-autocomplete">
+          <button class="mdb-autocomplete-clear">
+            <svg fill="#000000" height="24" viewBox="0 0 24 24" width="24" xmlns="https://www.w3.org/2000/svg">
+              <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" />
+              <path d="M0 0h24v24H0z" fill="none" />
+            </svg>
+          </button>
+          <label for="form-autocomplete-2" class="active">Subject</label>
+        </div>
+
         <div class="modal-footer">
           <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
-          <a class="btn btn-primary" href="login.html">Logout</a>
+          <a class="btn btn-lg btn-primary" href="login.html">Give!</a>
         </div>
       </div>
     </div>
   </div>
+
+  <script>
+  var subjects = [
+    "Where's My Stuff?",
+    "Cancel Items or Orders",
+    "Returns & Refunds",
+    "Shipping Rates & Information",
+    "Change Your Payment Method",
+    "Manage Your Account Information",
+    "About Two-Step Verification",
+    "Cancel Items or Orders",
+    "Change Your Order Information",
+    "Contact Third-Party Sellers",
+    "More in Managing Your Orders"
+    ];
+
+  $('#form-autocomplete-2').mdbAutocomplete({
+    data: subjects
+  });
+  </script>
 {% endblock %}

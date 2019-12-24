@@ -48,9 +48,9 @@ class Item(models.Model):
     name = models.CharField(max_length=128)
     item_quality = models.IntegerField(choices=Quality.choices, null=True)
     item_type = models.IntegerField(choices=ItemType.choices, null=True)
-    item_type_name = models.CharField(max_length=256, default='')
-    item_class = models.CharField(max_length=256, default='')
-    item_subclass = models.CharField(max_length=256, default='')
+    item_type_name = models.CharField(max_length=256, default='', null=True)
+    item_class = models.CharField(max_length=256, default='', null=True)
+    item_subclass = models.CharField(max_length=256, default='', null=True)
     item_level = models.IntegerField(null=True)
     ep = models.IntegerField(default=0, null=True)
 
