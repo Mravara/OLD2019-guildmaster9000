@@ -83,7 +83,7 @@ def give_item(request, raid_id):
             member = get_object_or_404(Member, pk=member_id)
             item = get_object_or_404(Item, pk=item_id)
             price_percentage = form.cleaned_data.get('price')
-            gp = item.get_gp(item_info.slot_value)
+            gp = item.get_gp(item_info.slot_value, price_percentage)
             member.gp += gp
             member.save()
             loot = Loot(

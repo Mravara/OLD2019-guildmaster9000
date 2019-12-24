@@ -86,8 +86,8 @@ class Item(models.Model):
             return (self.item_level - 1.265642857) / 1.0725
 
 
-    def get_gp(self, slot_value):
-        return (self.get_item_value()**2) * 0.04 * slot_value
+    def get_gp(self, slot_value, price_percentage):
+        return ((self.get_item_value()**2) * 0.04 * slot_value) * (price_percentage / 100)
 
 
 

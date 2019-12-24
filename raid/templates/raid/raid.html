@@ -70,8 +70,8 @@
                 <tbody>
                 {% for item in loot %}
                   <tr>
-                    <td><a href="">{{ item.member.name }}</a></td>
                     <td><a href="https://classic.wowhead.com/item={{ item.item.wow_id }}" class="q1">{{ item.item.name }}</a></td>
+                    <td><a href="">{{ item.member.name }}</a></td>
                     <td>{{ item.timestamp|date:"d-m-Y - H:i:s" }}</td>
                     <td><a href="">{{ item.given_by.member.name }}</a></td>
                     <td><a href="">{{ item.gp|floatformat:2 }}</a></td>
@@ -188,6 +188,7 @@
     {% endfor %}
   ];
 
+  // member ids
   $('#id_member').autocomplete({ 
     source: availableMembers,
     select: function (event, ui) {
@@ -195,10 +196,15 @@
     }
   });
 
-
+  // auto order table
   $('#dataTable').DataTable( {
     "order": [[ 2, "desc" ]]
   } );
+
+  // auto focus first field
+  $('#giveItemModal').on('shown.bs.modal', function () {
+    $('#id_member').focus();
+  }) 
 
   </script>
 
