@@ -1,3 +1,4 @@
+from django.shortcuts import get_object_or_404
 from django.conf import settings
 from django.db import models
 
@@ -52,7 +53,7 @@ class Item(models.Model):
     item_class = models.CharField(max_length=256, default='', null=True)
     item_subclass = models.CharField(max_length=256, default='', null=True)
     item_level = models.IntegerField(null=True)
-    ep = models.IntegerField(default=0, null=True)
+    gp = models.IntegerField(default=0, null=True)
 
     def __str__(self):
         return self.name
@@ -85,9 +86,43 @@ class Item(models.Model):
             return (self.item_level - 1.265642857) / 1.0725
 
 
-    def get_slot_value(self):
-        pass
+    def get_gp(self, slot_value):
+        return (self.get_item_value()**2) * 0.04 * slot_value
 
 
-    def get_ep(self):
-        return self.get_item_value() * 0.04 * self.get_slot_value()
+
+class ItemInfo(models.Model):
+
+    def __str__(self):
+        return self.name
+    
+    class ItemSlot(models.IntegerChoices):
+        TwoHandMelee = 0
+        RangedHunter = 1
+        TwoHandCaster = 2
+        OneHandMelee = 3
+        OneHandCaster = 4
+        ShieldMelee = 5
+        Head = 6
+        Chest = 7
+        Legs = 8
+        Shoulder = 9
+        Hands = 10
+        Waist = 11
+        Feet = 12
+        TwoHandHunter = 13
+        Wand = 14
+        ShieldCaster = 15
+        Trinket = 16
+        Wrist = 17
+        Neck = 18
+        Back = 19
+        Finger = 20
+        RangedMelee = 21
+        OneHandHunter = 22
+        OffHandCaster = 23
+        Relic = 24
+
+    name = models.CharField(max_length=128)
+    slot_value = models.FloatField()
+    slot_ref = models.IntegerField(choices=ItemSlot.choices)

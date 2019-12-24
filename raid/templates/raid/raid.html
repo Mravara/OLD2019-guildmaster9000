@@ -55,6 +55,7 @@
                     <th>Given To</th>
                     <th>Date</th>
                     <th>Given By</th>
+                    <th>GP</th>
                   </tr>
                 </thead>
                 <tfoot>
@@ -63,6 +64,7 @@
                     <th>Given To</th>
                     <th>Date</th>
                     <th>Given By</th>
+                    <th>GP</th>
                   </tr>
                 </tfoot>
                 <tbody>
@@ -72,6 +74,7 @@
                     <td><a href="https://classic.wowhead.com/item={{ item.item.wow_id }}" class="q1">{{ item.item.name }}</a></td>
                     <td>{{ item.timestamp|date:"d-m-Y - H:i:s" }}</td>
                     <td><a href="">{{ item.given_by.member.name }}</a></td>
+                    <td><a href="">{{ item.gp|floatformat:2 }}</a></td>
                   </tr>
                 {% endfor %}
                 </tbody>
@@ -113,8 +116,7 @@
             <div class="md-form mb-4">
               <i class="fas fa-gavel prefix grey-text"></i>
               <label data-error="wrong" data-success="right" for="defaultForm-item">Slot</label>
-              {{ form.item|as_crispy_field }}
-              {{ form.item_id|as_crispy_field }}
+              {{ form.item_slot|as_crispy_field }}
             </div>
 
             <div class="md-form mb-4">

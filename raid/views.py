@@ -7,7 +7,7 @@ from django.urls import reverse
 from members.models import Member
 from raid.models import Raid
 from loot.models import Loot
-from items.models import Item
+from items.models import Item, ItemInfo
 from dungeons.models import Dungeon
 from raid.forms import NewRaidForm, GiveItemForm
 
@@ -33,14 +33,13 @@ def get_raid(request, raid_id):
         items = Item.objects.filter(item_quality__gte=Item.Quality.EPIC)
         members = Member.objects.all()
         form = GiveItemForm()
-        form.initial['raid'] = raid_id
     context = {
         'raid': raid,
         'loot': loot,
         'items': items,
         'members': members,
         'form': form,
-        'item_types': Item.ItemType.choices,
+        'item_types': ItemInfo.ItemSlot.choices,
         'breadcrumbs': [
             'Raids',
             raid.dungeon.name,
@@ -63,10 +62,8 @@ def new_raid(request):
 
         return redirect(request.path)
 
-    dungeons = Dungeon.objects.all().order_by('name')
     context = {
         'form': NewRaidForm(),
-        'dungeons': dungeons,
         'breadcrumbs': [
             'Raids',
             'New Raid',
@@ -81,17 +78,20 @@ def give_item(request, raid_id):
         if form.is_valid():
             member_id = form.cleaned_data.get('member_id')
             item_id = form.cleaned_data.get('item_id')
+            item_info = form.cleaned_data.get('item_slot')
             raid = get_object_or_404(Raid, pk=raid_id)
             member = get_object_or_404(Member, pk=member_id)
             item = get_object_or_404(Item, pk=item_id)
             price_percentage = form.cleaned_data.get('price')
-
+            gp = item.get_gp(item_info.slot_value)
+            member.gp += gp
+            member.save()
             loot = Loot(
                 member=member,
                 raid=raid,
                 item=item,
                 price_percentage=price_percentage,
-                gp=10,
+                gp=gp,
                 given_by=request.user,
             )
             loot.save()
@@ -112,6 +112,7 @@ def pause_raid(request, raid_id):
     raid.state = Raid.State.PAUSED
     raid.save()
     return HttpResponseRedirect(reverse('raid', args=(raid.id,)))
+
 
 def fail_raid(request, raid_id):
     raid = get_object_or_404(Raid, pk=raid_id)
