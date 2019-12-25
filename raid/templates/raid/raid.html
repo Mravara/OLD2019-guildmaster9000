@@ -53,18 +53,18 @@
                   <tr>
                     <th>Item</th>
                     <th>Given To</th>
+                    <th>GP</th>
                     <th>Date</th>
                     <th>Given By</th>
-                    <th>GP</th>
                   </tr>
                 </thead>
                 <tfoot>
                   <tr>
                     <th>Item</th>
                     <th>Given To</th>
+                    <th>GP</th>
                     <th>Date</th>
                     <th>Given By</th>
-                    <th>GP</th>
                   </tr>
                 </tfoot>
                 <tbody>
@@ -72,9 +72,9 @@
                   <tr>
                     <td><a href="https://classic.wowhead.com/item={{ item.item.wow_id }}" class="q1">{{ item.item.name }}</a></td>
                     <td><a href="">{{ item.member.name }}</a></td>
+                    <td><a href="">{{ item.gp|floatformat:2 }}</a></td>
                     <td>{{ item.timestamp|date:"d-m-Y - H:i:s" }}</td>
                     <td><a href="">{{ item.given_by.member.name }}</a></td>
-                    <td><a href="">{{ item.gp|floatformat:2 }}</a></td>
                   </tr>
                 {% endfor %}
                 </tbody>
@@ -198,7 +198,7 @@
 
   // auto order table
   $('#dataTable').DataTable( {
-    "order": [[ 2, "desc" ]]
+    "order": [[ 3, "desc" ]]
   } );
 
   // auto focus first field

@@ -3,6 +3,7 @@ from django.http import HttpResponse, HttpResponseNotFound, HttpResponseRedirect
 from django.utils.timezone import datetime
 from django.conf import settings
 from django.urls import reverse
+from django.db.models import Count
 
 from members.models import Member
 from raid.models import Raid
@@ -13,7 +14,7 @@ from raid.forms import NewRaidForm, GiveItemForm
 
 
 def index(request):
-    raids = Raid.objects.order_by('-start')
+    raids = Raid.objects.order_by('-start').annotate(total_items=Count('loot'))
     context = {
         'raids': raids,
         'breadcrumbs': [
@@ -24,6 +25,7 @@ def index(request):
 
 
 def get_raid(request, raid_id):
+    referer = request.META.get('HTTP_REFERER')
     raid = get_object_or_404(Raid, pk=raid_id)
     loot = Loot.objects.filter(raid=raid)
     items = None
@@ -41,7 +43,7 @@ def get_raid(request, raid_id):
         'form': form,
         'item_types': ItemInfo.ItemSlot.choices,
         'breadcrumbs': [
-            'Raids',
+            'Raids' if 'raids' in referer else 'Loot',
             raid.dungeon.name,
         ]
     }

@@ -14,8 +14,8 @@
                     <th>Raid</th>
                     <th>Member</th>
                     <th>Item</th>
-                    <th>Date</th>
                     <th>GP</th>
+                    <th>Date</th>
                     {% comment %} <th>Given By</th> {% endcomment %}
                   </tr>
                 </thead>
@@ -24,8 +24,8 @@
                     <th>Raid</th>
                     <th>Member</th>
                     <th>Item</th>
-                    <th>Date</th>
                     <th>GP</th>
+                    <th>Date</th>
                     {% comment %} <th>Given By</th> {% endcomment %}
                   </tr>
                 </tfoot>
@@ -35,8 +35,8 @@
                     <td><a href="/raids/{{ item.raid.id }}/">{{ item.raid.dungeon.name }}</a></td>
                     <td><a href="">{{ item.member.name }}</a></td>
                     <td><a href="https://classic.wowhead.com/item={{ item.item.wow_id }}" class="q1">{{ item.item.name }}</a></td>
+                    <td>{{ item.gp|floatformat:2 }}</td>
                     <td>{{ item.timestamp|date:"d-m-Y - H:i:s" }}</td>
-                    <td><a href="">{{ item.gp|floatformat:2 }}</a></td>
                     {% comment %} <td><a href="">{{ item.given_by.member.name }}</a></td> {% endcomment %}
                   </tr>
                 {% endfor %}
@@ -53,7 +53,7 @@
   <script charset="UTF-8">
 
     $('#dataTable').DataTable( {
-      "order": [[ 3, "desc" ]]
+      "order": [[ 4, "desc" ]]
     } );
 
   </script>

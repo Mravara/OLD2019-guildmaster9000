@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     'raid.apps.RaidConfig',
     'dungeons.apps.DungeonsConfig',
     'loot.apps.LootConfig',
+    'accounts.apps.AccountsConfig',
 ]
 
 MIDDLEWARE = [
@@ -58,6 +59,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    # login middleware
+    'guildmaster9000.mymiddleware.loginmiddleware.LoginRequiredMiddleware',
 ]
 
 ROOT_URLCONF = 'guildmaster9000.urls'
@@ -146,3 +149,9 @@ STATICFILES_DIRS = (
 )
 
 CRISPY_TEMPLATE_PACK = 'bootstrap3'
+
+LOGIN_URL = '/accounts/login/'
+
+LOGIN_EXEMPT_URLS = (
+    r'^accounts/login/$',
+)

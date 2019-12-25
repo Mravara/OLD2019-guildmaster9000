@@ -33,5 +33,10 @@ class Member(models.Model):
     def __str__(self):
         return self.name
 
+    @staticmethod
     def get_member(request):
         return Member.objects.get(user=request.user)
+
+    @property
+    def priority(self):
+        return self.ep / self.gp

@@ -7,13 +7,14 @@
             <i class="fas fa-table"></i>
             Primal Members</div>
           <div class="card-body">
-            <div class="table-responsive">
-              <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+            <div class="table-sm">
+              <table class="table table-bordered" data-page-length='100' id="dataTable" width="100%" cellspacing="0">
                 <thead>
                   <tr>
                     <th>Name</th>
                     <th>Rank</th>
                     <th>Joined</th>
+                    <th>Priority</th>
                   </tr>
                 </thead>
                 <tfoot>
@@ -21,6 +22,7 @@
                     <th>Name</th>
                     <th>Rank</th>
                     <th>Joined</th>
+                    <th>Priority</th>
                   </tr>
                 </tfoot>
                 <tbody>
@@ -28,13 +30,28 @@
                   <tr>
                     <td><a href="{% url 'member' member.id %}">{{ member.name }}</a></td>
                     <td>{{ member.get_rank_display }}</td>
-                    <td>{{ member.joined }}</td>
+                    <td>{{ member.joined|date:"d-m-Y - H:i:s" }}</td>
+                    <td>{{ member.priority }}</td>
                   </tr>
                 {% endfor %}
                 </tbody>
               </table>
             </div>
           </div>
-          <div class="card-footer small text-muted">Updated {{ timestamp }}</div>
+          {% comment %} <div class="card-footer small text-muted">Updated {{ timestamp }}</div> {% endcomment %}
         </div>
+{% endblock %}
+
+
+{% block scripts %}
+
+  <script charset="UTF-8">
+
+  // auto order table
+  $('#dataTable').DataTable( {
+    "order": [[ 3, "desc" ]]
+  });
+
+  </script>
+
 {% endblock %}
