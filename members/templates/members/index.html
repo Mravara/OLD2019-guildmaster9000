@@ -13,7 +13,8 @@
                   <tr>
                     <th>Name</th>
                     <th>Rank</th>
-                    <th>Joined</th>
+                    <th>EP</th>
+                    <th>GP</th>
                     <th>Priority</th>
                   </tr>
                 </thead>
@@ -21,7 +22,8 @@
                   <tr>
                     <th>Name</th>
                     <th>Rank</th>
-                    <th>Joined</th>
+                    <th>EP</th>
+                    <th>GP</th>
                     <th>Priority</th>
                   </tr>
                 </tfoot>
@@ -30,7 +32,8 @@
                   <tr>
                     <td><a href="{% url 'member' member.id %}">{{ member.name }}</a></td>
                     <td>{{ member.get_rank_display }}</td>
-                    <td>{{ member.joined|date:"d-m-Y - H:i:s" }}</td>
+                    <td>{{ member.ep|floatformat:2 }}</td>
+                    <td>{{ member.gp|floatformat:2 }}</td>
                     <td>{{ member.priority }}</td>
                   </tr>
                 {% endfor %}
@@ -49,7 +52,7 @@
 
   // auto order table
   $('#dataTable').DataTable( {
-    "order": [[ 3, "desc" ]]
+    "order": [[ 4, "desc" ]]
   });
 
   </script>

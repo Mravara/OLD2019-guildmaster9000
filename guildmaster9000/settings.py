@@ -27,6 +27,7 @@ SECRET_KEY = 'w9_klds+!la7^qw2m=6unkoqj-=8y!x$3l2uxh$@la8$l75p1h'
 DEBUG = True
 
 ALLOWED_HOSTS = [
+    '127.0.0.1',
     '192.168.0.14',
     '94.253.184.70',
     'guild-primal.ddns.net',
