@@ -14,7 +14,7 @@
 
 <ul class="" style="list-style: none; padding-left: 0;">
 {% if raid.end is None %}
-    {% if member.is_officer %}
+    {% if user.member.is_officer %}
       <button type="button auto" class="btn btn-primary btn-lg btn-block" data-toggle="modal" data-target="#giveItemModal"><i class="fas fa-gavel" aria-hidden="true"></i> Give Item</button>
       <br>
       <div class="btn-group" role="group">
@@ -79,7 +79,7 @@
                   <tr>
                     <td><a href="https://classic.wowhead.com/item={{ item.item.wow_id }}" class="q1">{{ item.item.name }}</a></td>
                     <td><a href="">{{ item.member.name }}</a></td>
-                    <td><a href="">{{ item.gp|floatformat:2 }}</a></td>
+                    <td><a href="">{{ item.get_gp|floatformat:2 }}</a></td>
                     <td>{{ item.timestamp|date:"d-m-Y - H:i:s" }}</td>
                     <td><a href="">{{ item.given_by.member.name }}</a></td>
                   </tr>

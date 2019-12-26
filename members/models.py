@@ -21,14 +21,12 @@ class Member(models.Model):
         WARLOCK = 6
         WARRIOR = 7
 
-    user = models.OneToOneField(User, on_delete=models.CASCADE, blank=True, null=True)
+    user = models.OneToOneField(User, related_name='member', on_delete=models.CASCADE, blank=True, null=True)
     discord_id = models.BigIntegerField(null=True)
     name = models.CharField(max_length=50)
     member_class = models.IntegerField(choices=MemberClass.choices, null=True)
     rank = models.IntegerField(choices=Rank.choices, default=Rank.MEMBER, null=True)
     joined = models.DateTimeField(auto_now_add=True, null=True)
-    ep = models.FloatField(null=True)
-    gp = models.FloatField(null=True)
 
     def __str__(self):
         return self.name

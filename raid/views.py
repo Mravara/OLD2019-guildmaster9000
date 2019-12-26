@@ -16,9 +16,7 @@ from raid.forms import NewRaidForm, GiveItemForm
 
 def index(request):
     raids = Raid.objects.order_by('-start').annotate(total_items=Count('loot'))
-    member = Member.get_member(request)
     context = {
-        'member': member,
         'raids': raids,
         'breadcrumbs': [
             'Raids'
@@ -28,7 +26,6 @@ def index(request):
 
 
 def get_raid(request, raid_id):
-    member = Member.get_member(request)
     referer = request.META.get('HTTP_REFERER')
     raid = get_object_or_404(Raid, pk=raid_id)
     loot = Loot.objects.filter(raid=raid)
@@ -40,7 +37,6 @@ def get_raid(request, raid_id):
         members = Member.objects.all()
         form = GiveItemForm()
     context = {
-        'member': member,
         'raid': raid,
         'loot': loot,
         'items': items,
@@ -61,7 +57,7 @@ def new_raid(request):
         form = NewRaidForm(request.POST)
 
         if form.is_valid():
-            leader = Member.get_member(request)
+            leader = request.user.member
             dung = form.cleaned_data.get('dungeon')
             raid = Raid(dungeon=dung, leader=leader)
             raid.save()
@@ -92,15 +88,13 @@ def give_item(request, raid_id):
             member = get_object_or_404(Member, pk=member_id)
             item = get_object_or_404(Item, pk=item_id)
             price_percentage = form.cleaned_data.get('price')
-            gp = item.get_gp(item_info.slot_value, price_percentage)
-            member.gp += gp
             member.save()
             loot = Loot(
                 member=member,
                 raid=raid,
                 item=item,
+                item_info=item_info,
                 price_percentage=price_percentage,
-                gp=gp,
                 given_by=request.user,
             )
             loot.save()
