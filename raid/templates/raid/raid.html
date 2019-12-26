@@ -168,6 +168,29 @@
 
   <script charset="UTF-8">
 
+  // remove modal input values
+  $('#giveItemModal').on('show.bs.modal', function (e) {    
+    $("#id_item").val('')
+    $("#id_item_id").val('')
+    $("#id_member").val('')
+    $("#id_member_id").val('')
+    
+    $("#id_member").addClass("is-invalid");
+    $("#id_item").addClass("is-invalid");
+
+    $('#id_member').focus();
+  });
+
+  $("#id_member").keyup(function() {
+    $("#id_member_id").val('')
+    $("#id_member").addClass("is-invalid");
+  });
+
+  $("#id_item").keyup(function() {
+    $("#id_item_id").val('')
+    $("#id_item").addClass("is-invalid");
+  });
+
   // items
   var availableItemTags = [
     {% for item in items %}
@@ -181,7 +204,8 @@
   $('#id_item').autocomplete({ 
     source: availableItemTags,
     select: function (event, ui) {
-      $("#id_item_id").val(ui.item.id);
+      $("#id_item_id").val(ui.item.id),
+      $("#id_item").removeClass("is-invalid")
     }
   });
 
@@ -200,6 +224,7 @@
     source: availableMembers,
     select: function (event, ui) {
       $("#id_member_id").val(ui.item.id);
+      $("#id_member").removeClass("is-invalid")
     }
   });
 
@@ -207,11 +232,6 @@
   $('#dataTable').DataTable( {
     "order": [[ 3, "desc" ]]
   } );
-
-  // auto focus first field
-  $('#giveItemModal').on('shown.bs.modal', function () {
-    $('#id_member').focus();
-  }) 
 
   </script>
 

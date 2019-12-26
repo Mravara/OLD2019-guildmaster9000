@@ -104,7 +104,7 @@ def give_item(request, raid_id):
                 given_by=request.user,
             )
             loot.save()
-        return HttpResponseRedirect(reverse('raid', args=(raid.id,)))
+        return HttpResponseRedirect(reverse('raid', args=(raid_id,)))
 
 
 def complete_raid(request, raid_id):
