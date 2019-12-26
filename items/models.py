@@ -53,7 +53,6 @@ class Item(models.Model):
     item_class = models.CharField(max_length=256, default='', null=True)
     item_subclass = models.CharField(max_length=256, default='', null=True)
     item_level = models.IntegerField(null=True)
-    gp = models.IntegerField(default=0, null=True)
 
     def __str__(self):
         return self.name

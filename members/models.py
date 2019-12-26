@@ -27,6 +27,7 @@ class Member(models.Model):
     member_class = models.IntegerField(choices=MemberClass.choices, null=True)
     rank = models.IntegerField(choices=Rank.choices, default=Rank.MEMBER, null=True)
     joined = models.DateTimeField(auto_now_add=True, null=True)
+    ep = models.IntegerField(default=0)
 
     def __str__(self):
         return self.name
