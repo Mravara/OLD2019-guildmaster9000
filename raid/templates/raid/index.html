@@ -5,10 +5,11 @@
 
 
 <!--  -->
-
+{% if member.is_officer %}
 <ul class="" style="list-style: none; padding-left: 0;">
   <button type="button auto" class="btn btn-primary btn-lg btn-block" onclick="window.location.href='new/';"><i class="fas fa-plus" aria-hidden="true"></i> New Raid</button>
 </ul>
+{% endif %}
 
 <!-- DataTables Example -->
         <div class="card mb-3">

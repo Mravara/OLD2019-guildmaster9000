@@ -23,11 +23,9 @@ def welcome(request):
 def do_login(request, username, password):
     user = authenticate(request, username=username, password=password)
     if user is not None:
-        print('DA')
         login(request, user)
         return HttpResponseRedirect('/')
     else:
-        print('ne')
         return HttpResponseRedirect(reverse('welcome'))
 
 

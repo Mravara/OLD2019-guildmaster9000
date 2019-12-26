@@ -4,6 +4,7 @@ from django.utils.timezone import datetime
 from django.conf import settings
 from django.urls import reverse
 from django.db.models import Count
+from guildmaster9000.decorators import *
 
 from members.models import Member
 from raid.models import Raid
@@ -15,7 +16,9 @@ from raid.forms import NewRaidForm, GiveItemForm
 
 def index(request):
     raids = Raid.objects.order_by('-start').annotate(total_items=Count('loot'))
+    member = Member.get_member(request)
     context = {
+        'member': member,
         'raids': raids,
         'breadcrumbs': [
             'Raids'
@@ -25,6 +28,7 @@ def index(request):
 
 
 def get_raid(request, raid_id):
+    member = Member.get_member(request)
     referer = request.META.get('HTTP_REFERER')
     raid = get_object_or_404(Raid, pk=raid_id)
     loot = Loot.objects.filter(raid=raid)
@@ -36,6 +40,7 @@ def get_raid(request, raid_id):
         members = Member.objects.all()
         form = GiveItemForm()
     context = {
+        'member': member,
         'raid': raid,
         'loot': loot,
         'items': items,
@@ -50,6 +55,7 @@ def get_raid(request, raid_id):
     return render(request, "raid/raid.html", context)
 
 
+@officers('/raids/')
 def new_raid(request):
     if request.method == 'POST':
         form = NewRaidForm(request.POST)
@@ -74,6 +80,7 @@ def new_raid(request):
     return render(request, "raid/new_raid.html", context)
 
 
+@officers('/raids/')
 def give_item(request, raid_id):
     if request.method == 'POST':
         form = GiveItemForm(request.POST)

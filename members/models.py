@@ -6,7 +6,7 @@ from django.contrib.auth.models import User
 class Member(models.Model):
 
     class Rank(models.IntegerChoices):
-        MEMBER = 0,
+        MEMBER = 0
         RAID_LEADER = 10
         OFFICER = 100
         ADMIN = 1000
@@ -40,3 +40,6 @@ class Member(models.Model):
     @property
     def priority(self):
         return self.ep / self.gp
+
+    def is_officer(self):
+        return self.rank >= Member.Rank.OFFICER

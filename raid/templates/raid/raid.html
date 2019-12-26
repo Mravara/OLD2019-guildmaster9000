@@ -14,14 +14,21 @@
 
 <ul class="" style="list-style: none; padding-left: 0;">
 {% if raid.end is None %}
-  
-  <button type="button auto" class="btn btn-primary btn-lg btn-block" data-toggle="modal" data-target="#giveItemModal"><i class="fas fa-gavel" aria-hidden="true"></i> Give Item</button>
-  <br>
-  <div class="btn-group" role="group">
-    <button type="button" class="btn btn-danger btn" onclick="window.location.href='fail/';" data-toggle="modal" data-target="#failModal"><i class="fas fa-ban" aria-hidden="true"></i> Fail</button>
-    <button type="button" class="btn btn-warning btn text-white" onclick="window.location.href='pause/';" data-toggle="modal" data-target="#pauseModal"><i class="fas fa-pause-circle" aria-hidden="true"></i> Pause</button>
-    <button type="button" class="btn btn-success btn" data-toggle="modal" onclick="window.location.href='complete/';" data-target="#completeModal"><i class="fas fa-check-circle" aria-hidden="true"></i> Complete</button>
-  </div>
+    {% if member.is_officer %}
+      <button type="button auto" class="btn btn-primary btn-lg btn-block" data-toggle="modal" data-target="#giveItemModal"><i class="fas fa-gavel" aria-hidden="true"></i> Give Item</button>
+      <br>
+      <div class="btn-group" role="group">
+        <button type="button" class="btn btn-danger btn" onclick="window.location.href='fail/';" data-toggle="modal" data-target="#failModal"><i class="fas fa-ban" aria-hidden="true"></i> Fail</button>
+        <button type="button" class="btn btn-warning btn text-white" onclick="window.location.href='pause/';" data-toggle="modal" data-target="#pauseModal"><i class="fas fa-pause-circle" aria-hidden="true"></i> Pause</button>
+        <button type="button" class="btn btn-success btn" data-toggle="modal" onclick="window.location.href='complete/';" data-target="#completeModal"><i class="fas fa-check-circle" aria-hidden="true"></i> Complete</button>
+      </div>
+    {% else %}
+      <div class="btn-group btn-group-justified" role="group" aria-label="...">
+        <div class="btn-group" role="group">
+          <button type="button auto" class="btn btn-primary"><i class="fas fa-running" aria-hidden="true"></i> In Progress</button>
+        </div>
+      </div>
+    {% endif %}
 {% else %}
   <div class="btn-group btn-group-justified" role="group" aria-label="...">
     {% if raid.state == 1 %}
