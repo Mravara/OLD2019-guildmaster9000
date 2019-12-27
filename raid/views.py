@@ -3,7 +3,7 @@ from django.http import HttpResponse, HttpResponseNotFound, HttpResponseRedirect
 from django.utils.timezone import datetime
 from django.conf import settings
 from django.urls import reverse
-from django.db.models import Count
+from django.db.models import Count, F
 from guildmaster9000.decorators import *
 
 from members.models import Member
@@ -11,7 +11,7 @@ from raid.models import Raid, RaidMember
 from loot.models import Loot
 from items.models import Item, ItemInfo
 from dungeons.models import Dungeon
-from raid.forms import NewRaidForm, GiveItemForm
+from raid.forms import NewRaidForm, GiveItemForm, GiveEPForm
 
 
 def index(request):
@@ -36,12 +36,14 @@ def get_raid(request, raid_id):
     if not raid.done:
         items = Item.objects.filter(item_quality__gte=Item.Quality.EPIC)
         form = GiveItemForm()
+        form_ep = GiveEPForm()
     context = {
         'raid': raid,
         'loot': loot,
         'items': items,
         'raid_members': members,
         'form': form,
+        'form_ep': form_ep,
         'item_types': ItemInfo.ItemSlot.choices,
         'breadcrumbs': [
             'Raids' if 'raids' in referer else 'Loot',
@@ -147,4 +149,17 @@ def remove_raider(request, raid_id, raider_id):
 def delete_loot(request, raid_id, loot_id):
     loot = get_object_or_404(Loot, pk=loot_id)
     loot.delete()
+    return HttpResponseRedirect(reverse('raid', args=(raid_id,)))
+
+
+def give_ep(request, raid_id):
+    form = GiveEPForm(request.POST)
+
+    if form.is_valid():
+        raid = get_object_or_404(Raid, pk=raid_id)
+        raiders = raid.raid_members.all()
+        for raider in raiders:
+            raider.member.ep = F('ep') + form.cleaned_data.get('ep')
+            raider.member.save()
+
     return HttpResponseRedirect(reverse('raid', args=(raid_id,)))

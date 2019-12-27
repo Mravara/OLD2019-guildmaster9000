@@ -31,3 +31,5 @@ class GiveItemForm(forms.Form):
     price = forms.FloatField(label='', initial='100', min_value=0, max_value=100, required=True)
 
 
+class GiveEPForm(forms.Form):
+    ep = forms.IntegerField(required=True)

@@ -9,7 +9,8 @@ urlpatterns = [
     path('<int:raid_id>/complete/', views.complete_raid, name='complete'),
     path('<int:raid_id>/pause/', views.pause_raid, name='pause'),
     path('<int:raid_id>/fail/', views.fail_raid, name='fail'),
-    path('<int:raid_id>/give/', views.give_item, name='give_item'),
-    path('<int:raid_id>/delete/<int:loot_id>/', views.delete_loot, name='delete_loot'),
-    path('<int:raid_id>/remove/<int:raider_id>/', views.remove_raider, name='remove_raider'),
+    path('<int:raid_id>/give_ep/', views.give_ep, name='give_ep'),
+    path('<int:raid_id>/give_item/', views.give_item, name='give_item'),
+    path('<int:raid_id>/delete_loot/<int:loot_id>/', views.delete_loot, name='delete_loot'),
+    path('<int:raid_id>/remove_raider/<int:raider_id>/', views.remove_raider, name='remove_raider'),
 ]

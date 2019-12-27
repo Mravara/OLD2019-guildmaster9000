@@ -99,7 +99,7 @@
                     <td><a href="">{{ item.given_by.member.name }}</a></td>
                     {% if not raid.done and user.member.is_officer %}
                     <td>
-                      <button type="button" class="btn btn-sm btn-danger" onclick="window.location.href='delete/{{ item.id }}/';">Delete</button>
+                      <button type="button" class="btn btn-sm btn-danger" onclick="window.location.href='delete_item/{{ item.id }}/';">Delete</button>
                     </td>
                     {% endif %}
                   </tr>
@@ -156,7 +156,7 @@
                     <td><a href="">{{ member.member.priority|floatformat:2 }}</a></td>
                     {% if user.member.is_officer and not raid.done and not member.done %}
                     <td>
-                      <button type="button" class="btn btn-sm btn-danger" onclick="window.location.href='remove/{{ member.id }}/';">Delete</button>
+                      <button type="button" class="btn btn-sm btn-danger" onclick="window.location.href='remove_raider/{{ member.id }}/';">Delete</button>
                     </td>
                     {% endif %}
                   </tr>
@@ -173,11 +173,12 @@
 
 {% if raid.end is None %}
 {% load crispy_forms_tags %}
+{% csrf_token %}
 <!-- Give Item Modal-->
   <div class="modal fade bd-example-modal-xl" id="giveItemModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-xl" role="document">
       <div class="modal-content">
-        <form method="POST" action="give/">
+        <form method="POST" action="give_item/">
           {% csrf_token %}
           <div class="modal-header">
             <h5 class="modal-title" id="exampleModalLabel">Give item</h5>
@@ -243,19 +244,22 @@
   <div class="modal fade" id="giveEPModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
       <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title"><i class="fas fa-thumbs-up" aria-hidden="true"></i> Give EP</h5>
-          <button class="close" type="button" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">×</span>
-          </button>
-        </div>
-        <div class="modal-body">
-          {% comment %} {% crispy form_ep %} {% endcomment %}
-        </div>
-        <div class="modal-footer">
-          <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
-          <a class="btn btn-success" id="endRaidSubmit" href="#">Give</a>
-        </div>
+        <form method="POST" action="give_ep/">
+          {% csrf_token %}
+          <div class="modal-header">
+            <h5 class="modal-title"><i class="fas fa-thumbs-up" aria-hidden="true"></i> Give EP</h5>
+            <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">×</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            {{ form_ep.ep|as_crispy_field }}
+          </div>
+          <div class="modal-footer">
+            <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
+            <input type="submit" class="btn btn-success" value="Give"/>
+          </div>
+        </form>
       </div>
     </div>
   </div>
