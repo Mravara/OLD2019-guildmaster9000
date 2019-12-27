@@ -29,3 +29,5 @@ class GiveItemForm(forms.Form):
     item_id = forms.IntegerField(widget=forms.HiddenInput(), required=True)
     item_slot = forms.ModelChoiceField(queryset=ItemInfo.objects.all(), label='', initial=1)
     price = forms.FloatField(label='', initial='100', min_value=0, max_value=100, required=True)
+
+
