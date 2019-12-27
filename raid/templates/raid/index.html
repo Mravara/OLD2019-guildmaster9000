@@ -25,6 +25,7 @@
                     <th>Raid Leader</th>
                     <th>Started</th>
                     <th>Ended</th>
+                    <th>Members</th>
                     <th>Items</th>
                   </tr>
                 </thead>
@@ -34,6 +35,7 @@
                     <th>Raid Leader</th>
                     <th>Started</th>
                     <th>Ended</th>
+                    <th>Members</th>
                     <th>Items</th>
                   </tr>
                 </tfoot>
@@ -44,6 +46,7 @@
                     <td><a href="{% url 'member' raid.leader.id %}">{{ raid.leader.name }}</a></td>
                     <td>{{ raid.start|date:"d-m-Y - H:i:s" }}</td>
                     <td>{% if raid.end is not None %}{{ raid.end|date:"d-m-Y - H:i:s" }}{% else %}In progress...{% endif %}</td>
+                    <td>{{ raid.raid_members.count }}</td>
                     <td><a href="{% url 'raid' raid.id %}">{{ raid.total_items }}</a></td>
                   </tr>
                 {% endfor %}

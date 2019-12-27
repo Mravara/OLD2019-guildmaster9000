@@ -32,8 +32,8 @@ def get_raid(request, raid_id):
     items = None
     members = None
     form = None
-    members = raid.raid_members.filter(end=None)
-    if raid.end is None:
+    members = raid.raid_members.all()
+    if not raid.done:
         items = Item.objects.filter(item_quality__gte=Item.Quality.EPIC)
         form = GiveItemForm()
     context = {
@@ -68,7 +68,8 @@ def new_raid(request):
                 raiders = RaidMember.objects.bulk_create([RaidMember(member=m) for m in members])
                 raid.raid_members.set(raiders)
                 raid.save()
-            # return redirect("/raids/{}/".format(raid.id)) radi!
+            else:
+                return redirect("/raids/{}/".format(raid.id))
             return HttpResponseRedirect(reverse('raid', args=(raid.id,)))
 
         return redirect(request.path)

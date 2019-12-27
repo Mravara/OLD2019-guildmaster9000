@@ -9,6 +9,7 @@ class Member(models.Model):
 
     class Rank(models.IntegerChoices):
         MEMBER = 0
+        RAIDER = 5
         RAID_LEADER = 10
         OFFICER = 100
         ADMIN = 1000

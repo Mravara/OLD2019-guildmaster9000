@@ -13,15 +13,22 @@
 </style>
 
 <ul class="" style="list-style: none; padding-left: 0;">
-{% if raid.end is None %}
+{% if not raid.done %}
     {% if user.member.is_officer %}
       <button type="button auto" class="btn btn-primary btn-lg btn-block" data-toggle="modal" data-target="#giveItemModal"><i class="fas fa-gavel" aria-hidden="true"></i> Give Item</button>
       <br>
+  <div class="card float-left" style="width: 200px;">
       <div class="btn-group" role="group">
-        <button type="button" class="btn btn-danger btn" onclick="window.location.href='fail/';" data-toggle="modal" data-target="#failModal"><i class="fas fa-ban" aria-hidden="true"></i> Fail</button>
-        <button type="button" class="btn btn-warning btn text-white" onclick="window.location.href='pause/';" data-toggle="modal" data-target="#pauseModal"><i class="fas fa-pause-circle" aria-hidden="true"></i> Pause</button>
-        <button type="button" class="btn btn-success btn" data-toggle="modal" onclick="window.location.href='complete/';" data-target="#completeModal"><i class="fas fa-check-circle" aria-hidden="true"></i> Complete</button>
+        <button type="button" class="btn btn-success" data-toggle="modal" data-target="#epModal"><i class="fas fa-thumbs-up" aria-hidden="true"></i> Give EP</button>
       </div>
+  </div>
+  <div class="card float-right" style="width: 500px;">
+      <div class="btn-group" role="group">
+        <button type="button" class="btn btn-success" data-toggle="modal" data-target="#endRaidModal" name="complete"><i class="fas fa-check-circle" aria-hidden="true"></i> Complete</button>
+        <button type="button" class="btn btn-warning text-white" data-toggle="modal" data-target="#endRaidModal" name="pause"><i class="fas fa-pause-circle" aria-hidden="true"></i> Pause</button>
+        <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#endRaidModal" name="fail"><i class="fas fa-ban" aria-hidden="true"></i> Fail</button>
+      </div>
+  </div>
     {% else %}
       <div class="btn-group btn-group-justified" role="group" aria-label="...">
         <div class="btn-group" role="group">
@@ -48,6 +55,8 @@
 {% endif %}
 </ul>
 
+<br/>
+<br/>
 <!-- Loot Table -->
         <div class="card mb-3">
           <div class="card-header">
@@ -55,7 +64,7 @@
             <b>{{ raid.dungeon.name }} - Loot</b>  {{ raid.start|date:"d-m-Y - H:i:s" }}</div>
           <div class="card-body">
             <div class="table-responsive">
-              <table class="table table-bordered table-striped" id="dataTable" width="100%" cellspacing="0">
+              <table class="table table-bordered table-striped table-sm" id="dataTable" width="100%" cellspacing="0">
                 <thead>
                   <tr>
                     <th>Item</th>
@@ -63,7 +72,7 @@
                     <th>GP</th>
                     <th>Date</th>
                     <th>Given By</th>
-                    {% if user.member.is_officer %}
+                    {% if user.member.is_officer and not raid.done %}
                     <th style="width: 5%">Delete</th>
                     {% endif %}
                   </tr>
@@ -75,7 +84,7 @@
                     <th>GP</th>
                     <th>Date</th>
                     <th>Given By</th>
-                    {% if user.member.is_officer %}
+                    {% if user.member.is_officer and not raid.done %}
                     <th style="width: 5%">Delete</th>
                     {% endif %}
                   </tr>
@@ -88,11 +97,11 @@
                     <td><a href="">{{ item.gp|floatformat:2 }}</a></td>
                     <td>{{ item.timestamp|date:"d-m-Y - H:i:s" }}</td>
                     <td><a href="">{{ item.given_by.member.name }}</a></td>
-                    <td>
                     {% if not raid.done and user.member.is_officer %}
-                      <button type="button" class="btn btn-danger" onclick="window.location.href='delete/{{ item.id }}/';">Delete</button>
-                    {% endif %}
+                    <td>
+                      <button type="button" class="btn btn-sm btn-danger" onclick="window.location.href='delete/{{ item.id }}/';">Delete</button>
                     </td>
+                    {% endif %}
                   </tr>
                 {% endfor %}
                 </tbody>
@@ -103,6 +112,8 @@
         </div>
 <!-- End of Loot Table -->
 
+<hr />
+
 <!-- Members Table -->
         <div class="card mb-3">
           <div class="card-header">
@@ -110,14 +121,15 @@
             <b>{{ raid.dungeon.name }} - Raid Members</b>  </div>
           <div class="card-body">
             <div class="table-responsive">
-              <table class="table table-bordered table-striped" id="dataTable" width="100%" cellspacing="0">
+              <table class="table table-bordered table-striped table-sm" id="dataTable2" width="100%" cellspacing="0">
                 <thead>
                   <tr>
                     <th>Name</th>
+                    <th>Class</th>
                     <th>EP</th>
                     <th>GP</th>
                     <th>Priority</th>
-                    {% if user.member.is_officer %}
+                    {% if user.member.is_officer and not raid.done %}
                     <th style="width: 5%">Delete</th>
                     {% endif %}
                   </tr>
@@ -125,10 +137,11 @@
                 <tfoot>
                   <tr>
                     <th>Name</th>
+                    <th>Class</th>
                     <th>EP</th>
                     <th>GP</th>
                     <th>Priority</th>
-                    {% if user.member.is_officer %}
+                    {% if user.member.is_officer and not raid.done %}
                     <th style="width: 5%">Delete</th>
                     {% endif %}
                   </tr>
@@ -137,21 +150,24 @@
                 {% for member in raid_members %}
                   <tr class="{% if not raid.done and member.done or raid.done and not member.closed %}table-danger{% endif %} {% if raid.done and member.closed %}table-success{% endif %}">
                     <td><a href="">{{ member.member.name }}</a></td>
+                    <td>{{ member.member.get_member_class_display }}</td>
                     <td><a href="">{{ member.member.ep|floatformat:2 }}</a></td>
                     <td><a href="">{{ member.member.gp|floatformat:2 }}</a></td>
                     <td><a href="">{{ member.member.priority|floatformat:2 }}</a></td>
-                    <td>
                     {% if user.member.is_officer and not raid.done and not member.done %}
-                      <button type="button" class="btn btn-danger" onclick="window.location.href='remove/{{ member.id }}/';">Delete</button>
-                    {% endif %}
+                    <td>
+                      <button type="button" class="btn btn-sm btn-danger" onclick="window.location.href='remove/{{ member.id }}/';">Delete</button>
                     </td>
+                    {% endif %}
                   </tr>
                 {% endfor %}
                 </tbody>
               </table>
             </div>
           </div>
+          {% if raid.done %}
           <div class="card-footer"><span class="badge badge-success">Stayed until end</span> <span class="badge badge-danger">Left</span></div>
+          {% endif %}
         </div>
 <!-- End of Members Table -->
 
@@ -206,19 +222,19 @@
     </div>
   </div>
 
-  <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal fade" id="endRaidModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id="exampleModalLabel">Ready to Leave?</h5>
+          <h5 class="modal-title" id="endRaidLabel">Flag raid as ...?</h5>
           <button class="close" type="button" data-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">×</span>
           </button>
         </div>
-        <div class="modal-body">Select "Logout" below if you are ready to end your current session.</div>
+        <div class="modal-body">Are you sure you want to end this raid?</div>
         <div class="modal-footer">
-          <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
-          <a class="btn btn-primary" href="login.html">Logout</a>
+          <button class="btn btn-secondary" type="button" data-dismiss="modal">No</button>
+          <a class="btn btn-primary" id="endRaidSubmit" href="#">Yes</a>
         </div>
       </div>
     </div>
@@ -229,30 +245,38 @@
 
 
 {% block scripts %}
-
+{% if not raid.done %}
   <script charset="UTF-8">
 
   // remove modal input values
-  $('#giveItemModal').on('show.bs.modal', function (e) {    
-    $("#id_item").val('')
-    $("#id_item_id").val('')
-    $("#id_member").val('')
-    $("#id_member_id").val('')
+  $('#giveItemModal').on('show.bs.modal', function (e) {
+    $("#id_item").val('');
+    $("#id_item_id").val('');
+    $("#id_member").val('');
+    $("#id_member_id").val('');
     
     $("#id_member").addClass("is-invalid");
     $("#id_item").addClass("is-invalid");
+  });
 
+  $('#giveItemModal').on('shown.bs.modal', function (e) {
     $('#id_member').focus();
   });
 
-  $("#id_member").keyup(function() {
-    $("#id_member_id").val('')
-    $("#id_member").addClass("is-invalid");
+  $("#id_member").keyup(function(e) {
+    if (e.which <= 90 && e.which >= 48)
+    {
+      $("#id_member_id").val('');
+      $("#id_member").addClass("is-invalid");
+    }
   });
 
-  $("#id_item").keyup(function() {
-    $("#id_item_id").val('')
-    $("#id_item").addClass("is-invalid");
+  $("#id_item").keyup(function(e) {
+    if (e.which <= 90 && e.which >= 48)
+    {
+      $("#id_item_id").val('');
+      $("#id_item").addClass("is-invalid");
+    }
   });
 
   // items
@@ -268,8 +292,8 @@
   $('#id_item').autocomplete({ 
     source: availableItemTags,
     select: function (event, ui) {
-      $("#id_item_id").val(ui.item.id),
-      $("#id_item").removeClass("is-invalid")
+      $("#id_item_id").val(ui.item.id);
+      $("#id_item").removeClass("is-invalid");
     }
   });
 
@@ -288,15 +312,40 @@
     source: availableMembers,
     select: function (event, ui) {
       $("#id_member_id").val(ui.item.id);
-      $("#id_member").removeClass("is-invalid")
+      $("#id_member").removeClass("is-invalid");
     }
   });
 
   // auto order table
   $('#dataTable').DataTable( {
     "order": [[ 3, "desc" ]]
-  } );
+  });
+
+  // auto order table
+  $('#dataTable2').DataTable( {
+    "order": [[ 4, "desc" ]]
+  });
+
+  // prepare end raid modal
+  $('#endRaidModal').on('show.bs.modal', function (e) {
+    var target = $(e.relatedTarget);
+    $('#endRaidLabel').html(target.html());
+
+    var name = target.attr('name');
+    if (name == 'complete') {
+      $('#endRaidSubmit').addClass('bg-success').attr('href', 'complete/');
+      $('#endRaidLabel').addClass('text-success');
+    }
+    else if (name == 'fail') {
+      $('#endRaidSubmit').addClass('bg-danger').attr('href', 'fail/');
+      $('#endRaidLabel').addClass('text-danger');
+    }
+    else if (name == 'pause') {
+      $('#endRaidSubmit').addClass('bg-warning').attr('href', 'pause/');
+      $('#endRaidLabel').addClass('text-warning');
+    }
+  });
 
   </script>
-
+{% endif %}
 {% endblock %}

@@ -12,6 +12,7 @@
                 <thead>
                   <tr>
                     <th>Name</th>
+                    <th>Class</th>
                     <th>Rank</th>
                     <th>EP</th>
                     <th>GP</th>
@@ -21,6 +22,7 @@
                 <tfoot>
                   <tr>
                     <th>Name</th>
+                    <th>Class</th>
                     <th>Rank</th>
                     <th>EP</th>
                     <th>GP</th>
@@ -31,6 +33,7 @@
                 {% for member in members %}
                   <tr>
                     <td><a href="{% url 'member' member.id %}">{{ member.name }}</a></td>
+                    <td>{{ member.get_member_class_display }}</td>
                     <td>{{ member.get_rank_display }}</td>
                     <td>{{ member.ep|floatformat:2 }}</td>
                     <td>{{ member.gp|floatformat:2 }}</td>
