@@ -1,6 +1,5 @@
 from django.conf import settings
 from django.db import models
-from members.models import Member
 from items.models import Item
 from raid.models import Raid
 
@@ -19,6 +18,7 @@ class Loot(models.Model):
     )
     timestamp = models.DateTimeField(auto_now_add=True)
 
-    def get_gp(self):
-        return ((self.item.get_item_value()**2) * 0.04 * self.item_info.slot_value) * (self.price_percentage / 100)
+    @property
+    def gp(self):
+        return ((self.item.get_item_value**2) * 0.04 * self.item_info.slot_value) * (self.price_percentage / 100)
 

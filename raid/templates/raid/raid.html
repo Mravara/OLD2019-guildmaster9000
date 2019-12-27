@@ -48,11 +48,11 @@
 {% endif %}
 </ul>
 
-<!-- DataTables Example -->
+<!-- Loot Table -->
         <div class="card mb-3">
           <div class="card-header">
             <i class="fas fa-table"></i>
-            <b>{{ raid.dungeon.name }} Loot</b>  {{ raid.start|date:"d-m-Y - H:i:s" }}</div>
+            <b>{{ raid.dungeon.name }} - Loot</b>  {{ raid.start|date:"d-m-Y - H:i:s" }}</div>
           <div class="card-body">
             <div class="table-responsive">
               <table class="table table-bordered table-striped" id="dataTable" width="100%" cellspacing="0">
@@ -63,6 +63,9 @@
                     <th>GP</th>
                     <th>Date</th>
                     <th>Given By</th>
+                    {% if user.member.is_officer %}
+                    <th style="width: 5%">Delete</th>
+                    {% endif %}
                   </tr>
                 </thead>
                 <tfoot>
@@ -72,6 +75,9 @@
                     <th>GP</th>
                     <th>Date</th>
                     <th>Given By</th>
+                    {% if user.member.is_officer %}
+                    <th style="width: 5%">Delete</th>
+                    {% endif %}
                   </tr>
                 </tfoot>
                 <tbody>
@@ -79,9 +85,14 @@
                   <tr>
                     <td><a href="https://classic.wowhead.com/item={{ item.item.wow_id }}" class="q1">{{ item.item.name }}</a></td>
                     <td><a href="">{{ item.member.name }}</a></td>
-                    <td><a href="">{{ item.get_gp|floatformat:2 }}</a></td>
+                    <td><a href="">{{ item.gp|floatformat:2 }}</a></td>
                     <td>{{ item.timestamp|date:"d-m-Y - H:i:s" }}</td>
                     <td><a href="">{{ item.given_by.member.name }}</a></td>
+                    <td>
+                    {% if not raid.done and user.member.is_officer %}
+                      <button type="button" class="btn btn-danger" onclick="window.location.href='delete/{{ item.id }}/';">Delete</button>
+                    {% endif %}
+                    </td>
                   </tr>
                 {% endfor %}
                 </tbody>
@@ -90,6 +101,59 @@
           </div>
           {% comment %} <div class="card-footer"><span class="badge badge-success">Success</span> <span class="badge badge-warning">Paused</span> <span class="badge badge-danger">Failed</span></div> {% endcomment %}
         </div>
+<!-- End of Loot Table -->
+
+<!-- Members Table -->
+        <div class="card mb-3">
+          <div class="card-header">
+            <i class="fas fa-table"></i>
+            <b>{{ raid.dungeon.name }} - Raid Members</b>  </div>
+          <div class="card-body">
+            <div class="table-responsive">
+              <table class="table table-bordered table-striped" id="dataTable" width="100%" cellspacing="0">
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>EP</th>
+                    <th>GP</th>
+                    <th>Priority</th>
+                    {% if user.member.is_officer %}
+                    <th style="width: 5%">Delete</th>
+                    {% endif %}
+                  </tr>
+                </thead>
+                <tfoot>
+                  <tr>
+                    <th>Name</th>
+                    <th>EP</th>
+                    <th>GP</th>
+                    <th>Priority</th>
+                    {% if user.member.is_officer %}
+                    <th style="width: 5%">Delete</th>
+                    {% endif %}
+                  </tr>
+                </tfoot>
+                <tbody>
+                {% for member in raid_members %}
+                  <tr class="{% if not raid.done and member.done or raid.done and not member.closed %}table-danger{% endif %} {% if raid.done and member.closed %}table-success{% endif %}">
+                    <td><a href="">{{ member.member.name }}</a></td>
+                    <td><a href="">{{ member.member.ep|floatformat:2 }}</a></td>
+                    <td><a href="">{{ member.member.gp|floatformat:2 }}</a></td>
+                    <td><a href="">{{ member.member.priority|floatformat:2 }}</a></td>
+                    <td>
+                    {% if user.member.is_officer and not raid.done and not member.done %}
+                      <button type="button" class="btn btn-danger" onclick="window.location.href='remove/{{ member.id }}/';">Delete</button>
+                    {% endif %}
+                    </td>
+                  </tr>
+                {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div class="card-footer"><span class="badge badge-success">Stayed until end</span> <span class="badge badge-danger">Left</span></div>
+        </div>
+<!-- End of Members Table -->
 
 {% if raid.end is None %}
 {% load crispy_forms_tags %}
@@ -211,10 +275,10 @@
 
   // members
   var availableMembers = [
-    {% for member in members %}
+    {% for member in raid_members %}
       { 
-        "id": {{ member.id }},
-        "value": "{{ member.name|escapejs }}"
+        "id": {{ member.member.id }},
+        "value": "{{ member.member.name|escapejs }}"
       },
     {% endfor %}
   ];

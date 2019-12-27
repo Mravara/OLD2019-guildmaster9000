@@ -7,7 +7,7 @@ from django.db.models import Count
 from guildmaster9000.decorators import *
 
 from members.models import Member
-from raid.models import Raid
+from raid.models import Raid, RaidMember
 from loot.models import Loot
 from items.models import Item, ItemInfo
 from dungeons.models import Dungeon
@@ -32,15 +32,15 @@ def get_raid(request, raid_id):
     items = None
     members = None
     form = None
+    members = raid.raid_members.filter(end=None)
     if raid.end is None:
         items = Item.objects.filter(item_quality__gte=Item.Quality.EPIC)
-        members = Member.objects.all()
         form = GiveItemForm()
     context = {
         'raid': raid,
         'loot': loot,
         'items': items,
-        'members': members,
+        'raid_members': members,
         'form': form,
         'item_types': ItemInfo.ItemSlot.choices,
         'breadcrumbs': [
@@ -59,8 +59,15 @@ def new_raid(request):
         if form.is_valid():
             leader = request.user.member
             dung = form.cleaned_data.get('dungeon')
+            text_members = form.cleaned_data.get('members')
+            text_members_list = text_members.splitlines()
             raid = Raid(dungeon=dung, leader=leader)
             raid.save()
+            if len(text_members_list) > 0:
+                members = Member.objects.filter(name__in=text_members_list)
+                raiders = RaidMember.objects.bulk_create([RaidMember(member=m) for m in members])
+                raid.raid_members.set(raiders)
+                raid.save()
             # return redirect("/raids/{}/".format(raid.id)) radi!
             return HttpResponseRedirect(reverse('raid', args=(raid.id,)))
 
@@ -105,21 +112,38 @@ def complete_raid(request, raid_id):
     raid = get_object_or_404(Raid, pk=raid_id)
     raid.end = datetime.now()
     raid.state = Raid.State.SUCCESS
+    raid.raid_members.filter(end=None).update(closed=True, end=datetime.now())
     raid.save()
-    return HttpResponseRedirect(reverse('raid', args=(raid.id,)))
+    return HttpResponseRedirect(reverse('raid', args=(raid_id,)))
 
 
 def pause_raid(request, raid_id):
     raid = get_object_or_404(Raid, pk=raid_id)
     raid.end = datetime.now()
     raid.state = Raid.State.PAUSED
+    raid.raid_members.filter(end=None).update(closed=True, end=datetime.now())
     raid.save()
-    return HttpResponseRedirect(reverse('raid', args=(raid.id,)))
+    return HttpResponseRedirect(reverse('raid', args=(raid_id,)))
 
 
 def fail_raid(request, raid_id):
     raid = get_object_or_404(Raid, pk=raid_id)
     raid.end = datetime.now()
     raid.state = Raid.State.FAILED
+    raid.raid_members.filter(end=None).update(closed=True, end=datetime.now())
     raid.save()
-    return HttpResponseRedirect(reverse('raid', args=(raid.id,)))
+    return HttpResponseRedirect(reverse('raid', args=(raid_id,)))
+
+
+def remove_raider(request, raid_id, raider_id):
+    raid = get_object_or_404(Raid, pk=raid_id)
+    raider = raid.raid_members.get(id=raider_id)
+    raider.end = datetime.now()
+    raider.save()
+    return HttpResponseRedirect(reverse('raid', args=(raid_id,)))
+
+
+def delete_loot(request, raid_id, loot_id):
+    loot = get_object_or_404(Loot, pk=loot_id)
+    loot.delete()
+    return HttpResponseRedirect(reverse('raid', args=(raid_id,)))

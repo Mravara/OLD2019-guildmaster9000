@@ -1,6 +1,8 @@
 from django.conf import settings
 from django.db import models
 from django.contrib.auth.models import User
+from loot.models import Loot
+from django.db.models import F
 
 
 class Member(models.Model):
@@ -38,7 +40,17 @@ class Member(models.Model):
 
     @property
     def priority(self):
-        return self.ep / self.gp
+        return self.ep / max(self.gp, 1)
 
+    @property
     def is_officer(self):
         return self.rank >= Member.Rank.OFFICER
+
+    @property
+    def gp(self):
+        gp = 0
+        loot = Loot.objects.filter(member=self)
+        for l in loot:
+            gp += l.gp
+        return gp
+

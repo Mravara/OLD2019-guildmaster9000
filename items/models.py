@@ -74,6 +74,7 @@ class Item(models.Model):
         return None
 
 
+    @property
     def get_item_value(self):
         if self.item_quality == Item.Quality.UNCOMMON:
             return (self.item_level - 4) / 2

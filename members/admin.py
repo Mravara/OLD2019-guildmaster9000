@@ -1,5 +1,6 @@
 from django.contrib import admin
-from raid.models import Member, RaidMember
+from members.models import Member
+from raid.models import RaidMember
 
 class MemberAdmin(admin.ModelAdmin):
     list_display = ('name', 'rank', 'joined', 'member_class')

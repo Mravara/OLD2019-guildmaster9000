@@ -6,7 +6,7 @@ def officers(redirect_url=''):
         def wrap(request, *args, **kwargs):
             member = Member.get_member(request)
 
-            if member.is_officer():
+            if member.is_officer:
                 return function(request, *args, **kwargs)
             else:
                 return redirect(redirect_url)

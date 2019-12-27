@@ -13,6 +13,8 @@ class NewRaidForm(forms.Form):
         initial='1',
         )
 
+    members = forms.CharField(widget=forms.Textarea)
+
     def __init__(self, *args, **kwargs):
         super(NewRaidForm, self).__init__(*args, **kwargs)
         self.helper = FormHelper()

@@ -10,4 +10,6 @@ urlpatterns = [
     path('<int:raid_id>/pause/', views.pause_raid, name='pause'),
     path('<int:raid_id>/fail/', views.fail_raid, name='fail'),
     path('<int:raid_id>/give/', views.give_item, name='give_item'),
+    path('<int:raid_id>/delete/<int:loot_id>/', views.delete_loot, name='delete_loot'),
+    path('<int:raid_id>/remove/<int:raider_id>/', views.remove_raider, name='remove_raider'),
 ]
