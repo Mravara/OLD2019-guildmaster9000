@@ -15,19 +15,17 @@
 <ul class="" style="list-style: none; padding-left: 0;">
 {% if not raid.done %}
     {% if user.member.is_officer %}
-      <button type="button auto" class="btn btn-primary btn-lg btn-block" data-toggle="modal" data-target="#giveItemModal"><i class="fas fa-gavel" aria-hidden="true"></i> Give Item</button>
-      <br>
-  <div class="card float-left" style="width: 200px;">
-      <div class="btn-group" role="group">
-        <button type="button" class="btn btn-success" data-toggle="modal" data-target="#giveEPModal"><i class="fas fa-thumbs-up" aria-hidden="true"></i> Give EP</button>
-      </div>
+  <div class="card float-left" style="width: 150px;">
+    <div class="btn-group" role="group">
+      <button type="button" class="btn btn-success" data-toggle="modal" data-target="#giveEPModal"><i class="fas fa-thumbs-up" aria-hidden="true"></i> Give EP</button>
+    </div>
   </div>
-  <div class="card float-right" style="width: 500px;">
-      <div class="btn-group" role="group">
-        <button type="button" class="btn btn-success" data-toggle="modal" data-target="#endRaidModal" name="complete"><i class="fas fa-check-circle" aria-hidden="true"></i> Complete</button>
-        <button type="button" class="btn btn-warning text-white" data-toggle="modal" data-target="#endRaidModal" name="pause"><i class="fas fa-pause-circle" aria-hidden="true"></i> Pause</button>
-        <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#endRaidModal" name="fail"><i class="fas fa-ban" aria-hidden="true"></i> Fail</button>
-      </div>
+  <div class="card float-right" style="width: 300px;">
+    <div class="btn-group" role="group">
+      <button type="button" class="btn btn-success" data-toggle="modal" data-target="#endRaidModal" name="complete"><i class="fas fa-check-circle" aria-hidden="true"></i> Complete</button>
+      <button type="button" class="btn btn-warning text-white" data-toggle="modal" data-target="#endRaidModal" name="pause"><i class="fas fa-pause-circle" aria-hidden="true"></i> Pause</button>
+      <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#endRaidModal" name="fail"><i class="fas fa-ban" aria-hidden="true"></i> Fail</button>
+    </div>
   </div>
     {% else %}
       <div class="btn-group btn-group-justified" role="group" aria-label="...">
@@ -61,7 +59,12 @@
         <div class="card mb-3">
           <div class="card-header">
             <i class="fas fa-table"></i>
-            <b>{{ raid.dungeon.name }} - Loot</b>  {{ raid.start|date:"d-m-Y - H:i:s" }}</div>
+            <b>{{ raid.dungeon.name }} - Loot</b>  {{ raid.start|date:"d-m-Y - H:i:s" }}
+            {% if user.member.is_officer and not raid.done %}
+            <button type="button auto" class="btn btn-primary btn-sm float-right" data-toggle="modal" data-target="#giveItemModal">
+            <i class="fas fa-gavel" aria-hidden="true"></i> Give</button>
+            {% endif %}
+            </div>
           <div class="card-body">
             <div class="table-responsive">
               <table class="table table-bordered table-striped table-sm" id="dataTable" width="100%" cellspacing="0">
@@ -163,7 +166,7 @@
                     {% if user.member.is_officer and not raid.done %}
                     <td>
                       {% if not member.done %}
-                      <button type="button" class="btn btn-sm btn-danger" onclick="window.location.href='remove_raider/{{ member.id }}/';">Delete</button>
+                      <button type="button" class="btn btn-sm btn-danger" onclick="window.location.href='remove_raider/{{ member.id }}/';">Remove</button>
                       {% endif %}
                     </td>
                     {% endif %}
@@ -224,7 +227,7 @@
                     {% if user.member.is_officer and not raid.done %}
                       <td>
                         {% if member.waiting %}
-                        <button type="button" class="btn btn-sm btn-danger" onclick="window.location.href='remove_benched_raider/{{ member.id }}/';">Delete</button>
+                        <button type="button" class="btn btn-sm btn-danger" onclick="window.location.href='remove_benched_raider/{{ member.id }}/';">Remove</button>
                         {% endif %}
                       </td>
                     {% endif %}
