@@ -58,7 +58,7 @@
 <!-- Loot Table -->
         <div class="card mb-3">
           <div class="card-header">
-            <i class="fas fa-table"></i>
+            <i class="fas fa-gavel"></i>
             <b>{{ raid.dungeon.name }} - Loot</b>  {{ raid.start|date:"d-m-Y - H:i:s" }}
             {% if user.member.is_officer and not raid.done %}
             <button type="button auto" class="btn btn-primary btn-sm float-right" data-toggle="modal" data-target="#giveItemModal">
@@ -120,7 +120,7 @@
 <!-- Members Table -->
         <div class="card mb-3">
           <div class="card-header">
-            <i class="fas fa-table"></i>
+            <i class="fas fa-users"></i>
             <b>{{ raid.dungeon.name }} - Raid Members </b> 
             {% if user.member.is_officer and not raid.done %}
             <button type="button" class="btn btn-sm btn-primary float-right" data-toggle="modal" data-target="#addRaiders" name="addRaiders">
@@ -187,7 +187,7 @@
 <!-- Benched Members Table -->
         <div class="card mb-3">
           <div class="card-header">
-            <i class="fas fa-table"></i>
+            <i class="fas fa-users-cog"></i>
             <b>{{ raid.dungeon.name }} - Benched Raid Members </b> 
             {% if user.member.is_officer and not raid.done %}
             <button type="button" class="btn btn-sm btn-primary float-right" onclick="window.location.href='ping/';">
