@@ -415,9 +415,9 @@
 
 
 {% block scripts %}
-{% if not raid.done %}
-  <script charset="UTF-8">
+<script charset="UTF-8">
 
+{% if not raid.done %}
   // remove modal input values
   $('#giveItemModal').on('show.bs.modal', function (e) {
     $("#id_item").val('');
@@ -491,21 +491,6 @@
     }
   });
 
-  // auto order table loot
-  $('#dataTable').DataTable( {
-    "order": [[ 4, "desc" ]]
-  });
-
-  // auto order table members
-  $('#dataTable2').DataTable( {
-    "order": [[ 4, "desc" ]]
-  });
-
-  // auto order table benched members
-  $('#dataTable3').DataTable( {
-    "order": [[ 2, "asc" ]]
-  });
-
   // prepare end raid modal
   $('#endRaidModal').on('show.bs.modal', function (e) {
     var target = $(e.relatedTarget);
@@ -525,7 +510,21 @@
       $('#endRaidLabel').addClass('text-warning');
     }
   });
-
-  </script>
 {% endif %}
+
+  // auto order table loot
+  $('#dataTable').DataTable( {
+    "order": [[ 4, "desc" ]]
+  });
+
+  // auto order table members
+  $('#dataTable2').DataTable( {
+    "order": [[ 4, "desc" ]]
+  });
+
+  // auto order table benched members
+  $('#dataTable3').DataTable( {
+    "order": [[ 2, "asc" ]]
+  });
+  </script>
 {% endblock %}
