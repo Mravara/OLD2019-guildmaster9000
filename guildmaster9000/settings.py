@@ -31,6 +31,7 @@ ALLOWED_HOSTS = [
     '192.168.0.14',
     '94.253.184.70',
     'guild-primal.ddns.net',
+    'primal-guild.ddns.net',
 ]
 
 
