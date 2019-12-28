@@ -1,5 +1,6 @@
 from django.conf import settings
 from django.db import models
+from django.utils import timezone
 from django.contrib.auth.models import User
 from loot.models import Loot
 from django.db.models import F
@@ -29,7 +30,7 @@ class Member(models.Model):
     name = models.CharField(max_length=50)
     member_class = models.IntegerField(choices=MemberClass.choices, null=True)
     rank = models.IntegerField(choices=Rank.choices, default=Rank.MEMBER, null=True)
-    joined = models.DateTimeField(auto_now_add=True, null=True)
+    joined = models.DateTimeField(default=timezone.now)
     ep = models.IntegerField(default=0)
 
     def __str__(self):

@@ -1,5 +1,6 @@
 from django.conf import settings
 from django.db import models
+from datetime import datetime
 from items.models import Item
 from raid.models import Raid
 
@@ -16,7 +17,7 @@ class Loot(models.Model):
         null=True,
         blank=True
     )
-    timestamp = models.DateTimeField(auto_now_add=True)
+    timestamp = models.DateTimeField(default=datetime.now)
 
     @property
     def gp(self):

@@ -1,5 +1,6 @@
 from django.conf import settings
 from django.db import models
+from datetime import datetime
 
 
 class Raid(models.Model):
@@ -15,7 +16,7 @@ class Raid(models.Model):
     raid_members = models.ManyToManyField('raid.RaidMember', related_name='raid')
     benched_raid_members = models.ManyToManyField('raid.BenchedRaidMember', related_name='braid')
     state = models.IntegerField(choices=State.choices, default=State.IN_PROGRESS)
-    start = models.DateTimeField(auto_now_add=True)
+    start = models.DateTimeField(default=datetime.now)
     end = models.DateTimeField(null=True, blank=True)
 
     def __str__(self):
@@ -29,7 +30,7 @@ class Raid(models.Model):
 
 class RaidMember(models.Model):
     member = models.ForeignKey('members.Member', on_delete=models.PROTECT)
-    start = models.DateTimeField(auto_now_add=True)
+    start = models.DateTimeField(default=datetime.now)
     end = models.DateTimeField(null=True, blank=True)
     closed = models.BooleanField(default=False)
 
@@ -48,7 +49,7 @@ class RaidMember(models.Model):
 
 class BenchedRaidMember(models.Model):
     member = models.ForeignKey('members.Member', on_delete=models.PROTECT)
-    start = models.DateTimeField(auto_now_add=True)
+    start = models.DateTimeField(default=datetime.now)
     end = models.DateTimeField(null=True, blank=True)
     ticks = models.IntegerField(default=0)
 
