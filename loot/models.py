@@ -18,6 +18,7 @@ class Loot(models.Model):
         blank=True
     )
     timestamp = models.DateTimeField(default=datetime.now)
+    comment = models.CharField(default='', max_length=256)
 
     @property
     def gp(self):

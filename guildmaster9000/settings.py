@@ -150,7 +150,7 @@ DEFAULT_CHARSET = 'utf-8'
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
 
-DATE_FORMAT = 'd-m-Y - H:i:s'
+DATETIME_FORMAT = 'd-m-y - H:i:s'
 
 STATICFILES_DIRS = (
     os.path.join(PROJECT_ROOT, 'static'),

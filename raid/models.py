@@ -52,6 +52,7 @@ class BenchedRaidMember(models.Model):
     start = models.DateTimeField(default=datetime.now)
     end = models.DateTimeField(null=True, blank=True)
     ticks = models.IntegerField(default=0)
+    closed = models.BooleanField(default=False)
 
     def __str__(self):
         return self.member.name
@@ -59,3 +60,7 @@ class BenchedRaidMember(models.Model):
     @property
     def waiting(self):
         return self.end is None
+
+    @property
+    def closed_raid(self):
+        return self.closed

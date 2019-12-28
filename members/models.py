@@ -19,7 +19,7 @@ class Member(models.Model):
         DRUID = 0
         HUNTER = 1
         MAGE = 2
-        Priest = 3
+        PRIEST = 3
         ROGUE = 4
         SHAMAN = 5
         WARLOCK = 6
@@ -56,3 +56,23 @@ class Member(models.Model):
             gp += l.gp
         return gp
 
+    @property
+    def class_color(self):
+        if self.member_class == Member.MemberClass.DRUID:
+            return "#FF7D0A60"
+        elif self.member_class == Member.MemberClass.HUNTER:
+            return "#A9D27160"
+        elif self.member_class == Member.MemberClass.MAGE:
+            return "#40C7EB60"
+        elif self.member_class == Member.MemberClass.PRIEST:
+            return "#FFFFFF60"
+        elif self.member_class == Member.MemberClass.ROGUE:
+            return "#FFF56960"
+        elif self.member_class == Member.MemberClass.SHAMAN:
+            return "#0070DE60"
+        elif self.member_class == Member.MemberClass.WARLOCK:
+            return "#8787ED60"
+        elif self.member_class == Member.MemberClass.WARRIOR:
+            return "#C79C6E60"
+        else:
+            return "#FFFFFF"

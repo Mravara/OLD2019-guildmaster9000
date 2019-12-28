@@ -30,15 +30,16 @@ class GiveItemForm(forms.Form):
     item_id = forms.IntegerField(widget=forms.HiddenInput(), required=True)
     item_slot = forms.ModelChoiceField(queryset=ItemInfo.objects.all(), label='', initial=1)
     price = forms.FloatField(label='', initial='100', min_value=0, max_value=100, required=True)
+    comment = forms.CharField(label='', required=False)
 
 
 class GiveEPForm(forms.Form):
     ep = forms.IntegerField(required=True)
 
 
-class AddRaiders(forms.Form):
+class AddRaidersForm(forms.Form):
     members = forms.CharField(required=True, widget=forms.Textarea)
 
 
-class AddBenchedRaiders(forms.Form):
+class AddBenchedRaidersForm(forms.Form):
     members = forms.CharField(required=True, widget=forms.Textarea)

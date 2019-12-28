@@ -1,5 +1,5 @@
 {% extends 'index.html' %}
-
+{% load static %}
 {% block content %}
 <!-- DataTables Example -->
         <div class="card mb-3">
@@ -30,9 +30,9 @@
               </tfoot>
               <tbody>
               {% for member in members %}
-                <tr>
+                <tr style="background-color: {{ member.class_color }};">
                   <td><a href="{% url 'member' member.id %}">{{ member.name }}</a></td>
-                  <td>{{ member.get_member_class_display }}</td>
+                  <td><img width="20px" class="mr-1" src="{% static 'classes/' %}{{ member.get_member_class_display }}.png" class="rounded float-left" alt="">  {{ member.get_member_class_display }}</td>
                   <td>{{ member.get_rank_display }}</td>
                   <td>{{ member.ep|floatformat:2 }}</td>
                   <td>{{ member.gp|floatformat:2 }}</td>

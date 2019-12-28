@@ -73,7 +73,8 @@
                     <th>Item</th>
                     <th>Given To</th>
                     <th>GP</th>
-                    <th>Date</th>
+                    <th>Price</th>
+                    <th>Time</th>
                     <th>Given By</th>
                     {% if user.member.is_officer and not raid.done %}
                     <th style="width: 5%">Delete</th>
@@ -85,7 +86,8 @@
                     <th>Item</th>
                     <th>Given To</th>
                     <th>GP</th>
-                    <th>Date</th>
+                    <th>Price</th>
+                    <th>Time</th>
                     <th>Given By</th>
                     {% if user.member.is_officer and not raid.done %}
                     <th style="width: 5%">Delete</th>
@@ -97,8 +99,9 @@
                   <tr>
                     <td><a href="https://classic.wowhead.com/item={{ item.item.wow_id }}" class="q1">{{ item.item.name }}</a></td>
                     <td><a href="">{{ item.member.name }}</a></td>
-                    <td><a href="">{{ item.gp|floatformat:2 }}</a></td>
-                    <td>{{ item.timestamp|date:"d-m-Y - H:i:s" }}</td>
+                    <td>{{ item.gp|floatformat:2 }}</td>
+                    <td>{{ item.price_percentage|floatformat:2 }}%</td>
+                    <td>{{ item.timestamp|date:"H:i:s d-m-y" }}</td>
                     <td><a href="">{{ item.given_by.member.name }}</a></td>
                     {% if not raid.done and user.member.is_officer %}
                     <td>
@@ -138,6 +141,8 @@
                     <th>EP</th>
                     <th>GP</th>
                     <th>Priority</th>
+                    <th style="width: 10%">Joined</th>
+                    <th style="width: 10%">Left</th>
                     {% if user.member.is_officer and not raid.done %}
                     <th style="width: 5%">Remove</th>
                     {% endif %}
@@ -150,6 +155,8 @@
                     <th>EP</th>
                     <th>GP</th>
                     <th>Priority</th>
+                    <th>Joined</th>
+                    <th>Left</th>
                     {% if user.member.is_officer and not raid.done %}
                     <th style="width: 5%">Remove</th>
                     {% endif %}
@@ -160,9 +167,11 @@
                   <tr class="{% if not raid.done and member.done or raid.done and not member.closed %}table-danger{% endif %} {% if raid.done and member.closed %}table-success{% endif %}">
                     <td><a href="">{{ member.member.name }}</a></td>
                     <td>{{ member.member.get_member_class_display }}</td>
-                    <td><a href="">{{ member.member.ep|floatformat:2 }}</a></td>
-                    <td><a href="">{{ member.member.gp|floatformat:2 }}</a></td>
-                    <td><a href="">{{ member.member.priority|floatformat:2 }}</a></td>
+                    <td>{{ member.member.ep|floatformat:2 }}</td>
+                    <td>{{ member.member.gp|floatformat:2 }}</td>
+                    <td>{{ member.member.priority|floatformat:2 }}</td>
+                    <td>{{ member.start|date:"H:i:s - d.m.y" }}</td>
+                    <td>{{ member.end|date:"H:i:s - d.m.y" }}</td>
                     {% if user.member.is_officer and not raid.done %}
                     <td>
                       {% if not member.done %}
@@ -205,6 +214,8 @@
                   <tr>
                     <th>Name</th>
                     <th>Class</th>
+                    <th style="width: 10%">Joined</th>
+                    <th style="width: 10%">Left</th>
                     {% if user.member.is_officer and not raid.done %}
                     <th style="width: 5%">Remove</th>
                     {% endif %}
@@ -214,6 +225,8 @@
                   <tr>
                     <th>Name</th>
                     <th>Class</th>
+                    <th>Joined</th>
+                    <th>Left</th>
                     {% if user.member.is_officer and not raid.done %}
                     <th style="width: 5%">Remove</th>
                     {% endif %}
@@ -221,9 +234,11 @@
                 </tfoot>
                 <tbody>
                 {% for member in benched_raid_members %}
-                  <tr class="{% if not member.waiting %}table-danger{% endif %}">
+                  <tr class="{% if not member.waiting and not member.closed_raid %}table-danger{% elif member.closed_raid %}table-success{% endif %}">
                     <td><a href="">{{ member.member.name }}</a></td>
                     <td>{{ member.member.get_member_class_display }}</td>
+                    <td>{{ member.start|date:"H:i:s - d.m.y" }}</td>
+                    <td>{{ member.end|date:"H:i:s - d.m.y" }}</td>
                     {% if user.member.is_officer and not raid.done %}
                       <td>
                         {% if member.waiting %}
@@ -283,6 +298,12 @@
               <label data-error="wrong" data-success="right" for="defaultForm-price">Price %</label>
               {{ form.price|as_crispy_field }}
             </div>
+
+            <div class="md-form mb-4">
+              <i class="fas fa-user prefix grey-text"></i>
+              <label data-error="wrong" data-success="right" for="defaultForm-member">Comment (optional)</label>
+              {{ form.comment|as_crispy_field }}
+            </div>
           </div>
 
           <div class="modal-footer">
@@ -294,6 +315,7 @@
     </div>
   </div>
 
+<!-- End Raid Modal-->
   <div class="modal fade" id="endRaidModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
       <div class="modal-content">
@@ -311,7 +333,9 @@
       </div>
     </div>
   </div>
+<!-- End of End Raid Modal-->
 
+<!-- Give EP Modal-->
   <div class="modal fade" id="giveEPModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
       <div class="modal-content">
@@ -334,6 +358,57 @@
       </div>
     </div>
   </div>
+<!-- End of Give EP Modal-->
+
+<!-- Add Raiders Modal-->
+  <div class="modal fade" id="addRaiders" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <form method="POST" action="add_raiders/">
+          {% csrf_token %}
+          <div class="modal-header">
+            <h5 class="modal-title"><i class="fas fa-plus-circle" aria-hidden="true"></i> Add Raiders</h5>
+            <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">×</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            {{ form_add_raiders.members|as_crispy_field }}
+          </div>
+          <div class="modal-footer">
+            <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
+            <input type="submit" class="btn btn-primary" value="Add"/>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+<!-- End of Add Raiders Modal-->
+
+<!-- Add Benched Raiders Modal-->
+  <div class="modal fade" id="addBenchedRaiders" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <form method="POST" action="add_benched_raiders/">
+          {% csrf_token %}
+          <div class="modal-header">
+            <h5 class="modal-title"><i class="fas fa-plus-circle" aria-hidden="true"></i> Add Benched Raiders</h5>
+            <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">×</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            {{ form_add_raiders.members|as_crispy_field }}
+          </div>
+          <div class="modal-footer">
+            <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
+            <input type="submit" class="btn btn-primary" value="Add"/>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+<!-- End of Add Benched Raiders Modal-->
 {% endif %}
 
 {% endblock %}
@@ -416,14 +491,19 @@
     }
   });
 
-  // auto order table
+  // auto order table loot
   $('#dataTable').DataTable( {
-    "order": [[ 3, "desc" ]]
+    "order": [[ 4, "desc" ]]
   });
 
-  // auto order table
+  // auto order table members
   $('#dataTable2').DataTable( {
     "order": [[ 4, "desc" ]]
+  });
+
+  // auto order table benched members
+  $('#dataTable3').DataTable( {
+    "order": [[ 2, "asc" ]]
   });
 
   // prepare end raid modal
