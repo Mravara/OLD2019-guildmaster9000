@@ -13,6 +13,7 @@ class Raid(models.Model):
     dungeon = models.ForeignKey('dungeons.Dungeon', on_delete=models.PROTECT)
     leader = models.ForeignKey('members.Member', related_name='leader', on_delete=models.PROTECT)
     raid_members = models.ManyToManyField('raid.RaidMember', related_name='raid')
+    benched_raid_members = models.ManyToManyField('raid.BenchedRaidMember', related_name='braid')
     state = models.IntegerField(choices=State.choices, default=State.IN_PROGRESS)
     start = models.DateTimeField(auto_now_add=True)
     end = models.DateTimeField(null=True, blank=True)
@@ -47,13 +48,13 @@ class RaidMember(models.Model):
 
 class BenchedRaidMember(models.Model):
     member = models.ForeignKey('members.Member', on_delete=models.PROTECT)
-    raid = models.ForeignKey('Raid', on_delete=models.PROTECT)
-    name = models.CharField(max_length=64)
-    ticks = models.IntegerField()
     start = models.DateTimeField(auto_now_add=True)
     end = models.DateTimeField(null=True, blank=True)
+    ticks = models.IntegerField(default=0)
 
     def __str__(self):
         return self.member.name
 
-
+    @property
+    def waiting(self):
+        return self.end is None

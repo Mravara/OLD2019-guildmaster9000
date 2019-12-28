@@ -7,42 +7,40 @@
             <i class="fas fa-table"></i>
             Primal Members</div>
           <div class="card-body">
-            <div class="table-sm">
-              <table class="table table-bordered" data-page-length='100' id="dataTable" width="100%" cellspacing="0">
-                <thead>
-                  <tr>
-                    <th>Name</th>
-                    <th>Class</th>
-                    <th>Rank</th>
-                    <th>EP</th>
-                    <th>GP</th>
-                    <th>Priority</th>
-                  </tr>
-                </thead>
-                <tfoot>
-                  <tr>
-                    <th>Name</th>
-                    <th>Class</th>
-                    <th>Rank</th>
-                    <th>EP</th>
-                    <th>GP</th>
-                    <th>Priority</th>
-                  </tr>
-                </tfoot>
-                <tbody>
-                {% for member in members %}
-                  <tr>
-                    <td><a href="{% url 'member' member.id %}">{{ member.name }}</a></td>
-                    <td>{{ member.get_member_class_display }}</td>
-                    <td>{{ member.get_rank_display }}</td>
-                    <td>{{ member.ep|floatformat:2 }}</td>
-                    <td>{{ member.gp|floatformat:2 }}</td>
-                    <td>{{ member.priority }}</td>
-                  </tr>
-                {% endfor %}
-                </tbody>
-              </table>
-            </div>
+            <table class="table table-bordered table-sm" data-page-length='100' id="dataTable" width="100%" cellspacing="0">
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Class</th>
+                  <th>Rank</th>
+                  <th>EP</th>
+                  <th>GP</th>
+                  <th>Priority</th>
+                </tr>
+              </thead>
+              <tfoot>
+                <tr>
+                  <th>Name</th>
+                  <th>Class</th>
+                  <th>Rank</th>
+                  <th>EP</th>
+                  <th>GP</th>
+                  <th>Priority</th>
+                </tr>
+              </tfoot>
+              <tbody>
+              {% for member in members %}
+                <tr>
+                  <td><a href="{% url 'member' member.id %}">{{ member.name }}</a></td>
+                  <td>{{ member.get_member_class_display }}</td>
+                  <td>{{ member.get_rank_display }}</td>
+                  <td>{{ member.ep|floatformat:2 }}</td>
+                  <td>{{ member.gp|floatformat:2 }}</td>
+                  <td>{{ member.priority|floatformat:2 }}</td>
+                </tr>
+              {% endfor %}
+              </tbody>
+            </table>
           </div>
           {% comment %} <div class="card-footer small text-muted">Updated {{ timestamp }}</div> {% endcomment %}
         </div>
@@ -55,7 +53,7 @@
 
   // auto order table
   $('#dataTable').DataTable( {
-    "order": [[ 4, "desc" ]]
+    "order": [[ 5, "desc" ]]
   });
 
   </script>

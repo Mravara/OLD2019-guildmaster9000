@@ -118,7 +118,13 @@
         <div class="card mb-3">
           <div class="card-header">
             <i class="fas fa-table"></i>
-            <b>{{ raid.dungeon.name }} - Raid Members</b>  </div>
+            <b>{{ raid.dungeon.name }} - Raid Members </b> 
+            {% if user.member.is_officer and not raid.done %}
+            <button type="button" class="btn btn-sm btn-primary float-right" data-toggle="modal" data-target="#addRaiders" name="addRaiders">
+            <i class="fas fa-plus-circle" aria-hidden="true"></i> Add</button>
+            {% endif %}
+          </div>
+
           <div class="card-body">
             <div class="table-responsive">
               <table class="table table-bordered table-striped table-sm" id="dataTable2" width="100%" cellspacing="0">
@@ -130,7 +136,7 @@
                     <th>GP</th>
                     <th>Priority</th>
                     {% if user.member.is_officer and not raid.done %}
-                    <th style="width: 5%">Delete</th>
+                    <th style="width: 5%">Remove</th>
                     {% endif %}
                   </tr>
                 </thead>
@@ -142,7 +148,7 @@
                     <th>GP</th>
                     <th>Priority</th>
                     {% if user.member.is_officer and not raid.done %}
-                    <th style="width: 5%">Delete</th>
+                    <th style="width: 5%">Remove</th>
                     {% endif %}
                   </tr>
                 </tfoot>
@@ -154,9 +160,11 @@
                     <td><a href="">{{ member.member.ep|floatformat:2 }}</a></td>
                     <td><a href="">{{ member.member.gp|floatformat:2 }}</a></td>
                     <td><a href="">{{ member.member.priority|floatformat:2 }}</a></td>
-                    {% if user.member.is_officer and not raid.done and not member.done %}
+                    {% if user.member.is_officer and not raid.done %}
                     <td>
+                      {% if not member.done %}
                       <button type="button" class="btn btn-sm btn-danger" onclick="window.location.href='remove_raider/{{ member.id }}/';">Delete</button>
+                      {% endif %}
                     </td>
                     {% endif %}
                   </tr>
@@ -171,9 +179,69 @@
         </div>
 <!-- End of Members Table -->
 
+<hr />
+
+<!-- Benched Members Table -->
+        <div class="card mb-3">
+          <div class="card-header">
+            <i class="fas fa-table"></i>
+            <b>{{ raid.dungeon.name }} - Benched Raid Members </b> 
+            {% if user.member.is_officer and not raid.done %}
+            <button type="button" class="btn btn-sm btn-primary float-right" onclick="window.location.href='ping/';">
+            <i class="fas fa-exclamation-circle" aria-hidden="true"></i> Ping</button>
+
+            <button type="button" class="btn btn-sm btn-primary float-right mr-2" data-toggle="modal" data-target="#addBenchedRaiders" name="addBenchedRaiders">
+            <i class="fas fa-plus-circle" aria-hidden="true"></i> Add</button>
+            {% endif %}
+          </div>
+
+          <div class="card-body">
+            <div class="table-responsive">
+              <table class="table table-bordered table-striped table-sm" id="dataTable3" width="100%" cellspacing="0">
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Class</th>
+                    {% if user.member.is_officer and not raid.done %}
+                    <th style="width: 5%">Remove</th>
+                    {% endif %}
+                  </tr>
+                </thead>
+                <tfoot>
+                  <tr>
+                    <th>Name</th>
+                    <th>Class</th>
+                    {% if user.member.is_officer and not raid.done %}
+                    <th style="width: 5%">Remove</th>
+                    {% endif %}
+                  </tr>
+                </tfoot>
+                <tbody>
+                {% for member in benched_raid_members %}
+                  <tr class="{% if not member.waiting %}table-danger{% endif %}">
+                    <td><a href="">{{ member.member.name }}</a></td>
+                    <td>{{ member.member.get_member_class_display }}</td>
+                    {% if user.member.is_officer and not raid.done %}
+                      <td>
+                        {% if member.waiting %}
+                        <button type="button" class="btn btn-sm btn-danger" onclick="window.location.href='remove_benched_raider/{{ member.id }}/';">Delete</button>
+                        {% endif %}
+                      </td>
+                    {% endif %}
+                  </tr>
+                {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          </div>
+          {% if raid.done %}
+          <div class="card-footer"><span class="badge badge-success">Stayed until end</span> <span class="badge badge-danger">Left</span></div>
+          {% endif %}
+        </div>
+<!-- End of Benched Members Table -->
+
 {% if raid.end is None %}
 {% load crispy_forms_tags %}
-{% csrf_token %}
 <!-- Give Item Modal-->
   <div class="modal fade bd-example-modal-xl" id="giveItemModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-xl" role="document">
@@ -283,8 +351,13 @@
     $("#id_item").addClass("is-invalid");
   });
 
+  // focus
   $('#giveItemModal').on('shown.bs.modal', function (e) {
     $('#id_member').focus();
+  });
+
+  $('#giveEPModal').on('shown.bs.modal', function (e) {
+    $('#id_ep').focus();
   });
 
   $("#id_member").keyup(function(e) {

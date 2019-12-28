@@ -11,6 +11,10 @@ urlpatterns = [
     path('<int:raid_id>/fail/', views.fail_raid, name='fail'),
     path('<int:raid_id>/give_ep/', views.give_ep, name='give_ep'),
     path('<int:raid_id>/give_item/', views.give_item, name='give_item'),
+    path('<int:raid_id>/add_raiders/', views.add_raiders, name='add_raiders'),
+    path('<int:raid_id>/add_benched_raiders/', views.add_benched_raiders, name='add_benched_raiders'),
     path('<int:raid_id>/delete_loot/<int:loot_id>/', views.delete_loot, name='delete_loot'),
     path('<int:raid_id>/remove_raider/<int:raider_id>/', views.remove_raider, name='remove_raider'),
+    path('<int:raid_id>/remove_benched_raider/<int:raider_id>/', views.remove_benched_raider, name='remove_benched_raider'),
+    path('<int:raid_id>/ping/', views.ping, name='ping'),
 ]

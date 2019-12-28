@@ -14,6 +14,7 @@ class NewRaidForm(forms.Form):
         )
 
     members = forms.CharField(widget=forms.Textarea)
+    benched_members = forms.CharField(required=False, widget=forms.Textarea)
 
     def __init__(self, *args, **kwargs):
         super(NewRaidForm, self).__init__(*args, **kwargs)
@@ -33,3 +34,11 @@ class GiveItemForm(forms.Form):
 
 class GiveEPForm(forms.Form):
     ep = forms.IntegerField(required=True)
+
+
+class AddRaiders(forms.Form):
+    members = forms.CharField(required=True, widget=forms.Textarea)
+
+
+class AddBenchedRaiders(forms.Form):
+    members = forms.CharField(required=True, widget=forms.Textarea)
