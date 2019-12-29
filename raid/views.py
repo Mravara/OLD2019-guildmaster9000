@@ -122,17 +122,18 @@ def give_item(request, raid_id):
             member = get_object_or_404(Member, pk=member_id)
             item = get_object_or_404(Item, pk=item_id)
             price_percentage = form.cleaned_data.get('price')
-            member.save()
             loot = Loot(
                 member=member,
                 raid=raid,
                 item=item,
                 item_info=item_info,
                 price_percentage=price_percentage,
-                given_by=request.user,
+                given_by=request.user.member,
                 comment=comment,
             )
             loot.save()
+            member.gp = F('gp') + loot.gp
+            member.save()
         return HttpResponseRedirect(reverse('raid', args=(raid_id,)))
 
 

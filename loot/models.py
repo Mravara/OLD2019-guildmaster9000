@@ -11,12 +11,7 @@ class Loot(models.Model):
     item = models.ForeignKey('items.Item', on_delete=models.PROTECT)
     item_info = models.ForeignKey('items.ItemInfo', on_delete=models.PROTECT, null=True)
     price_percentage = models.FloatField(null=True, default=100)
-    given_by = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        on_delete=models.SET_NULL,
-        null=True,
-        blank=True
-    )
+    given_by = models.ForeignKey('members.Member', on_delete=models.PROTECT, related_name='given_by', null=True)
     timestamp = models.DateTimeField(default=datetime.now)
     comment = models.CharField(default='', max_length=256)
 
