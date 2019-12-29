@@ -39,7 +39,7 @@ class Member(models.Model):
 
     @staticmethod
     def get_member(request):
-        return Member.objects.get(user=request.user)
+        return request.user.member
 
     @property
     def priority(self):
