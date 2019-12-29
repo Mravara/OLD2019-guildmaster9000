@@ -140,7 +140,7 @@ USE_I18N = True
 
 USE_L10N = False
 
-USE_TZ = True
+USE_TZ = False
 
 DEFAULT_CHARSET = 'utf-8'
 

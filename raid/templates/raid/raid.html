@@ -102,7 +102,7 @@
                     <td>{{ item.gp|floatformat:2 }}</td>
                     <td>{{ item.price_percentage|floatformat:2 }}%</td>
                     <td>{{ item.timestamp|date:"H:i:s d-m-y" }}</td>
-                    <td><a href="">{{ item.given_by.member.name }}</a></td>
+                    <td><a href="">{{ item.given_by.name }}</a></td>
                     {% if not raid.done and user.member.is_officer %}
                     <td>
                       <button type="button" class="btn btn-sm btn-danger" onclick="window.location.href='delete_item/{{ item.id }}/';">Delete</button>
