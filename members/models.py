@@ -32,6 +32,7 @@ class Member(models.Model):
     rank = models.IntegerField(choices=Rank.choices, default=Rank.MEMBER, null=True)
     joined = models.DateTimeField(default=timezone.now)
     ep = models.IntegerField(default=0)
+    gp = models.IntegerField(default=0)
 
     def __str__(self):
         return self.name
@@ -49,7 +50,7 @@ class Member(models.Model):
         return self.rank >= Member.Rank.OFFICER
 
     @property
-    def gp(self):
+    def loot_gp(self):
         gp = 0
         loot = Loot.objects.filter(member=self)
         for l in loot:
