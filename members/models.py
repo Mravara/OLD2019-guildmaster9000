@@ -77,3 +77,9 @@ class Member(models.Model):
             return "#C79C6E60"
         else:
             return "#FFFFFF"
+
+
+class Decay(models.Model):
+    member = models.ForeignKey('members.Member', on_delete=models.PROTECT)
+    percentage = models.FloatField()
+    time = models.DateTimeField(default=timezone.now)
