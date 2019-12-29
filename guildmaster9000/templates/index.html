@@ -125,21 +125,32 @@
           <a class="dropdown-item" href="blank.html">Blank Page</a>
         </div>
       </li> {% endcomment %}
+
       <li class="nav-item">
         <a class="nav-link" href="/raids/">
           <i class="fas fa-fw fa-fist-raised"></i>
           <span>Raids</span></a>
       </li>
+
       <li class="nav-item">
         <a class="nav-link" href="/loot/">
           <i class="fas fa-fw fa-coins"></i>
           <span>Loot</span></a>
       </li>
+
       <li class="nav-item">
         <a class="nav-link" href="/members/">
           <i class="fas fa-fw fa-users"></i>
           <span>Members</span></a>
       </li>
+
+      {% if user.member.is_officer %}
+      <li class="nav-item">
+        <a class="nav-link" href="/officers/">
+          <i class="fas fa-fw fa-user-secret"></i>
+          <span>Officers</span></a>
+      </li>
+      {% endif %}
     </ul>
 
     <div id="content-wrapper">

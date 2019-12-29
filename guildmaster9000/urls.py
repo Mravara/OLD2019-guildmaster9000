@@ -21,6 +21,7 @@ urlpatterns = [
     path('raids/', include('raid.urls')),
     path('loot/', include('loot.urls')),
     path('members/', include('members.urls')),
+    path('officers/', include('officers.urls')),
     path('items/', include('items.urls')),
     path('dungeons/', include('dungeons.urls')),
     path('accounts/', include('accounts.urls')),

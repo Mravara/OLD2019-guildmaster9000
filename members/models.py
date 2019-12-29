@@ -27,7 +27,7 @@ class Member(models.Model):
 
     user = models.OneToOneField(User, related_name='member', on_delete=models.CASCADE, blank=True, null=True)
     discord_id = models.BigIntegerField(null=True)
-    name = models.CharField(max_length=50)
+    name = models.CharField(max_length=64)
     member_class = models.IntegerField(choices=MemberClass.choices, null=True)
     rank = models.IntegerField(choices=Rank.choices, default=Rank.MEMBER, null=True)
     joined = models.DateTimeField(default=timezone.now)
@@ -77,6 +77,11 @@ class Member(models.Model):
             return "#C79C6E60"
         else:
             return "#FFFFFF"
+
+
+class Character(models.Model):
+    name = models.CharField(max_length=64)
+    member = models.ForeignKey('members.Member', on_delete=models.CASCADE)
 
 
 class Decay(models.Model):
