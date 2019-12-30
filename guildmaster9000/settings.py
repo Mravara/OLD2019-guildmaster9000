@@ -55,6 +55,7 @@ INSTALLED_APPS = [
     'dungeons.apps.DungeonsConfig',
     'loot.apps.LootConfig',
     'accounts.apps.AccountsConfig',
+    'officers.apps.OfficersConfig',
 ]
 
 MIDDLEWARE = [

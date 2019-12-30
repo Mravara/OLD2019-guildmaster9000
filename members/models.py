@@ -97,3 +97,6 @@ class Decay(models.Model):
     affected_members = models.ManyToManyField('members.Member', related_name='decays')
     percentage = models.FloatField()
     time = models.DateTimeField(default=timezone.now)
+
+    def __str__(self):
+        return str(self.time)

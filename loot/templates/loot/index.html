@@ -1,5 +1,5 @@
 {% extends 'index.html' %}
-
+{% load static %}
 {% block content %}
 <!-- DataTables Example -->
         <div class="card mb-3">
@@ -13,6 +13,7 @@
                   <tr>
                     <th>Raid</th>
                     <th>Member</th>
+                    <th>Character</th>
                     <th>Class</th>
                     <th>Item</th>
                     <th>GP</th>
@@ -24,6 +25,7 @@
                   <tr>
                     <th>Raid</th>
                     <th>Member</th>
+                    <th>Character</th>
                     <th>Class</th>
                     <th>Item</th>
                     <th>GP</th>
@@ -36,7 +38,8 @@
                   <tr class="{% if item.raid.state == 0 %}table-primary{% elif item.raid.state == 1 %}table-warning{% elif item.raid.state == 2 %}table-danger{% elif item.raid.state == 3 %}table-success{% endif %}">
                     <td><a href="/raids/{{ item.raid.id }}/">{{ item.raid.dungeon.name }}</a></td>
                     <td><a href="">{{ item.member.name }}</a></td>
-                    <td><a href="">{{ item.member.get_member_class_display }}</a></td>
+                    <td>{{ item.character }}</td>
+                    <td><img width="20px" class="mr-1" src="{% static 'classes/' %}{{ item.character.get_character_class_display }}.png" class="rounded float-left" alt=""> {{ item.character.get_character_class_display }}</td>
                     <td><a href="https://classic.wowhead.com/item={{ item.item.wow_id }}" class="q1">{{ item.item.name }}</a></td>
                     <td>{{ item.gp|floatformat:2 }}</td>
                     <td>{{ item.timestamp|date:"d-m-Y - H:i:s" }}</td>

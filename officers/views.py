@@ -3,21 +3,28 @@ from django.urls import reverse
 from django.http import HttpResponse, HttpResponseRedirect
 from django.db.models import F
 from django.utils.timezone import datetime
-
 from members.models import Member, Decay
 from guildmaster9000.decorators import *
-
-
-def index(request):
-    return HttpResponse('officers')
+from officers.forms import DecayForm
 
 
 @officers('/')
-def decay_epgp(request, percentage=10):
-    print("decay happened")
-    members = Member.objects.all()
-    members.update(ep=F('ep') * (1 - percentage/100), gp=F('gp') * (1 - percentage/100))
-    decay = Decay.objects.create(percentage=percentage, time=datetime.now())
-    decay.affected_members.set(members)
-    decay.save()
-    return HttpResponseRedirect(reverse('index'))
+def index(request):
+    form = DecayForm()
+    context = {
+        'form': form,
+    }
+    return render(request, "officers/index.html", context)
+
+
+@officers('/')
+def decay_epgp(request):
+    form = DecayForm(request.POST)
+    if form.is_valid():
+        decay = form.cleaned_data.get('decay')
+        members = Member.objects.all()
+        members.update(ep=F('ep') * (1 - decay/100), gp=F('gp') * (1 - decay/100))
+        decay = Decay.objects.create(percentage=decay, time=datetime.now())
+        decay.affected_members.set(members)
+        decay.save()
+    return HttpResponseRedirect(reverse('officers_index'))
