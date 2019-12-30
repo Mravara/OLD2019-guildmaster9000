@@ -7,7 +7,7 @@ class MemberAdmin(admin.ModelAdmin):
 
 
 class CharacterAdmin(admin.ModelAdmin):
-    list_display = ('name', 'member', 'character_class')
+    list_display = ('name', 'owner', 'character_class')
 
 
 admin.site.register(Member, MemberAdmin)

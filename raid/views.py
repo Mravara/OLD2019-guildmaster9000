@@ -39,6 +39,7 @@ def get_raid(request, raid_id):
     if not raid.done:
         items = Item.objects.filter(item_quality__gte=Item.Quality.EPIC)
         form = GiveItemForm()
+        form.fields['character'].queryset = raid.raid_characters.order_by('character__name')
         form_ep = GiveEPForm()
         form_add_raiders = AddRaidersForm()
         form_add_benched_raiders = AddBenchedRaidersForm()
@@ -113,18 +114,19 @@ def new_raid(request):
 def give_item(request, raid_id):
     if request.method == 'POST':
         form = GiveItemForm(request.POST)
+        print(form.errors)
+        print(form.cleaned_data)
         if form.is_valid():
-            member_id = form.cleaned_data.get('member_id')
+            character = form.cleaned_data.get('character')
             item_id = form.cleaned_data.get('item_id')
             item_info = form.cleaned_data.get('item_slot')
             comment = form.cleaned_data.get('comment')
             raid = get_object_or_404(Raid, pk=raid_id)
-            character = get_object_or_404(Character, pk=member_id)
             item = get_object_or_404(Item, pk=item_id)
             price_percentage = form.cleaned_data.get('price')
             loot = Loot(
-                member=character.member,
-                character=character,
+                member=character.character.owner,
+                character=character.character,
                 raid=raid,
                 item=item,
                 item_info=item_info,
@@ -133,8 +135,8 @@ def give_item(request, raid_id):
                 comment=comment,
             )
             loot.save()
-            character.member.gp = F('gp') + loot.gp
-            character.member.save()
+            character.character.owner.gp = F('gp') + loot.gp
+            character.character.owner.save()
         return HttpResponseRedirect(reverse('raid', args=(raid_id,)))
 
 
@@ -190,6 +192,8 @@ def remove_benched_raider(request, raid_id, raider_id):
 @officers('/raids/')
 def delete_loot(request, raid_id, loot_id):
     loot = get_object_or_404(Loot, pk=loot_id)
+    loot.member.gp = F('gp') - loot.gp
+    loot.member.save()
     loot.delete()
     return HttpResponseRedirect(reverse('raid', args=(raid_id,)))
 
@@ -218,7 +222,7 @@ def add_raiders(request, raid_id):
         text_members_list = text_members.splitlines()
         text_members_list = list(dict.fromkeys(text_members_list)) # removes duplicates
         characters = Character.objects.filter(name__in=text_members_list)
-        raiders = RaidCharacter.objects.bulk_create([RaidCharacter(member=c) for c in characters])
+        raiders = RaidCharacter.objects.bulk_create([RaidCharacter(character=c) for c in characters])
         raid.raid_characters.add(*raiders)
         raid.save()
     return HttpResponseRedirect(reverse('raid', args=(raid_id,)))
@@ -233,7 +237,7 @@ def add_benched_raiders(request, raid_id):
         text_members_list = text_members.splitlines()
         text_members_list = list(dict.fromkeys(text_members_list)) # removes duplicates
         characters = Character.objects.filter(name__in=text_members_list)
-        raiders = BenchedRaidCharacter.objects.bulk_create([BenchedRaidCharacter(member=c) for c in characters])
+        raiders = BenchedRaidCharacter.objects.bulk_create([BenchedRaidCharacter(character=c) for c in characters])
         raid.benched_raid_characters.add(*raiders)
         raid.save()
     return HttpResponseRedirect(reverse('raid', args=(raid_id,)))

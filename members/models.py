@@ -63,9 +63,12 @@ class Character(models.Model):
 
 
     name = models.CharField(max_length=64)
-    member = models.ForeignKey('members.Member', on_delete=models.CASCADE)
+    owner = models.ForeignKey('members.Member', on_delete=models.CASCADE)
     character_class = models.IntegerField(choices=MemberClass.choices, null=True)
     joined = models.DateTimeField(default=timezone.now)
+
+    def __str__(self):
+        return self.name
 
     @property
     def class_color(self):

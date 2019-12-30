@@ -105,7 +105,7 @@
                     <td><a href="">{{ item.given_by.name }}</a></td>
                     {% if not raid.done and user.member.is_officer %}
                     <td>
-                      <button type="button" class="btn btn-sm btn-danger" onclick="window.location.href='delete_item/{{ item.id }}/';">Delete</button>
+                      <button type="button" class="btn btn-sm btn-danger" onclick="window.location.href='delete_loot/{{ item.id }}/';">Delete</button>
                     </td>
                     {% endif %}
                   </tr>
@@ -167,12 +167,12 @@
                 <tbody>
                 {% for raider in raid_characters %}
                   <tr class="{% if not raid.done and raider.done or raid.done and not raider.closed %}table-danger{% endif %} {% if raid.done and raider.closed %}table-success{% endif %}">
-                    <td><a href="">{{ raider.character.member.name }}</a></td>
+                    <td><a href="">{{ raider.character.owner.name }}</a></td>
                     <td>{{ raider.character.name }}</td>
                     <td><img width="20px" class="mr-1" src="{% static 'classes/' %}{{ raider.character.get_character_class_display }}.png" class="rounded float-left" alt=""> {{ raider.character.get_character_class_display }}</td>
-                    <td>{{ raider.character.member.ep|floatformat:2 }}</td>
-                    <td>{{ raider.character.member.gp|floatformat:2 }}</td>
-                    <td>{{ raider.character.member.priority|floatformat:2 }}</td>
+                    <td>{{ raider.character.owner.ep|floatformat:2 }}</td>
+                    <td>{{ raider.character.owner.gp|floatformat:2 }}</td>
+                    <td>{{ raider.character.owner.priority|floatformat:2 }}</td>
                     <td>{{ raider.start|date:"H:i:s - d.m.y" }}</td>
                     <td>{{ raider.end|date:"H:i:s - d.m.y" }}</td>
                     {% if user.member.is_officer and not raid.done %}
@@ -240,7 +240,7 @@
                 <tbody>
                 {% for benched_raider in benched_raid_characters %}
                   <tr class="{% if not benched_raider.waiting and not benched_raider.closed_raid %}table-danger{% elif benched_raider.closed_raid %}table-success{% endif %}">
-                    <td><a href="">{{ benched_raider.character.member.name }}</a></td>
+                    <td><a href="">{{ benched_raider.character.owner.name }}</a></td>
                     <td><a href="">{{ benched_raider.character.name }}</a></td>
                     <td>{{ benched_raider.character.get_character_class_display }}</td>
                     <td>{{ benched_raider.start|date:"H:i:s - d.m.y" }}</td>
@@ -281,9 +281,8 @@
           <div class="modal-body mx-3">
             <div class="md-form mb-4">
               <i class="fas fa-user prefix grey-text"></i>
-              <label data-error="wrong" data-success="right" for="defaultForm-member">Member</label>
-              {{ form.member|as_crispy_field }}
-              {{ form.member_id|as_crispy_field }}
+              <label data-error="wrong" data-success="right" for="defaultForm-member">Character</label>
+              {{ form.character|as_crispy_field }}
             </div>
 
             <div class="md-form mb-4">
@@ -475,25 +474,6 @@
     select: function (event, ui) {
       $("#id_item_id").val(ui.item.id);
       $("#id_item").removeClass("is-invalid");
-    }
-  });
-
-  // members
-  var availableMembers = [
-    {% for raider in raid_characters %}
-      { 
-        "id": {{ raider.character.id }},
-        "value": "{{ raider.character.name|escapejs }}"
-      },
-    {% endfor %}
-  ];
-
-  // member ids
-  $('#id_member').autocomplete({ 
-    source: availableMembers,
-    select: function (event, ui) {
-      $("#id_member_id").val(ui.item.id);
-      $("#id_member").removeClass("is-invalid");
     }
   });
 

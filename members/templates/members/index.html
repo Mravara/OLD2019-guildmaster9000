@@ -11,7 +11,6 @@
               <thead>
                 <tr>
                   <th>Name</th>
-                  <th>Class</th>
                   <th>Rank</th>
                   <th>EP</th>
                   <th>GP</th>
@@ -21,7 +20,6 @@
               <tfoot>
                 <tr>
                   <th>Name</th>
-                  <th>Class</th>
                   <th>Rank</th>
                   <th>EP</th>
                   <th>GP</th>
@@ -32,7 +30,7 @@
               {% for member in members %}
                 <tr style="background-color: {{ member.class_color }};">
                   <td><a href="{% url 'member' member.id %}">{{ member.name }}</a></td>
-                  <td><img width="20px" class="mr-1" src="{% static 'classes/' %}{{ member.get_member_class_display }}.png" class="rounded float-left" alt="">  {{ member.get_member_class_display }}</td>
+                  {% comment %} <td><img width="20px" class="mr-1" src="{% static 'classes/' %}{{ member.get_member_class_display }}.png" class="rounded float-left" alt="">  {{ member.get_member_class_display }}</td> {% endcomment %}
                   <td>{{ member.get_rank_display }}</td>
                   <td>{{ member.ep|floatformat:2 }}</td>
                   <td>{{ member.gp|floatformat:2 }}</td>
@@ -53,7 +51,7 @@
 
   // auto order table
   $('#dataTable').DataTable( {
-    "order": [[ 5, "desc" ]]
+    "order": [[ 4, "desc" ]]
   });
 
   </script>
