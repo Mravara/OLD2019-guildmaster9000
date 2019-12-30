@@ -15,20 +15,10 @@ class Member(models.Model):
         OFFICER = 100
         ADMIN = 1000
 
-    class MemberClass(models.IntegerChoices):
-        DRUID = 0
-        HUNTER = 1
-        MAGE = 2
-        PRIEST = 3
-        ROGUE = 4
-        SHAMAN = 5
-        WARLOCK = 6
-        WARRIOR = 7
 
     user = models.OneToOneField(User, related_name='member', on_delete=models.CASCADE, blank=True, null=True)
     discord_id = models.BigIntegerField(null=True)
     name = models.CharField(max_length=64)
-    member_class = models.IntegerField(choices=MemberClass.choices, null=True)
     rank = models.IntegerField(choices=Rank.choices, default=Rank.MEMBER, null=True)
     joined = models.DateTimeField(default=timezone.now)
     ep = models.IntegerField(default=0)
@@ -57,34 +47,50 @@ class Member(models.Model):
             gp += l.gp
         return gp
 
+
+
+class Character(models.Model):
+    
+    class MemberClass(models.IntegerChoices):
+        DRUID = 0
+        HUNTER = 1
+        MAGE = 2
+        PRIEST = 3
+        ROGUE = 4
+        SHAMAN = 5
+        WARLOCK = 6
+        WARRIOR = 7
+
+
+    name = models.CharField(max_length=64)
+    member = models.ForeignKey('members.Member', on_delete=models.CASCADE)
+    character_class = models.IntegerField(choices=MemberClass.choices, null=True)
+    joined = models.DateTimeField(default=timezone.now)
+
     @property
     def class_color(self):
-        if self.member_class == Member.MemberClass.DRUID:
+        if self.character_class == Character.MemberClass.DRUID:
             return "#FF7D0A60"
-        elif self.member_class == Member.MemberClass.HUNTER:
+        elif self.character_class == Character.MemberClass.HUNTER:
             return "#A9D27160"
-        elif self.member_class == Member.MemberClass.MAGE:
+        elif self.character_class == Character.MemberClass.MAGE:
             return "#40C7EB60"
-        elif self.member_class == Member.MemberClass.PRIEST:
+        elif self.character_class == Character.MemberClass.PRIEST:
             return "#FFFFFF60"
-        elif self.member_class == Member.MemberClass.ROGUE:
+        elif self.character_class == Character.MemberClass.ROGUE:
             return "#FFF56960"
-        elif self.member_class == Member.MemberClass.SHAMAN:
+        elif self.character_class == Character.MemberClass.SHAMAN:
             return "#0070DE60"
-        elif self.member_class == Member.MemberClass.WARLOCK:
+        elif self.character_class == Character.MemberClass.WARLOCK:
             return "#8787ED60"
-        elif self.member_class == Member.MemberClass.WARRIOR:
+        elif self.character_class == Character.MemberClass.WARRIOR:
             return "#C79C6E60"
         else:
             return "#FFFFFF"
 
 
-class Character(models.Model):
-    name = models.CharField(max_length=64)
-    member = models.ForeignKey('members.Member', on_delete=models.CASCADE)
-
 
 class Decay(models.Model):
-    member = models.ForeignKey('members.Member', on_delete=models.PROTECT)
+    affected_members = models.ManyToManyField('members.Member', related_name='decays')
     percentage = models.FloatField()
     time = models.DateTimeField(default=timezone.now)

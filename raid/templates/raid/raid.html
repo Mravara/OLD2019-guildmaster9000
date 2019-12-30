@@ -98,7 +98,7 @@
                 {% for item in loot %}
                   <tr>
                     <td><a href="https://classic.wowhead.com/item={{ item.item.wow_id }}" class="q1">{{ item.item.name }}</a></td>
-                    <td><a href="">{{ item.member.name }}</a></td>
+                    <td><a href="">{{ item.character.name }}</a></td>
                     <td>{{ item.gp|floatformat:2 }}</td>
                     <td>{{ item.price_percentage|floatformat:2 }}%</td>
                     <td>{{ item.timestamp|date:"H:i:s d-m-y" }}</td>
@@ -137,6 +137,7 @@
                 <thead>
                   <tr>
                     <th>Name</th>
+                    <th>Character</th>
                     <th>Class</th>
                     <th>EP</th>
                     <th>GP</th>
@@ -151,6 +152,7 @@
                 <tfoot>
                   <tr>
                     <th>Name</th>
+                    <th>Character</th>
                     <th>Class</th>
                     <th>EP</th>
                     <th>GP</th>
@@ -163,19 +165,20 @@
                   </tr>
                 </tfoot>
                 <tbody>
-                {% for member in raid_members %}
-                  <tr class="{% if not raid.done and member.done or raid.done and not member.closed %}table-danger{% endif %} {% if raid.done and member.closed %}table-success{% endif %}">
-                    <td><a href="">{{ member.member.name }}</a></td>
-                    <td><img width="20px" class="mr-1" src="{% static 'classes/' %}{{ member.member.get_member_class_display }}.png" class="rounded float-left" alt=""> {{ member.member.get_member_class_display }}</td>
-                    <td>{{ member.member.ep|floatformat:2 }}</td>
-                    <td>{{ member.member.gp|floatformat:2 }}</td>
-                    <td>{{ member.member.priority|floatformat:2 }}</td>
-                    <td>{{ member.start|date:"H:i:s - d.m.y" }}</td>
-                    <td>{{ member.end|date:"H:i:s - d.m.y" }}</td>
+                {% for raider in raid_characters %}
+                  <tr class="{% if not raid.done and raider.done or raid.done and not raider.closed %}table-danger{% endif %} {% if raid.done and raider.closed %}table-success{% endif %}">
+                    <td><a href="">{{ raider.character.member.name }}</a></td>
+                    <td>{{ raider.character.name }}</td>
+                    <td><img width="20px" class="mr-1" src="{% static 'classes/' %}{{ raider.character.get_character_class_display }}.png" class="rounded float-left" alt=""> {{ raider.character.get_character_class_display }}</td>
+                    <td>{{ raider.character.member.ep|floatformat:2 }}</td>
+                    <td>{{ raider.character.member.gp|floatformat:2 }}</td>
+                    <td>{{ raider.character.member.priority|floatformat:2 }}</td>
+                    <td>{{ raider.start|date:"H:i:s - d.m.y" }}</td>
+                    <td>{{ raider.end|date:"H:i:s - d.m.y" }}</td>
                     {% if user.member.is_officer and not raid.done %}
                     <td>
-                      {% if not member.done %}
-                      <button type="button" class="btn btn-sm btn-danger" onclick="window.location.href='remove_raider/{{ member.id }}/';">Remove</button>
+                      {% if not raider.done %}
+                      <button type="button" class="btn btn-sm btn-danger" onclick="window.location.href='remove_raider/{{ raider.id }}/';">Remove</button>
                       {% endif %}
                     </td>
                     {% endif %}
@@ -213,6 +216,7 @@
                 <thead>
                   <tr>
                     <th>Name</th>
+                    <th>Character</th>
                     <th>Class</th>
                     <th style="width: 10%">Joined</th>
                     <th style="width: 10%">Left</th>
@@ -224,6 +228,7 @@
                 <tfoot>
                   <tr>
                     <th>Name</th>
+                    <th>Character</th>
                     <th>Class</th>
                     <th>Joined</th>
                     <th>Left</th>
@@ -233,15 +238,16 @@
                   </tr>
                 </tfoot>
                 <tbody>
-                {% for member in benched_raid_members %}
-                  <tr class="{% if not member.waiting and not member.closed_raid %}table-danger{% elif member.closed_raid %}table-success{% endif %}">
-                    <td><a href="">{{ member.member.name }}</a></td>
-                    <td>{{ member.member.get_member_class_display }}</td>
-                    <td>{{ member.start|date:"H:i:s - d.m.y" }}</td>
-                    <td>{{ member.end|date:"H:i:s - d.m.y" }}</td>
+                {% for benched_raider in benched_raid_characters %}
+                  <tr class="{% if not benched_raider.waiting and not benched_raider.closed_raid %}table-danger{% elif benched_raider.closed_raid %}table-success{% endif %}">
+                    <td><a href="">{{ benched_raider.character.member.name }}</a></td>
+                    <td><a href="">{{ benched_raider.character.name }}</a></td>
+                    <td>{{ benched_raider.character.get_character_class_display }}</td>
+                    <td>{{ benched_raider.start|date:"H:i:s - d.m.y" }}</td>
+                    <td>{{ benched_raider.end|date:"H:i:s - d.m.y" }}</td>
                     {% if user.member.is_officer and not raid.done %}
                       <td>
-                        {% if member.waiting %}
+                        {% if benched_raider.waiting %}
                         <button type="button" class="btn btn-sm btn-danger" onclick="window.location.href='remove_benched_raider/{{ member.id }}/';">Remove</button>
                         {% endif %}
                       </td>
@@ -474,10 +480,10 @@
 
   // members
   var availableMembers = [
-    {% for member in raid_members %}
+    {% for raider in raid_characters %}
       { 
-        "id": {{ member.member.id }},
-        "value": "{{ member.member.name|escapejs }}"
+        "id": {{ raider.character.id }},
+        "value": "{{ raider.character.name|escapejs }}"
       },
     {% endfor %}
   ];
@@ -519,7 +525,7 @@
 
   // auto order table members
   $('#dataTable2').DataTable( {
-    "order": [[ 4, "desc" ]]
+    "order": [[ 5, "desc" ]]
   });
 
   // auto order table benched members

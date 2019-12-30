@@ -7,6 +7,7 @@ from raid.models import Raid
 
 class Loot(models.Model):
     member = models.ForeignKey('members.Member', on_delete=models.PROTECT)
+    character = models.ForeignKey('members.Character', on_delete=models.PROTECT, null=True)
     raid = models.ForeignKey('raid.Raid', on_delete=models.PROTECT, null=True)
     item = models.ForeignKey('items.Item', on_delete=models.PROTECT)
     item_info = models.ForeignKey('items.ItemInfo', on_delete=models.PROTECT, null=True)
