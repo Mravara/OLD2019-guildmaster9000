@@ -10,6 +10,10 @@ class CharacterAdmin(admin.ModelAdmin):
     list_display = ('name', 'owner', 'character_class')
 
 
+class DecayAdmin(admin.ModelAdmin):
+    list_display = ('time', 'percentage', 'affected_members')
+
+
 admin.site.register(Decay)
 admin.site.register(Member, MemberAdmin)
 admin.site.register(Character, CharacterAdmin)

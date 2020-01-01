@@ -145,7 +145,7 @@ def complete_raid(request, raid_id):
     raid = get_object_or_404(Raid, pk=raid_id)
     raid.end = datetime.now()
     raid.state = Raid.State.SUCCESS
-    raid.raid_members.filter(end=None).update(closed=True, end=datetime.now())
+    raid.raid_characters.filter(end=None).update(closed=True, end=datetime.now())
     raid.benched_raid_characters.filter(end=None).update(closed=True, end=datetime.now())
     raid.save()
     return HttpResponseRedirect(reverse('raid', args=(raid_id,)))
@@ -156,7 +156,7 @@ def pause_raid(request, raid_id):
     raid = get_object_or_404(Raid, pk=raid_id)
     raid.end = datetime.now()
     raid.state = Raid.State.PAUSED
-    raid.raid_members.filter(end=None).update(closed=True, end=datetime.now())
+    raid.raid_characters.filter(end=None).update(closed=True, end=datetime.now())
     raid.save()
     return HttpResponseRedirect(reverse('raid', args=(raid_id,)))
 
@@ -166,7 +166,7 @@ def fail_raid(request, raid_id):
     raid = get_object_or_404(Raid, pk=raid_id)
     raid.end = datetime.now()
     raid.state = Raid.State.FAILED
-    raid.raid_members.filter(end=None).update(closed=True, end=datetime.now())
+    raid.raid_characters.filter(end=None).update(closed=True, end=datetime.now())
     raid.save()
     return HttpResponseRedirect(reverse('raid', args=(raid_id,)))
 
@@ -192,8 +192,8 @@ def remove_benched_raider(request, raid_id, raider_id):
 @officers('/raids/')
 def delete_loot(request, raid_id, loot_id):
     loot = get_object_or_404(Loot, pk=loot_id)
-    loot.member.gp = F('gp') - loot.gp
-    loot.member.save()
+    loot.character.owner.gp = F('gp') - loot.gp
+    loot.character.owner.save()
     loot.delete()
     return HttpResponseRedirect(reverse('raid', args=(raid_id,)))
 

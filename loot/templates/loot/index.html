@@ -8,7 +8,7 @@
             Primal Loot</div>
           <div class="card-body">
             <div class="table-responsive">
-              <table class="table table-bordered table-striped" id="dataTable" width="100%" cellspacing="0">
+              <table class="table table-bordered table-striped table-sm" id="dataTable" data-page-length='100' width="100%" cellspacing="0">
                 <thead>
                   <tr>
                     <th>Raid</th>
@@ -59,7 +59,7 @@
   <script charset="UTF-8">
 
     $('#dataTable').DataTable( {
-      "order": [[ 4, "desc" ]]
+      "order": [[ 6, "desc" ]]
     } );
 
   </script>
