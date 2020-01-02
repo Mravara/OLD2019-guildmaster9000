@@ -13,8 +13,6 @@ class Raid(models.Model):
 
     dungeon = models.ForeignKey('dungeons.Dungeon', on_delete=models.PROTECT)
     leader = models.ForeignKey('members.Member', related_name='leader', on_delete=models.PROTECT)
-    raid_characters = models.ManyToManyField('raid.RaidCharacter', related_name='raid')
-    benched_raid_characters = models.ManyToManyField('raid.BenchedRaidCharacter', related_name='braid')
     state = models.IntegerField(choices=State.choices, default=State.IN_PROGRESS)
     start = models.DateTimeField(default=datetime.now)
     end = models.DateTimeField(null=True, blank=True)
@@ -29,6 +27,7 @@ class Raid(models.Model):
 
 
 class RaidCharacter(models.Model):
+    raid = models.ForeignKey('raid.Raid', related_name='raidcharacter', on_delete=models.CASCADE, null=True)
     character = models.ForeignKey('members.Character', on_delete=models.PROTECT, null=True)
     start = models.DateTimeField(default=datetime.now)
     end = models.DateTimeField(null=True, blank=True)
@@ -48,6 +47,7 @@ class RaidCharacter(models.Model):
 
 
 class BenchedRaidCharacter(models.Model):
+    raid = models.ForeignKey('raid.Raid', related_name='benchedraidcharacter', on_delete=models.CASCADE, null=True)
     character = models.ForeignKey('members.Character', on_delete=models.PROTECT, null=True)
     start = models.DateTimeField(default=datetime.now)
     end = models.DateTimeField(null=True, blank=True)

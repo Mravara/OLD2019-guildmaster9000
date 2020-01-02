@@ -31,9 +31,9 @@ with open(file, 'r') as f:
         raid_loot = r.get('loot')
         for l in raid_loot:
             try:        
+                given_to = Character.objects.get(name=l.get('given_to'))
                 item = Item.objects.get(name=l.get('item'))
                 item_info = ItemInfo.objects.get(pk=1)
-                given_to = Character.objects.get(name=l.get('given_to'))
                 loot = Loot.objects.create(character=given_to, raid=raid, item=item, item_info=item_info, price_percentage=100, given_by=leader, timestamp=date)
             except:
                 print("doesn't exist: " + l.get('given_to'))

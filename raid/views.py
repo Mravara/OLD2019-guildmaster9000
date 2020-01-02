@@ -34,12 +34,12 @@ def get_raid(request, raid_id):
     form_ep = None
     form_add_raiders = None
     form_add_benched_raiders = None
-    characters = raid.raid_characters.all()
-    benched_characters = raid.benched_raid_characters.all()
+    characters = RaidCharacter.objects.filter(raid=raid)
+    benched_characters = BenchedRaidCharacter.objects.filter(raid=raid)
     if not raid.done:
         items = Item.objects.filter(item_quality__gte=Item.Quality.EPIC)
         form = GiveItemForm()
-        form.fields['character'].queryset = raid.raid_characters.order_by('character__name')
+        form.fields['character'].queryset = characters.order_by('character__name')
         form_ep = GiveEPForm()
         form_add_raiders = AddRaidersForm()
         form_add_benched_raiders = AddBenchedRaidersForm()
@@ -76,12 +76,11 @@ def new_raid(request):
             text_members = form.cleaned_data.get('members')
             text_members_list = text_members.splitlines()
             text_members_list = list(dict.fromkeys(text_members_list)) # removes duplicates
+            text_members_list = [x.capitalize() for x in text_members_list]
 
             if len(text_members_list) > 0:
                 characters = Character.objects.filter(name__in=text_members_list)
-                raiders = RaidCharacter.objects.bulk_create([RaidCharacter(character=c) for c in characters])
-                raid.raid_characters.set(raiders)
-                raid.save()
+                RaidCharacter.objects.bulk_create([RaidCharacter(character=c, raid=raid) for c in characters])
             else:
                 return redirect("/raids/{}/".format(raid.id))
             
@@ -91,10 +90,7 @@ def new_raid(request):
 
             if len(text_benched_members_list) > 0:
                 characters = Character.objects.filter(name__in=text_benched_members_list)
-                raiders = BenchedRaidCharacter.objects.bulk_create([BenchedRaidCharacter(character=c) for c in characters])
-                raid.benched_raid_characters.set(raiders)
-                raid.raid = raid
-                raid.save()
+                BenchedRaidCharacter.objects.bulk_create([BenchedRaidCharacter(character=c, raid=raid) for c in characters])
 
             return HttpResponseRedirect(reverse('raid', args=(raid.id,)))
 
@@ -114,8 +110,6 @@ def new_raid(request):
 def give_item(request, raid_id):
     if request.method == 'POST':
         form = GiveItemForm(request.POST)
-        print(form.errors)
-        print(form.cleaned_data)
         if form.is_valid():
             character = form.cleaned_data.get('character')
             item_id = form.cleaned_data.get('item_id')
@@ -125,7 +119,6 @@ def give_item(request, raid_id):
             item = get_object_or_404(Item, pk=item_id)
             price_percentage = form.cleaned_data.get('price')
             loot = Loot(
-                member=character.character.owner,
                 character=character.character,
                 raid=raid,
                 item=item,
@@ -145,9 +138,9 @@ def complete_raid(request, raid_id):
     raid = get_object_or_404(Raid, pk=raid_id)
     raid.end = datetime.now()
     raid.state = Raid.State.SUCCESS
-    raid.raid_characters.filter(end=None).update(closed=True, end=datetime.now())
-    raid.benched_raid_characters.filter(end=None).update(closed=True, end=datetime.now())
     raid.save()
+    RaidCharacter.objects.filter(raid=raid, end=None).update(closed=True, end=datetime.now())
+    BenchedRaidCharacter.objects.filter(raid=raid, end=None).update(closed=True, end=datetime.now())
     return HttpResponseRedirect(reverse('raid', args=(raid_id,)))
 
 
@@ -156,8 +149,9 @@ def pause_raid(request, raid_id):
     raid = get_object_or_404(Raid, pk=raid_id)
     raid.end = datetime.now()
     raid.state = Raid.State.PAUSED
-    raid.raid_characters.filter(end=None).update(closed=True, end=datetime.now())
     raid.save()
+    RaidCharacter.objects.filter(raid=raid, end=None).update(closed=True, end=datetime.now())
+    BenchedRaidCharacter.objects.filter(raid=raid, end=None).update(closed=True, end=datetime.now())
     return HttpResponseRedirect(reverse('raid', args=(raid_id,)))
 
 
@@ -166,8 +160,9 @@ def fail_raid(request, raid_id):
     raid = get_object_or_404(Raid, pk=raid_id)
     raid.end = datetime.now()
     raid.state = Raid.State.FAILED
-    raid.raid_characters.filter(end=None).update(closed=True, end=datetime.now())
     raid.save()
+    RaidCharacter.objects.filter(raid=raid, end=None).update(closed=True, end=datetime.now())
+    BenchedRaidCharacter.objects.filter(raid=raid, end=None).update(closed=True, end=datetime.now())
     return HttpResponseRedirect(reverse('raid', args=(raid_id,)))
 
 
