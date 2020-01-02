@@ -8,7 +8,7 @@
             Primal Loot</div>
           <div class="card-body">
             <div class="table-responsive">
-              <table class="table table-bordered table-striped table-sm" id="dataTable" data-page-length='100' width="100%" cellspacing="0">
+              <table class="table table-bordered table-striped table-sm" id="dataTable0" width="100%" cellspacing="0">
                 <thead>
                   <tr>
                     <th>Raid</th>
@@ -33,7 +33,7 @@
                     {% comment %} <th>Given By</th> {% endcomment %}
                   </tr>
                 </tfoot>
-                <tbody>
+                {% comment %} <tbody>
                 {% for item in loot %}
                   <tr class="{% if item.raid.state == 0 %}table-primary{% elif item.raid.state == 1 %}table-warning{% elif item.raid.state == 2 %}table-danger{% elif item.raid.state == 3 %}table-success{% endif %}">
                     <td><a href="/raids/{{ item.raid.id }}/">{{ item.raid.dungeon.name }}</a></td>
@@ -43,10 +43,9 @@
                     <td><a href="https://classic.wowhead.com/item={{ item.item.wow_id }}" class="q1">{{ item.item.name }}</a></td>
                     <td>{{ item.gp|floatformat:2 }}</td>
                     <td>{{ item.timestamp|date:"d-m-Y - H:i:s" }}</td>
-                    {% comment %} <td><a href="">{{ item.given_by.member.name }}</a></td> {% endcomment %}
                   </tr>
                 {% endfor %}
-                </tbody>
+                </tbody> {% endcomment %}
               </table>
             </div>
           </div>
@@ -58,9 +57,17 @@
 
   <script charset="UTF-8">
 
-    $('#dataTable').DataTable( {
-      "order": [[ 6, "desc" ]]
-    } );
+    var table = $('#dataTable0').DataTable({
+      "order": [[ 6, "desc" ]],
+      "lengthMenu": [[10, 25, 50], [10, 25, 50]],
+      "processing": true,
+      "serverSide": true,
+      "ajax": "page/",
+    });
+    
+    table.on('draw', function () {
+      $WowheadPower.refreshLinks();
+    });
 
   </script>
 
