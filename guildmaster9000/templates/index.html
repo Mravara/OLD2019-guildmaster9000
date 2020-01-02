@@ -256,6 +256,13 @@
   {% block scripts %}
   {% endblock %}
 
+  <script>
+    var table = $('#dataTable').DataTable();
+    table.on('draw', function () {
+      $WowheadPower.refreshLinks();
+    });
+  </script>
+
 </body>
 
 </html>
