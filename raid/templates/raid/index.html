@@ -44,8 +44,8 @@
                   <tr class="{% if raid.state == 0 %}table-primary{% elif raid.state == 1 %}table-warning{% elif raid.state == 2 %}table-danger{% elif raid.state == 3 %}table-success{% endif %}">
                     <td><a href="{% url 'raid' raid.id %}">{{ raid.dungeon.name }}</a></td>
                     <td><a href="{% url 'member' raid.leader.id %}">{{ raid.leader.name }}</a></td>
-                    <td>{{ raid.start|date:"d-m-Y - H:i:s" }}</td>
-                    <td>{% if raid.end is not None %}{{ raid.end|date:"d-m-Y - H:i:s" }}{% else %}In progress...{% endif %}</td>
+                    <td>{{ raid.start|date:"Y-m-d - H:i:s" }}</td>
+                    <td>{% if raid.end is not None %}{{ raid.end|date:"Y-m-d - H:i:s" }}{% else %}In progress...{% endif %}</td>
                     <td>{{ raid.raid_characters.count }}</td>
                     <td><a href="{% url 'raid' raid.id %}">{{ raid.total_items }}</a></td>
                   </tr>

@@ -55,7 +55,7 @@ def get_raid(request, raid_id):
         'form_add_benched_raiders': form_add_benched_raiders,
         'item_types': ItemInfo.ItemSlot.choices,
         'breadcrumbs': [
-            'Raids' if 'raids' in referer else 'Loot',
+            'Raids' if (referer is not None and 'raids' in referer)else 'Loot',
             raid.dungeon.name,
         ]
     }
