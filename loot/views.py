@@ -19,8 +19,8 @@ def loot(request):
 def get_page(request):
     columns = []
     draw = request.GET.get('draw')
-    start = int(request.GET.get('start')[0])
-    end = start + int(request.GET.get('length')[0]) * 10 # wtf?
+    start = int(request.GET.get('start'))
+    end = start + int(request.GET.get('length'))
     search = request.GET.get('search[value]')
 
     loot = Loot.objects.all().filter(Q(character__name__icontains=search) | Q(item__name__icontains=search))[start:end]
