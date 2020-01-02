@@ -97,18 +97,18 @@
                   </tr>
                 </tfoot>
                 <tbody>
-                {% for item in loot %}
+                {% for l in loot %}
                   <tr>
-                    <td><a href="https://classic.wowhead.com/item={{ item.item.wow_id }}" class="q1">{{ item.item.name }}</a></td>
-                    <td>{{ item.item.get_item_type_display }}</td>
-                    <td><a href="#">{{ item.character.name }}</a></td>
-                    <td>{{ item.gp|floatformat:2 }}</td>
-                    <td>{{ item.price_percentage|floatformat:2 }}%</td>
-                    <td>{{ item.timestamp|date:"H:i:s d-m-y" }}</td>
-                    <td><a href="#">{{ item.given_by.name }}</a></td>
+                    <td><a href="https://classic.wowhead.com/item={{ l.item.wow_id }}" class="q1">{{ l.item.name }}</a></td>
+                    <td>{{ l.item.get_item_type_display }}</td>
+                    <td><a href="#">{{ l.character.name }}</a></td>
+                    <td>{{ l.gp|floatformat:2 }}</td>
+                    <td>{{ l.price_percentage|floatformat:2 }}%</td>
+                    <td>{{ l.timestamp|date:"H:i:s d-m-y" }}</td>
+                    <td><a href="#">{{ l.given_by.name }}</a></td>
                     {% if not raid.done and user.member.is_officer %}
                     <td>
-                      <button type="button" class="btn btn-sm btn-danger" onclick="window.location.href='delete_loot/{{ item.id }}/';">Delete</button>
+                      <button type="button" class="btn btn-sm btn-danger" onclick="window.location.href='delete_loot/{{ l.id }}/';">Delete</button>
                     </td>
                     {% endif %}
                   </tr>
