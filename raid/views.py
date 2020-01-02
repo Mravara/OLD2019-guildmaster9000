@@ -6,7 +6,7 @@ from django.urls import reverse
 from django.db.models import Count, F
 from guildmaster9000.decorators import *
 
-from members.models import Member, Character
+from members.models import Member, Character, EP
 from raid.models import Raid, RaidCharacter, BenchedRaidCharacter
 from loot.models import Loot
 from items.models import Item, ItemInfo
@@ -196,15 +196,16 @@ def delete_loot(request, raid_id, loot_id):
 @officers('/raids/')
 def give_ep(request, raid_id):
     form = GiveEPForm(request.POST)
-
     if form.is_valid():
+        ep = form.cleaned_data.get('ep')
         raid = get_object_or_404(Raid, pk=raid_id)
-        raiders = raid.raid_characters.all()
+        raiders = RaidCharacter.objects.filter(raid=raid)
         for raider in raiders:
             if not raider.done:
-                raider.member.ep = F('ep') + form.cleaned_data.get('ep')
-                raider.member.save()
-
+                raider.character.owner.ep = F('ep') + ep
+                raider.character.owner.save()
+        
+        EP.objects.create(raid=raid, amount=ep)
     return HttpResponseRedirect(reverse('raid', args=(raid_id,)))
 
 

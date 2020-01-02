@@ -98,11 +98,11 @@
                 {% for item in loot %}
                   <tr>
                     <td><a href="https://classic.wowhead.com/item={{ item.item.wow_id }}" class="q1">{{ item.item.name }}</a></td>
-                    <td><a href="">{{ item.character.name }}</a></td>
+                    <td><a href="#">{{ item.character.name }}</a></td>
                     <td>{{ item.gp|floatformat:2 }}</td>
                     <td>{{ item.price_percentage|floatformat:2 }}%</td>
                     <td>{{ item.timestamp|date:"H:i:s d-m-y" }}</td>
-                    <td><a href="">{{ item.given_by.name }}</a></td>
+                    <td><a href="#">{{ item.given_by.name }}</a></td>
                     {% if not raid.done and user.member.is_officer %}
                     <td>
                       <button type="button" class="btn btn-sm btn-danger" onclick="window.location.href='delete_loot/{{ item.id }}/';">Delete</button>
@@ -167,7 +167,7 @@
                 <tbody>
                 {% for raider in raid_characters %}
                   <tr class="{% if not raid.done and raider.done or raid.done and not raider.closed %}table-danger{% endif %} {% if raid.done and raider.closed %}table-success{% endif %}">
-                    <td><a href="">{{ raider.character.owner.name }}</a></td>
+                    <td><a href="#">{{ raider.character.owner.name }}</a></td>
                     <td>{{ raider.character.name }}</td>
                     <td><img width="20px" class="mr-1" src="{% static 'classes/' %}{{ raider.character.get_character_class_display }}.png" class="rounded float-left" alt=""> {{ raider.character.get_character_class_display }}</td>
                     <td>{{ raider.character.owner.ep|floatformat:2 }}</td>
@@ -240,8 +240,8 @@
                 <tbody>
                 {% for benched_raider in benched_raid_characters %}
                   <tr class="{% if not benched_raider.waiting and not benched_raider.closed_raid %}table-danger{% elif benched_raider.closed_raid %}table-success{% endif %}">
-                    <td><a href="">{{ benched_raider.character.owner.name }}</a></td>
-                    <td><a href="">{{ benched_raider.character.name }}</a></td>
+                    <td><a href="#">{{ benched_raider.character.owner.name }}</a></td>
+                    <td><a href="#">{{ benched_raider.character.name }}</a></td>
                     <td>{{ benched_raider.character.get_character_class_display }}</td>
                     <td>{{ benched_raider.start|date:"H:i:s - d.m.y" }}</td>
                     <td>{{ benched_raider.end|date:"H:i:s - d.m.y" }}</td>

@@ -3,6 +3,7 @@ from django.db import models
 from django.utils import timezone
 from django.contrib.auth.models import User
 from loot.models import Loot
+from raid.models import Raid
 from django.db.models import F
 
 
@@ -96,6 +97,16 @@ class Character(models.Model):
 class Decay(models.Model):
     affected_members = models.ManyToManyField('members.Member', related_name='decays')
     percentage = models.FloatField()
+    time = models.DateTimeField(default=timezone.now)
+
+    def __str__(self):
+        return str(self.time)
+
+
+
+class EP(models.Model):
+    raid = models.ForeignKey('raid.Raid', on_delete=models.CASCADE)
+    amount = models.FloatField()
     time = models.DateTimeField(default=timezone.now)
 
     def __str__(self):

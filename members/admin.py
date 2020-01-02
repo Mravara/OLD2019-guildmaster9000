@@ -1,5 +1,5 @@
 from django.contrib import admin
-from members.models import Member, Character, Decay
+from members.models import Member, Character, Decay, EP
 from raid.models import RaidCharacter
 
 class MemberAdmin(admin.ModelAdmin):
@@ -11,9 +11,14 @@ class CharacterAdmin(admin.ModelAdmin):
 
 
 class DecayAdmin(admin.ModelAdmin):
-    list_display = ('time', 'percentage', 'affected_members')
+    list_display = ('time', 'percentage')
 
 
-admin.site.register(Decay)
+class EPAdmin(admin.ModelAdmin):
+    list_display = ('raid', 'amount', 'time')
+
+
+admin.site.register(EP, EPAdmin)
+admin.site.register(Decay, DecayAdmin)
 admin.site.register(Member, MemberAdmin)
 admin.site.register(Character, CharacterAdmin)
