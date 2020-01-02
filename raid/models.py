@@ -27,8 +27,8 @@ class Raid(models.Model):
 
 
 class RaidCharacter(models.Model):
-    raid = models.ForeignKey('raid.Raid', related_name='raidcharacter', on_delete=models.CASCADE, null=True)
-    character = models.ForeignKey('members.Character', on_delete=models.PROTECT, null=True)
+    raid = models.ForeignKey('raid.Raid', related_name='raidcharacter', on_delete=models.CASCADE)
+    character = models.ForeignKey('members.Character', on_delete=models.CASCADE, null=True)
     start = models.DateTimeField(default=datetime.now)
     end = models.DateTimeField(null=True, blank=True)
     closed = models.BooleanField(default=False)
@@ -47,8 +47,8 @@ class RaidCharacter(models.Model):
 
 
 class BenchedRaidCharacter(models.Model):
-    raid = models.ForeignKey('raid.Raid', related_name='benchedraidcharacter', on_delete=models.CASCADE, null=True)
-    character = models.ForeignKey('members.Character', on_delete=models.PROTECT, null=True)
+    raid = models.ForeignKey('raid.Raid', related_name='benchedraidcharacter', on_delete=models.CASCADE)
+    character = models.ForeignKey('members.Character', on_delete=models.CASCADE, null=True)
     start = models.DateTimeField(default=datetime.now)
     end = models.DateTimeField(null=True, blank=True)
     ticks = models.IntegerField(default=0)

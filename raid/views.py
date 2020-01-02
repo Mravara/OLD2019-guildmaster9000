@@ -39,7 +39,7 @@ def get_raid(request, raid_id):
     if not raid.done:
         items = Item.objects.filter(item_quality__gte=Item.Quality.EPIC)
         form = GiveItemForm()
-        form.fields['character'].queryset = characters.order_by('character__name')
+        form.fields['character'].queryset = characters.filter(end=None).order_by('character__name')
         form_ep = GiveEPForm()
         form_add_raiders = AddRaidersForm()
         form_add_benched_raiders = AddBenchedRaidersForm()
@@ -169,7 +169,7 @@ def fail_raid(request, raid_id):
 @officers('/raids/')
 def remove_raider(request, raid_id, raider_id):
     raid = get_object_or_404(Raid, pk=raid_id)
-    raider = raid.raid_characters.get(id=raider_id)
+    raider = RaidCharacter.objects.get(id=raider_id, raid=raid)
     raider.end = datetime.now()
     raider.save()
     return HttpResponseRedirect(reverse('raid', args=(raid_id,)))
@@ -178,7 +178,7 @@ def remove_raider(request, raid_id, raider_id):
 @officers('/raids/')
 def remove_benched_raider(request, raid_id, raider_id):
     raid = get_object_or_404(Raid, pk=raid_id)
-    raider = raid.benched_raid_characters.get(id=raider_id)
+    raider = BenchedRaidCharacter.objects.get(id=raider_id, raid=raid)
     raider.end = datetime.now()
     raider.save()
     return HttpResponseRedirect(reverse('raid', args=(raid_id,)))
@@ -217,9 +217,7 @@ def add_raiders(request, raid_id):
         text_members_list = text_members.splitlines()
         text_members_list = list(dict.fromkeys(text_members_list)) # removes duplicates
         characters = Character.objects.filter(name__in=text_members_list)
-        raiders = RaidCharacter.objects.bulk_create([RaidCharacter(character=c) for c in characters])
-        raid.raid_characters.add(*raiders)
-        raid.save()
+        raiders = RaidCharacter.objects.bulk_create([RaidCharacter(character=c, raid=raid) for c in characters])
     return HttpResponseRedirect(reverse('raid', args=(raid_id,)))
 
 
@@ -232,9 +230,7 @@ def add_benched_raiders(request, raid_id):
         text_members_list = text_members.splitlines()
         text_members_list = list(dict.fromkeys(text_members_list)) # removes duplicates
         characters = Character.objects.filter(name__in=text_members_list)
-        raiders = BenchedRaidCharacter.objects.bulk_create([BenchedRaidCharacter(character=c) for c in characters])
-        raid.benched_raid_characters.add(*raiders)
-        raid.save()
+        raiders = BenchedRaidCharacter.objects.bulk_create([BenchedRaidCharacter(character=c, raid=raid) for c in characters])
     return HttpResponseRedirect(reverse('raid', args=(raid_id,)))
 
 

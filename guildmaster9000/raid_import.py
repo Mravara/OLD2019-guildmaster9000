@@ -15,28 +15,35 @@ file = "/home/mrav/Downloads/Output.json"
 with open(file, 'r') as f:
     loaded = json.load(f)
     raids = loaded.get('raids')
-    dungeon = Dungeon.objects.all().first()
     for r in raids:
-        raiders = []
-        date = datetime.datetime.strptime(r.get('date'), '%d.%m.%Y.')
+        leader = Member.objects.get(pk=11)
+        raid_loot = r.get('loot')
+        date = datetime.datetime.strptime(r.get('date'), '%d.%m.%Y. %H:%M')
+
+        dungeon = None
+        if len(raid_loot) < 10:
+            dungeon = Dungeon.objects.all().first()
+        else:
+            dungeon = Dungeon.objects.all().last()
+        
+        raid = Raid.objects.create(dungeon=dungeon, leader=leader, state=3, start=date, end=date)
         characters_text = r.get('characters')
+        characters_text = [x.capitalize() for x in characters_text]
         characters = Character.objects.filter(name__in=characters_text)
         for c in characters:
-            raider = RaidCharacter.objects.create(character=c, start=date, end=date, closed=True)
-            raiders.append(raider)
-        leader = Member.objects.get(pk=11)
-        raid = Raid.objects.create(dungeon=dungeon, leader=leader, state=3, start=date, end=date)
-        raid.raid_characters.set(raiders)
+            raider = RaidCharacter.objects.create(character=c, raid=raid, start=date, end=date, closed=True)
 
-        raid_loot = r.get('loot')
         for l in raid_loot:
+            given_to = None
+            asshole = ""
             try:        
                 given_to = Character.objects.get(name=l.get('given_to'))
-                item = Item.objects.get(name=l.get('item'))
-                item_info = ItemInfo.objects.get(pk=1)
-                loot = Loot.objects.create(character=given_to, raid=raid, item=item, item_info=item_info, price_percentage=100, given_by=leader, timestamp=date)
             except:
-                print("doesn't exist: " + l.get('given_to'))
+                given_to = Character.objects.get(name='Pizdek')
+                asshole = l.get('given_to')
+            item = Item.objects.get(name=l.get('item'))
+            item_info = ItemInfo.objects.get(pk=1)
+            loot = Loot.objects.create(character=given_to, raid=raid, item=item, item_info=item_info, price_percentage=100, given_by=leader, timestamp=date, comment=asshole)
         
 
 
