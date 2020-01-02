@@ -71,6 +71,7 @@
                 <thead>
                   <tr>
                     <th>Item</th>
+                    <th>Type</th>
                     <th>Given To</th>
                     <th>GP</th>
                     <th>Price</th>
@@ -84,6 +85,7 @@
                 <tfoot>
                   <tr>
                     <th>Item</th>
+                    <th>Type</th>
                     <th>Given To</th>
                     <th>GP</th>
                     <th>Price</th>
@@ -98,6 +100,7 @@
                 {% for item in loot %}
                   <tr>
                     <td><a href="https://classic.wowhead.com/item={{ item.item.wow_id }}" class="q1">{{ item.item.name }}</a></td>
+                    <td>{{ item.item.get_item_type_display }}</td>
                     <td><a href="#">{{ item.character.name }}</a></td>
                     <td>{{ item.gp|floatformat:2 }}</td>
                     <td>{{ item.price_percentage|floatformat:2 }}%</td>
