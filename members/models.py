@@ -94,7 +94,7 @@ class Character(models.Model):
 
 
 
-class Decay(models.Model):
+class DecayLog(models.Model):
     affected_members = models.ManyToManyField('members.Member', related_name='decays')
     percentage = models.FloatField()
     time = models.DateTimeField(default=timezone.now)
@@ -104,7 +104,8 @@ class Decay(models.Model):
 
 
 
-class EP(models.Model):
+class EPLog(models.Model):
+    affected_characters = models.ManyToManyField('members.Character', related_name='eplog')
     raid = models.ForeignKey('raid.Raid', on_delete=models.CASCADE)
     amount = models.FloatField()
     time = models.DateTimeField(default=timezone.now)

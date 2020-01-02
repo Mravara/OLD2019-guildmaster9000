@@ -3,10 +3,11 @@ from django.http import HttpResponse, HttpResponseNotFound, HttpResponseRedirect
 from django.utils.timezone import datetime
 from django.conf import settings
 from django.urls import reverse
-from django.db.models import Count, F
+from django.db.models import Count, F, Sum
 from guildmaster9000.decorators import *
+from itertools import chain
 
-from members.models import Member, Character, EP
+from members.models import Member, Character, EPLog
 from raid.models import Raid, RaidCharacter, BenchedRaidCharacter
 from loot.models import Loot
 from items.models import Item, ItemInfo
@@ -28,14 +29,20 @@ def index(request):
 def get_raid(request, raid_id):
     referer = request.META.get('HTTP_REFERER')
     raid = get_object_or_404(Raid, pk=raid_id)
-    loot = Loot.objects.filter(raid=raid)
+    loot = Loot.objects.filter(raid=raid).select_related('item')
     items = None
     form = None
     form_ep = None
     form_add_raiders = None
     form_add_benched_raiders = None
     characters = RaidCharacter.objects.filter(raid=raid)
+    for char in characters:
+        ep_amount = EPLog.objects.filter(raid=raid, affected_characters=char.character).aggregate(amount=Sum('amount'))
+        char.ep_amount = round(ep_amount.get('amount'), 2)
     benched_characters = BenchedRaidCharacter.objects.filter(raid=raid)
+    for char in benched_characters:
+        ep_amount = EPLog.objects.filter(raid=raid, affected_characters=char.character).aggregate(amount=Sum('amount'))
+        char.ep_amount = round(ep_amount.get('amount'), 2)
     if not raid.done:
         items = Item.objects.filter(item_quality__gte=Item.Quality.EPIC)
         form = GiveItemForm()
@@ -199,13 +206,22 @@ def give_ep(request, raid_id):
     if form.is_valid():
         ep = form.cleaned_data.get('ep')
         raid = get_object_or_404(Raid, pk=raid_id)
-        raiders = RaidCharacter.objects.filter(raid=raid)
-        for raider in raiders:
-            if not raider.done:
-                raider.character.owner.ep = F('ep') + ep
-                raider.character.owner.save()
         
-        EP.objects.create(raid=raid, amount=ep)
+        raiders = RaidCharacter.objects.filter(raid=raid, end=None).select_related('character__owner')
+        for raider in raiders:
+            raider.character.owner.ep = F('ep') + ep
+            raider.character.owner.save()
+        
+        benched_raiders = BenchedRaidCharacter.objects.filter(raid=raid, end=None).select_related('character__owner')
+        for benched_raider in benched_raiders:
+            benched_raider.character.owner.ep = F('ep') + ep
+            benched_raider.character.owner.save()
+        
+        affected = [x.character for x in list(chain(raiders, benched_raiders))]
+
+        log = EPLog.objects.create(raid=raid, amount=ep)
+        log.affected_characters.set(affected)
+        log.save()
     return HttpResponseRedirect(reverse('raid', args=(raid_id,)))
 
 

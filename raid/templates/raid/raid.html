@@ -147,8 +147,9 @@
                     <th>Priority</th>
                     <th style="width: 10%">Joined</th>
                     <th style="width: 10%">Left</th>
-                    {% if user.member.is_officer and not raid.done %}
-                    <th style="width: 5%">Remove</th>
+                    <th>EP Gained</th>
+                    {% if user.member.is_officer and not raid.done%}
+                      <th style="width: 5%">Remove</th>
                     {% endif %}
                   </tr>
                 </thead>
@@ -162,8 +163,11 @@
                     <th>Priority</th>
                     <th>Joined</th>
                     <th>Left</th>
-                    {% if user.member.is_officer and not raid.done %}
-                    <th style="width: 5%">Remove</th>
+                    <th>EP Gained</th>
+                    {% if user.member.is_officer %}
+                      {% if not raider.done and not raid.done %}
+                        <th style="width: 5%">Remove</th>
+                      {% endif %}
                     {% endif %}
                   </tr>
                 </tfoot>
@@ -178,12 +182,15 @@
                     <td>{{ raider.character.owner.priority|floatformat:2 }}</td>
                     <td>{{ raider.start|date:"H:i:s - d.m.y" }}</td>
                     <td>{{ raider.end|date:"H:i:s - d.m.y" }}</td>
-                    {% if user.member.is_officer and not raid.done %}
-                    <td>
-                      {% if not raider.done %}
-                      <button type="button" class="btn btn-sm btn-danger" onclick="window.location.href='remove_raider/{{ raider.id }}/';">Remove</button>
+                    <td>{{ raider.ep_amount }}</td>
+                    {% if user.member.is_officer %}
+                      {% if not raid.done %}
+                        <td>
+                          {% if not raider.done %}
+                            <button type="button" class="btn btn-sm btn-danger" onclick="window.location.href='remove_raider/{{ raider.id }}/';">Remove</button>
+                          {% endif %}
+                        </td>
                       {% endif %}
-                    </td>
                     {% endif %}
                   </tr>
                 {% endfor %}
@@ -223,6 +230,7 @@
                     <th>Class</th>
                     <th style="width: 10%">Joined</th>
                     <th style="width: 10%">Left</th>
+                    <th>EP Gained</th>
                     {% if user.member.is_officer and not raid.done %}
                     <th style="width: 5%">Remove</th>
                     {% endif %}
@@ -235,6 +243,7 @@
                     <th>Class</th>
                     <th>Joined</th>
                     <th>Left</th>
+                    <th>EP Gained</th>
                     {% if user.member.is_officer and not raid.done %}
                     <th style="width: 5%">Remove</th>
                     {% endif %}
@@ -248,6 +257,7 @@
                     <td>{{ benched_raider.character.get_character_class_display }}</td>
                     <td>{{ benched_raider.start|date:"H:i:s - d.m.y" }}</td>
                     <td>{{ benched_raider.end|date:"H:i:s - d.m.y" }}</td>
+                    <td>{{ benched_raider.ep_amount }}</td>
                     {% if user.member.is_officer and not raid.done %}
                       <td>
                         {% if benched_raider.waiting %}
