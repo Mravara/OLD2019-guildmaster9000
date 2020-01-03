@@ -35,14 +35,21 @@ def get_raid(request, raid_id):
     form_ep = None
     form_add_raiders = None
     form_add_benched_raiders = None
+    
     characters = RaidCharacter.objects.filter(raid=raid)
     for char in characters:
         ep_amount = EPLog.objects.filter(raid=raid, affected_characters=char.character).aggregate(amount=Sum('amount'))
-        char.ep_amount = round(ep_amount.get('amount'), 2)
+        amount = ep_amount.get('amount')
+        if amount:
+            char.ep_amount = round(amount, 2)
+    
     benched_characters = BenchedRaidCharacter.objects.filter(raid=raid)
     for char in benched_characters:
         ep_amount = EPLog.objects.filter(raid=raid, affected_characters=char.character).aggregate(amount=Sum('amount'))
-        char.ep_amount = round(ep_amount.get('amount'), 2)
+        amount = ep_amount.get('amount')
+        if amount:
+            char.ep_amount = round(amount, 2)
+    
     if not raid.done:
         items = Item.objects.filter(item_quality__gte=Item.Quality.EPIC)
         form = GiveItemForm()
@@ -82,8 +89,9 @@ def new_raid(request):
 
             text_members = form.cleaned_data.get('members')
             text_members_list = text_members.splitlines()
+            text_members_list.append('Primalbank')
             text_members_list = list(dict.fromkeys(text_members_list)) # removes duplicates
-            text_members_list = [x.capitalize() for x in text_members_list]
+            text_members_list = [x.capitalize().strip() for x in text_members_list]
 
             if len(text_members_list) > 0:
                 characters = Character.objects.filter(name__in=text_members_list)
@@ -230,9 +238,12 @@ def add_raiders(request, raid_id):
     form = AddRaidersForm(request.POST)
     if form.is_valid():
         raid = get_object_or_404(Raid, pk=raid_id)
+
         text_members = form.cleaned_data.get('members')
         text_members_list = text_members.splitlines()
         text_members_list = list(dict.fromkeys(text_members_list)) # removes duplicates
+        text_members_list = [x.capitalize().strip() for x in text_members_list]
+
         characters = Character.objects.filter(name__in=text_members_list)
         raiders = RaidCharacter.objects.bulk_create([RaidCharacter(character=c, raid=raid) for c in characters])
     return HttpResponseRedirect(reverse('raid', args=(raid_id,)))
