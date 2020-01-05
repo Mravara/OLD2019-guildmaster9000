@@ -1,5 +1,5 @@
 from django.shortcuts import render, get_object_or_404, redirect
-from django.http import HttpResponse, HttpResponseNotFound, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseNotFound, HttpResponseRedirect, Http404
 from django.utils.timezone import datetime
 from django.conf import settings
 from django.urls import reverse
@@ -16,7 +16,7 @@ from raid.forms import NewRaidForm, GiveItemForm, GiveEPForm, AddRaidersForm, Ad
 
 
 def index(request):
-    raids = Raid.objects.order_by('-start').annotate(total_items=Count('loot'))
+    raids = Raid.objects.order_by('-start').annotate(total_items=Count('loot')).select_related('dungeon', 'leader').prefetch_related('raidcharacter')
     context = {
         'raids': raids,
         'breadcrumbs': [
@@ -28,27 +28,21 @@ def index(request):
 
 def get_raid(request, raid_id):
     referer = request.META.get('HTTP_REFERER')
-    raid = get_object_or_404(Raid, pk=raid_id)
-    loot = Loot.objects.filter(raid=raid).select_related('item')
+    raid = None
+    try:
+        raid = Raid.objects.select_related('leader', 'dungeon').get(pk=raid_id)
+    except Raid.DoesNotExist:
+        raise Http404("WTF?")
+    loot = Loot.objects.filter(raid=raid).select_related('item', 'character', 'item_info', 'given_by')
     items = None
     form = None
     form_ep = None
     form_add_raiders = None
     form_add_benched_raiders = None
     
-    characters = RaidCharacter.objects.filter(raid=raid)
-    for char in characters:
-        ep_amount = EPLog.objects.filter(raid=raid, affected_characters=char.character).aggregate(amount=Sum('amount'))
-        amount = ep_amount.get('amount')
-        if amount:
-            char.ep_amount = round(amount, 2)
+    characters = RaidCharacter.objects.filter(raid=raid).prefetch_related('character__owner')
     
-    benched_characters = BenchedRaidCharacter.objects.filter(raid=raid)
-    for char in benched_characters:
-        ep_amount = EPLog.objects.filter(raid=raid, affected_characters=char.character).aggregate(amount=Sum('amount'))
-        amount = ep_amount.get('amount')
-        if amount:
-            char.ep_amount = round(amount, 2)
+    benched_characters = BenchedRaidCharacter.objects.filter(raid=raid).prefetch_related('character__owner')
     
     if not raid.done:
         items = Item.objects.filter(item_quality__gte=Item.Quality.EPIC)
@@ -216,11 +210,13 @@ def give_ep(request, raid_id):
         raid = get_object_or_404(Raid, pk=raid_id)
         
         raiders = RaidCharacter.objects.filter(raid=raid, end=None).select_related('character__owner')
+        raiders.update(earned_ep=F('earned_ep') + ep)
         for raider in raiders:
             raider.character.owner.ep = F('ep') + ep
             raider.character.owner.save()
         
         benched_raiders = BenchedRaidCharacter.objects.filter(raid=raid, end=None).select_related('character__owner')
+        benched_raiders.update(earned_ep=F('earned_ep') + ep)
         for benched_raider in benched_raiders:
             benched_raider.character.owner.ep = F('ep') + ep
             benched_raider.character.owner.save()

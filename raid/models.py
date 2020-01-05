@@ -32,6 +32,7 @@ class RaidCharacter(models.Model):
     start = models.DateTimeField(default=datetime.now)
     end = models.DateTimeField(null=True, blank=True)
     closed = models.BooleanField(default=False)
+    earned_ep = models.FloatField(default=0)
 
     def __str__(self):
         return self.character.name
@@ -53,6 +54,7 @@ class BenchedRaidCharacter(models.Model):
     end = models.DateTimeField(null=True, blank=True)
     ticks = models.IntegerField(default=0)
     closed = models.BooleanField(default=False)
+    earned_ep = models.FloatField(default=0)
 
     def __str__(self):
         return self.character.name

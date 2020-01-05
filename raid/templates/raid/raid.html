@@ -182,7 +182,7 @@
                     <td>{{ raider.character.owner.priority|floatformat:2 }}</td>
                     <td>{{ raider.start|date:"H:i:s - d.m.y" }}</td>
                     <td>{{ raider.end|date:"H:i:s - d.m.y" }}</td>
-                    <td>{{ raider.ep_amount }}</td>
+                    <td>{{ raider.earned_ep }}</td>
                     {% if user.member.is_officer %}
                       {% if not raid.done %}
                         <td>
@@ -257,7 +257,7 @@
                     <td>{{ benched_raider.character.get_character_class_display }}</td>
                     <td>{{ benched_raider.start|date:"H:i:s - d.m.y" }}</td>
                     <td>{{ benched_raider.end|date:"H:i:s - d.m.y" }}</td>
-                    <td>{{ benched_raider.ep_amount }}</td>
+                    <td>{{ benched_raider.earned_ep }}</td>
                     {% if user.member.is_officer and not raid.done %}
                       <td>
                         {% if benched_raider.waiting %}
