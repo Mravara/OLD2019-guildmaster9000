@@ -23,7 +23,9 @@ def get_page(request):
     end = start + int(request.GET.get('length'))
     search = request.GET.get('search[value]')
 
-    loot = Loot.objects.all().filter(Q(character__name__icontains=search) | Q(item__name__icontains=search))[start:end]
+    all_loot = Loot.objects.all()
+
+    loot = all_loot.filter(Q(character__name__icontains=search) | Q(item__name__icontains=search))[start:end]
 
     for l in loot:
         row = [
@@ -37,7 +39,7 @@ def get_page(request):
         ]
         columns.append(row)
 
-    count = Loot.objects.all().count()
+    count = all_loot.count()
 
     data = {
         'draw': draw,

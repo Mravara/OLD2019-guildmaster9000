@@ -100,7 +100,7 @@
                 {% for l in loot %}
                   <tr>
                     <td><a href="https://classic.wowhead.com/item={{ l.item.wow_id }}" class="q1">{{ l.item.name }}</a></td>
-                    <td>{{ l.item.get_item_type_display }}</td>
+                    <td>{{ l.item_info.get_slot_ref_display }}</td>
                     <td><a href="#">{{ l.character.name }}</a></td>
                     <td>{{ l.gp|floatformat:2 }}</td>
                     <td>{{ l.price_percentage|floatformat:2 }}%</td>
@@ -141,10 +141,9 @@
                   <tr>
                     <th>Name</th>
                     <th>Character</th>
-                    <th>Class</th>
+                    <th>Priority</th>
                     <th>EP</th>
                     <th>GP</th>
-                    <th>Priority</th>
                     <th style="width: 10%">Joined</th>
                     <th style="width: 10%">Left</th>
                     <th>EP Gained</th>
@@ -157,10 +156,9 @@
                   <tr>
                     <th>Name</th>
                     <th>Character</th>
-                    <th>Class</th>
+                    <th>Priority</th>
                     <th>EP</th>
                     <th>GP</th>
-                    <th>Priority</th>
                     <th>Joined</th>
                     <th>Left</th>
                     <th>EP Gained</th>
@@ -175,11 +173,11 @@
                 {% for raider in raid_characters %}
                   <tr class="{% if not raid.done and raider.done or raid.done and not raider.closed %}table-danger{% endif %} {% if raid.done and raider.closed %}table-success{% endif %}">
                     <td><a href="#">{{ raider.character.owner.name }}</a></td>
-                    <td>{{ raider.character.name }}</td>
-                    <td><img width="20px" class="mr-1" src="{% static 'classes/' %}{{ raider.character.get_character_class_display }}.png" class="rounded float-left" alt=""> {{ raider.character.get_character_class_display }}</td>
+                    <td style="background-color: {{ raider.character.class_color }};"><img width="20px" class="mr-1" src="{% static 'classes/' %}{{ raider.character.get_character_class_display }}.png" class="rounded float-left" alt=""> {{ raider.character.name }}</td>
+                    <td>{{ raider.character.owner.priority|floatformat:2 }}</td>
+                    {% comment %} <td><img width="20px" class="mr-1" src="{% static 'classes/' %}{{ raider.character.get_character_class_display }}.png" class="rounded float-left" alt=""> {{ raider.character.get_character_class_display }}</td> {% endcomment %}
                     <td>{{ raider.character.owner.ep|floatformat:2 }}</td>
                     <td>{{ raider.character.owner.gp|floatformat:2 }}</td>
-                    <td>{{ raider.character.owner.priority|floatformat:2 }}</td>
                     <td>{{ raider.start|date:"H:i:s - d.m.y" }}</td>
                     <td>{{ raider.end|date:"H:i:s - d.m.y" }}</td>
                     <td>{{ raider.earned_ep }}</td>
@@ -485,13 +483,19 @@
     {% endfor %}
   ];
 
-  $('#id_item').autocomplete({ 
-    source: availableItemTags,
+  $('#id_item').autocomplete({
+    source: 'get_items/',
     select: function (event, ui) {
       $("#id_item_id").val(ui.item.id);
       $("#id_item").removeClass("is-invalid");
-    }
+    },
   });
+
+  function get_items(){
+    $.get('get_items/', function(data){
+      $("#id_item").val();
+    });
+  }
 
   // prepare end raid modal
   $('#endRaidModal').on('show.bs.modal', function (e) {

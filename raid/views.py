@@ -1,9 +1,11 @@
 from django.shortcuts import render, get_object_or_404, redirect
-from django.http import HttpResponse, HttpResponseNotFound, HttpResponseRedirect, Http404
+from django.http import HttpResponse, HttpResponseNotFound, HttpResponseRedirect, Http404, JsonResponse
 from django.utils.timezone import datetime
 from django.conf import settings
 from django.urls import reverse
 from django.db.models import Count, F, Sum
+from django.core import serializers
+
 from guildmaster9000.decorators import *
 from itertools import chain
 
@@ -40,22 +42,23 @@ def get_raid(request, raid_id):
     form_add_raiders = None
     form_add_benched_raiders = None
     
-    characters = RaidCharacter.objects.filter(raid=raid).prefetch_related('character__owner')
+    characters = RaidCharacter.objects.filter(raid=raid).select_related('character__owner')
     
-    benched_characters = BenchedRaidCharacter.objects.filter(raid=raid).prefetch_related('character__owner')
+    benched_characters = BenchedRaidCharacter.objects.filter(raid=raid).select_related('character__owner')
     
-    all_characters = Character.objects.all()
+    all_characters_query = Character.objects.all()
+    raid_characters_query = characters.filter(end=None).order_by('character__name')
 
     if not raid.done:
         items = Item.objects.filter(item_quality__gte=Item.Quality.EPIC)
         form = GiveItemForm()
-        form.fields['character'].queryset = characters.filter(end=None).order_by('character__name')
+        form.fields['character'].queryset = raid_characters_query
         form_ep = GiveEPForm()
-        form_ep.fields['character'].queryset = characters.filter(end=None).order_by('character__name')
+        form_ep.fields['character'].queryset = raid_characters_query
         form_add_raiders = AddRaidersForm()
-        form_add_raiders.fields['character'].queryset = all_characters
+        form_add_raiders.fields['character'].queryset = all_characters_query
         form_add_benched_raiders = AddBenchedRaidersForm()
-        form_add_benched_raiders.fields['character'].queryset = all_characters
+        form_add_benched_raiders.fields['character'].queryset = all_characters_query
     context = {
         'raid': raid,
         'loot': loot,
@@ -285,3 +288,11 @@ def ping(request, raid_id):
     # raid = get_object_or_404(Raid, pk=raid_id)
     # benched_members = raid.benched_members.all()
 
+
+@officers('/raids/')
+def get_items(request, raid_id):
+    term = request.GET.get('term')
+    items = Item.objects.values('id', 'name').filter(name__icontains=term)
+    # data = serializers.serialize('json', list(items))
+    print(list(items))
+    return JsonResponse(list(items), safe=False)

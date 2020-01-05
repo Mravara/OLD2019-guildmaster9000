@@ -28,7 +28,7 @@
               </tfoot>
               <tbody>
               {% for member in members %}
-                <tr style="background-color: {{ member.class_color }};">
+                <tr>
                   <td><a href="{% url 'member' member.id %}">{{ member.name }}</a></td>
                   {% comment %} <td><img width="20px" class="mr-1" src="{% static 'classes/' %}{{ member.get_member_class_display }}.png" class="rounded float-left" alt="">  {{ member.get_member_class_display }}</td> {% endcomment %}
                   <td>{{ member.get_rank_display }}</td>
