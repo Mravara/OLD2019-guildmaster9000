@@ -39,12 +39,15 @@ class GiveItemForm(forms.Form):
 
 
 class GiveEPForm(forms.Form):
+    character = forms.ModelChoiceField(queryset=RaidCharacter.objects.all(), required=False)
     ep = forms.IntegerField(required=True)
 
 
 class AddRaidersForm(forms.Form):
-    members = forms.CharField(required=True, widget=forms.Textarea)
+    character = forms.ModelChoiceField(queryset=Character.objects.all(), required=False)
+    members = forms.CharField(required=False, widget=forms.Textarea)
 
 
 class AddBenchedRaidersForm(forms.Form):
-    members = forms.CharField(required=True, widget=forms.Textarea)
+    character = forms.ModelChoiceField(queryset=Character.objects.all(), required=False)
+    members = forms.CharField(required=False, widget=forms.Textarea)

@@ -44,13 +44,18 @@ def get_raid(request, raid_id):
     
     benched_characters = BenchedRaidCharacter.objects.filter(raid=raid).prefetch_related('character__owner')
     
+    all_characters = Character.objects.all()
+
     if not raid.done:
         items = Item.objects.filter(item_quality__gte=Item.Quality.EPIC)
         form = GiveItemForm()
         form.fields['character'].queryset = characters.filter(end=None).order_by('character__name')
         form_ep = GiveEPForm()
+        form_ep.fields['character'].queryset = characters.filter(end=None).order_by('character__name')
         form_add_raiders = AddRaidersForm()
+        form_add_raiders.fields['character'].queryset = all_characters
         form_add_benched_raiders = AddBenchedRaidersForm()
+        form_add_benched_raiders.fields['character'].queryset = all_characters
     context = {
         'raid': raid,
         'loot': loot,
@@ -207,25 +212,30 @@ def give_ep(request, raid_id):
     form = GiveEPForm(request.POST)
     if form.is_valid():
         ep = form.cleaned_data.get('ep')
+        character = form.cleaned_data.get('character')
         raid = get_object_or_404(Raid, pk=raid_id)
-        
-        raiders = RaidCharacter.objects.filter(raid=raid, end=None).select_related('character__owner')
-        raiders.update(earned_ep=F('earned_ep') + ep)
-        for raider in raiders:
-            raider.character.owner.ep = F('ep') + ep
-            raider.character.owner.save()
-        
-        benched_raiders = BenchedRaidCharacter.objects.filter(raid=raid, end=None).select_related('character__owner')
-        benched_raiders.update(earned_ep=F('earned_ep') + ep)
-        for benched_raider in benched_raiders:
-            benched_raider.character.owner.ep = F('ep') + ep
-            benched_raider.character.owner.save()
-        
-        affected = [x.character for x in list(chain(raiders, benched_raiders))]
 
-        log = EPLog.objects.create(raid=raid, amount=ep)
-        log.affected_characters.set(affected)
-        log.save()
+        print(character)
+
+        if character is not None:
+            character.character.owner.ep = F('ep') + ep
+            character.character.owner.save()
+            character.earned_ep = F('earned_ep') + ep
+            character.save()
+        else:
+            raiders = RaidCharacter.objects.filter(raid=raid, end=None).select_related('character__owner')
+            raiders.update(earned_ep=F('earned_ep') + ep)
+            for raider in raiders:
+                raider.character.owner.ep = F('ep') + ep
+                raider.character.owner.save()
+            
+            benched_raiders = BenchedRaidCharacter.objects.filter(raid=raid, end=None).select_related('character__owner')
+            benched_raiders.update(earned_ep=F('earned_ep') + ep)
+            for benched_raider in benched_raiders:
+                benched_raider.character.owner.ep = F('ep') + ep
+                benched_raider.character.owner.save()
+        
+        EPLog.objects.create(raid=raid, amount=ep)
     return HttpResponseRedirect(reverse('raid', args=(raid_id,)))
 
 
@@ -234,14 +244,19 @@ def add_raiders(request, raid_id):
     form = AddRaidersForm(request.POST)
     if form.is_valid():
         raid = get_object_or_404(Raid, pk=raid_id)
+        character = form.cleaned_data.get('character')
 
-        text_members = form.cleaned_data.get('members')
-        text_members_list = text_members.splitlines()
-        text_members_list = list(dict.fromkeys(text_members_list)) # removes duplicates
-        text_members_list = [x.capitalize().strip() for x in text_members_list]
+        if character is not None:
+            RaidCharacter.objects.create(character=character, raid=raid)
+        else:
+            text_members = form.cleaned_data.get('members')
+            text_members_list = text_members.splitlines()
+            text_members_list = list(dict.fromkeys(text_members_list)) # removes duplicates
+            text_members_list = [x.capitalize().strip() for x in text_members_list]
 
-        characters = Character.objects.filter(name__in=text_members_list)
-        raiders = RaidCharacter.objects.bulk_create([RaidCharacter(character=c, raid=raid) for c in characters])
+            characters = Character.objects.filter(name__in=text_members_list)
+            RaidCharacter.objects.bulk_create([RaidCharacter(character=c, raid=raid) for c in characters])
+
     return HttpResponseRedirect(reverse('raid', args=(raid_id,)))
 
 
@@ -250,11 +265,17 @@ def add_benched_raiders(request, raid_id):
     form = AddBenchedRaidersForm(request.POST)
     if form.is_valid():
         raid = get_object_or_404(Raid, pk=raid_id)
-        text_members = form.cleaned_data.get('members')
-        text_members_list = text_members.splitlines()
-        text_members_list = list(dict.fromkeys(text_members_list)) # removes duplicates
-        characters = Character.objects.filter(name__in=text_members_list)
-        raiders = BenchedRaidCharacter.objects.bulk_create([BenchedRaidCharacter(character=c, raid=raid) for c in characters])
+        character = form.cleaned_data.get('character')
+
+        if character is not None:
+            BenchedRaidCharacter.objects.create(character=character, raid=raid)
+        else:
+            text_members = form.cleaned_data.get('members')
+            text_members_list = text_members.splitlines()
+            text_members_list = list(dict.fromkeys(text_members_list)) # removes duplicates
+            characters = Character.objects.filter(name__in=text_members_list)
+            BenchedRaidCharacter.objects.bulk_create([BenchedRaidCharacter(character=c, raid=raid) for c in characters])
+    
     return HttpResponseRedirect(reverse('raid', args=(raid_id,)))
 
 

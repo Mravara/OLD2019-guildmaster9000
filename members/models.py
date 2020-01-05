@@ -105,7 +105,6 @@ class DecayLog(models.Model):
 
 
 class EPLog(models.Model):
-    affected_characters = models.ManyToManyField('members.Character', related_name='eplog')
     raid = models.ForeignKey('raid.Raid', on_delete=models.CASCADE)
     amount = models.FloatField()
     time = models.DateTimeField(default=timezone.now)
