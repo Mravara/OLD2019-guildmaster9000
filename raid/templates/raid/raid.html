@@ -10,6 +10,10 @@
     overflow-x: hidden;
     z-index: 5000;
   }
+
+  .ui-autocomplete-loading {
+    background: white url("images/ui-anim_basic_16x16.gif") right center no-repeat;
+  }
 </style>
 
 <ul class="" style="list-style: none; padding-left: 0;">
@@ -434,9 +438,38 @@
 
 
 {% block scripts %}
-<script charset="UTF-8">
+<script>
 
 {% if not raid.done %}
+{% comment %} 
+  // web sockets
+  var socket = new WebSocket('ws://' + window.location.host + '/raids/{{ raid.id }}/offer_item/500/');
+
+  socket.onopen = function open() {
+    console.log('WebSockets connection created.');
+  };
+
+  socket.onmessage = function message(event) {
+    var data = JSON.parse(event.data);
+    // NOTE: We escape JavaScript to prevent XSS attacks.
+    var username = encodeURI(data['username']);
+    var user = $('li').filter(function () {
+      return $(this).data('username') == username;
+    });
+
+    if (data['is_logged_in']) {
+      user.html(username + ': Online');
+    }
+    else {
+      user.html(username + ': Offline');
+    }
+  };
+
+  if (socket.readyState == WebSocket.OPEN) {
+    socket.onopen();
+  }
+ {% endcomment %}
+
   // remove modal input values
   $('#giveItemModal').on('show.bs.modal', function (e) {
     $("#id_item").val('');
@@ -474,28 +507,14 @@
   });
 
   // items
-  var availableItemTags = [
-    {% for item in items %}
-      { 
-        "id": {{ item.id }},
-        "value": "{{ item.name|escapejs }}"
-      },
-    {% endfor %}
-  ];
-
   $('#id_item').autocomplete({
     source: 'get_items/',
+    minLength: 3,
     select: function (event, ui) {
       $("#id_item_id").val(ui.item.id);
       $("#id_item").removeClass("is-invalid");
-    },
+    }
   });
-
-  function get_items(){
-    $.get('get_items/', function(data){
-      $("#id_item").val();
-    });
-  }
 
   // prepare end raid modal
   $('#endRaidModal').on('show.bs.modal', function (e) {

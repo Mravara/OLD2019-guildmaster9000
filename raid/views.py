@@ -36,7 +36,6 @@ def get_raid(request, raid_id):
     except Raid.DoesNotExist:
         raise Http404("WTF?")
     loot = Loot.objects.filter(raid=raid).select_related('item', 'character', 'item_info', 'given_by')
-    items = None
     form = None
     form_ep = None
     form_add_raiders = None
@@ -50,7 +49,6 @@ def get_raid(request, raid_id):
     raid_characters_query = characters.filter(end=None).order_by('character__name')
 
     if not raid.done:
-        items = Item.objects.filter(item_quality__gte=Item.Quality.EPIC)
         form = GiveItemForm()
         form.fields['character'].queryset = raid_characters_query
         form_ep = GiveEPForm()
@@ -62,7 +60,6 @@ def get_raid(request, raid_id):
     context = {
         'raid': raid,
         'loot': loot,
-        'items': items,
         'raid_characters': characters,
         'benched_raid_characters': benched_characters,
         'form': form,
@@ -292,7 +289,17 @@ def ping(request, raid_id):
 @officers('/raids/')
 def get_items(request, raid_id):
     term = request.GET.get('term')
-    items = Item.objects.values('id', 'name').filter(name__icontains=term)
-    # data = serializers.serialize('json', list(items))
-    print(list(items))
-    return JsonResponse(list(items), safe=False)
+    items = Item.objects.filter(name__icontains=term, item_quality__gte=Item.Quality.EPIC).values('id', value=F('name')).order_by('name')
+    data = []
+    for i in items:
+        data.append(i)
+    print(data)
+    return JsonResponse(data, safe=False)
+
+
+@officers('/raids/')
+def offer_item(request, raid_id, item_id):
+    data = {
+
+    }
+    return JsonResponse(data)
