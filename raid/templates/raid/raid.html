@@ -279,7 +279,7 @@
         </div>
 <!-- End of Benched Members Table -->
 
-{% if raid.end is None %}
+{% if raid.end is None and user.member.is_officer %}
 {% load crispy_forms_tags %}
 <!-- Give Item Modal-->
   <div class="modal fade bd-example-modal-xl" id="giveItemModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -441,34 +441,9 @@
 <script>
 
 {% if not raid.done %}
-{% comment %} 
+
   // web sockets
-  var socket = new WebSocket('ws://' + window.location.host + '/raids/{{ raid.id }}/offer_item/500/');
-
-  socket.onopen = function open() {
-    console.log('WebSockets connection created.');
-  };
-
-  socket.onmessage = function message(event) {
-    var data = JSON.parse(event.data);
-    // NOTE: We escape JavaScript to prevent XSS attacks.
-    var username = encodeURI(data['username']);
-    var user = $('li').filter(function () {
-      return $(this).data('username') == username;
-    });
-
-    if (data['is_logged_in']) {
-      user.html(username + ': Online');
-    }
-    else {
-      user.html(username + ': Offline');
-    }
-  };
-
-  if (socket.readyState == WebSocket.OPEN) {
-    socket.onopen();
-  }
- {% endcomment %}
+  // https://channels.readthedocs.io/en/latest/tutorial/part_2.html
 
   // remove modal input values
   $('#giveItemModal').on('show.bs.modal', function (e) {

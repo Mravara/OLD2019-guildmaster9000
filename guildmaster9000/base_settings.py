@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     # third party apps
     'crispy_forms',
+    'channels',
     # my apps
     'home.apps.HomeConfig',
     'members.apps.MembersConfig',
@@ -165,3 +166,6 @@ LOGIN_URL = '/accounts/login/'
 LOGIN_EXEMPT_URLS = (
     r'^accounts/login/$',
 )
+
+# websockets
+ASGI_APPLICATION = "guildmaster9000.routing.application"
