@@ -295,11 +295,3 @@ def get_items(request, raid_id):
         data.append(i)
     print(data)
     return JsonResponse(data, safe=False)
-
-
-@officers('/raids/')
-def offer_item(request, raid_id, item_id):
-    data = {
-
-    }
-    return JsonResponse(data)
