@@ -45,6 +45,12 @@ class RaidCharacter(models.Model):
     def closed_raid(self):
         return self.closed
 
+    def get_priority_color(self, minp, maxp, currentp):
+        priority = round((currentp - minp) / (maxp - minp) * 100)
+        priority = max(10, min(priority, 99))
+        
+        return "#0000ff{}".format(priority)
+
 
 
 class BenchedRaidCharacter(models.Model):

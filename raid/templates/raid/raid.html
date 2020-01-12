@@ -1,5 +1,6 @@
 {% extends 'index.html' %}
 {% load static %}
+{% load call_method %}
 {% block content %}
 
 <style>
@@ -13,6 +14,10 @@
 
   .ui-autocomplete-loading {
     background: white url("images/ui-anim_basic_16x16.gif") right center no-repeat;
+  }
+
+  .table tbody tr:hover {
+    background-color: #ffff0050 !important;
   }
 </style>
 
@@ -140,7 +145,7 @@
 
           <div class="card-body">
             <div class="table-responsive">
-              <table class="table table-bordered table-striped table-xs table-sm" id="dataTable2" width="100%" cellspacing="0">
+              <table class="table table-bordered table-xs table-sm" id="dataTable2" width="100%" cellspacing="0">
                 <thead>
                   <tr>
                     <th>Character</th>
@@ -175,7 +180,7 @@
                 {% for raider in raid_characters %}
                   <tr class="{% if not raid.done and raider.done or raid.done and not raider.closed %}table-danger{% endif %} {% if raid.done and raider.closed %}table-success{% endif %}">
                     <td style="background-color: {{ raider.character.class_color }};"><img width="20px" class="mr-1" src="{% static 'classes/' %}{{ raider.character.get_character_class_display }}.png" class="rounded float-left" alt=""> {{ raider.character.name }}</td>
-                    <td>{{ raider.character.owner.priority|floatformat:2 }}</td>
+                    <td  style="background-color: {% call_method raider 'get_priority_color' min_priority max_priority raider.character.owner.priority %};">{{ raider.character.owner.priority|floatformat:2 }}</td>
                     {% comment %} <td><img width="20px" class="mr-1" src="{% static 'classes/' %}{{ raider.character.get_character_class_display }}.png" class="rounded float-left" alt=""> {{ raider.character.get_character_class_display }}</td> {% endcomment %}
                     <td>{{ raider.character.owner.ep|floatformat:2 }}</td>
                     <td>{{ raider.character.owner.gp|floatformat:2 }}</td>
@@ -513,7 +518,7 @@
 
   // auto order table members
   $('#dataTable2').DataTable( {
-    "order": [[ 5, "desc" ]]
+    "order": [[ 1, "desc" ]]
   });
 
   // auto order table benched members

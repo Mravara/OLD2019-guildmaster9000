@@ -49,6 +49,15 @@ def get_raid(request, raid_id):
     all_characters_query = Character.objects.all()
     raid_characters_query = characters.filter(end=None).order_by('character__name')
 
+    min_priority = 9999999
+    max_priority = -1
+
+    for character in characters:
+        if character.character.owner.priority < min_priority:
+            min_priority = character.character.owner.priority
+        if character.character.owner.priority > max_priority:
+            max_priority = character.character.owner.priority
+
     if not raid.done:
         form = GiveItemForm()
         form.fields['character'].queryset = raid_characters_query
@@ -63,6 +72,8 @@ def get_raid(request, raid_id):
         'loot': loot,
         'raid_characters': characters,
         'benched_raid_characters': benched_characters,
+        'min_priority': min_priority,
+        'max_priority': max_priority,
         'form': form,
         'form_ep': form_ep,
         'form_add_raiders': form_add_raiders,
