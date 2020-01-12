@@ -5,6 +5,7 @@ from django.conf import settings
 from django.urls import reverse
 from django.db.models import Count, F, Sum
 from django.core import serializers
+import requests
 
 from guildmaster9000.decorators import *
 from itertools import chain
@@ -92,8 +93,11 @@ def new_raid(request):
             text_members_list = list(dict.fromkeys(text_members_list)) # removes duplicates
             text_members_list = [x.capitalize().strip() for x in text_members_list]
 
+            raiders = None
+            benched_raiders = None
+
             if len(text_members_list) > 0:
-                characters = Character.objects.filter(name__in=text_members_list)
+                raiders = characters = Character.objects.filter(name__in=text_members_list)
                 RaidCharacter.objects.bulk_create([RaidCharacter(character=c, raid=raid) for c in characters])
             else:
                 return redirect("/raids/{}/".format(raid.id))
@@ -103,8 +107,28 @@ def new_raid(request):
             text_benched_members_list = list(dict.fromkeys(text_benched_members_list)) # removes duplicates
 
             if len(text_benched_members_list) > 0:
-                characters = Character.objects.filter(name__in=text_benched_members_list)
+                benched_raiders = characters = Character.objects.filter(name__in=text_benched_members_list)
                 BenchedRaidCharacter.objects.bulk_create([BenchedRaidCharacter(character=c, raid=raid) for c in characters])
+
+            # # trigger webhook
+            # webhook_url = 'https://discordapp.com/api/webhooks/663807443783909412/oaQIP-kuEz4VWGvtpsITdgb2mjpI2HtIktuHQ8ADlRS7dWWFkxEH76RGMPDthg8uZlhn'
+            # data = 'New raid started\n'
+            # ids = []
+            
+            # if raiders:
+            #     for raider in raiders:
+            #         ids.append(str(raider.owner.discord_id))
+            
+            # if benched_raiders:
+            #     for benched_raider in benched_raiders:
+            #         ids.append(str(benched_raider.owner.discord_id))
+            
+            # id_list = '\n'.join(ids)
+            # data = data + id_list
+            # webhook_data = {
+            #     'content': data
+            # }
+            # requests.post(webhook_url, webhook_data)
 
             return HttpResponseRedirect(reverse('raid', args=(raid.id,)))
 

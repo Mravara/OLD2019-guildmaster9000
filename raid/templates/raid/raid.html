@@ -71,7 +71,7 @@
             </div>
           <div class="card-body">
             <div class="table-responsive">
-              <table class="table table-bordered table-striped table-sm" id="dataTable" width="100%" cellspacing="0">
+              <table class="table table-bordered table-striped table-sm table-xs" id="dataTable" width="100%" cellspacing="0">
                 <thead>
                   <tr>
                     <th>Item</th>
@@ -112,7 +112,7 @@
                     <td><a href="#">{{ l.given_by.name }}</a></td>
                     {% if not raid.done and user.member.is_officer %}
                     <td>
-                      <button type="button" class="btn btn-sm btn-danger" onclick="window.location.href='delete_loot/{{ l.id }}/';">Delete</button>
+                      <button type="button" class="btn btn-xs btn-danger" onclick="window.location.href='delete_loot/{{ l.id }}/';">Delete</button>
                     </td>
                     {% endif %}
                   </tr>
@@ -140,17 +140,16 @@
 
           <div class="card-body">
             <div class="table-responsive">
-              <table class="table table-bordered table-striped table-sm" id="dataTable2" width="100%" cellspacing="0">
+              <table class="table table-bordered table-striped table-xs table-sm" id="dataTable2" width="100%" cellspacing="0">
                 <thead>
                   <tr>
-                    <th>Name</th>
                     <th>Character</th>
                     <th>Priority</th>
                     <th>EP</th>
                     <th>GP</th>
+                    <th>EP Gained</th>
                     <th style="width: 10%">Joined</th>
                     <th style="width: 10%">Left</th>
-                    <th>EP Gained</th>
                     {% if user.member.is_officer and not raid.done%}
                       <th style="width: 5%">Remove</th>
                     {% endif %}
@@ -158,14 +157,13 @@
                 </thead>
                 <tfoot>
                   <tr>
-                    <th>Name</th>
                     <th>Character</th>
                     <th>Priority</th>
                     <th>EP</th>
                     <th>GP</th>
+                    <th>EP Gained</th>
                     <th>Joined</th>
                     <th>Left</th>
-                    <th>EP Gained</th>
                     {% if user.member.is_officer %}
                       {% if not raider.done and not raid.done %}
                         <th style="width: 5%">Remove</th>
@@ -176,20 +174,19 @@
                 <tbody>
                 {% for raider in raid_characters %}
                   <tr class="{% if not raid.done and raider.done or raid.done and not raider.closed %}table-danger{% endif %} {% if raid.done and raider.closed %}table-success{% endif %}">
-                    <td><a href="#">{{ raider.character.owner.name }}</a></td>
                     <td style="background-color: {{ raider.character.class_color }};"><img width="20px" class="mr-1" src="{% static 'classes/' %}{{ raider.character.get_character_class_display }}.png" class="rounded float-left" alt=""> {{ raider.character.name }}</td>
                     <td>{{ raider.character.owner.priority|floatformat:2 }}</td>
                     {% comment %} <td><img width="20px" class="mr-1" src="{% static 'classes/' %}{{ raider.character.get_character_class_display }}.png" class="rounded float-left" alt=""> {{ raider.character.get_character_class_display }}</td> {% endcomment %}
                     <td>{{ raider.character.owner.ep|floatformat:2 }}</td>
                     <td>{{ raider.character.owner.gp|floatformat:2 }}</td>
+                    <td>{{ raider.earned_ep }}</td>
                     <td>{{ raider.start|date:"H:i:s - d.m.y" }}</td>
                     <td>{{ raider.end|date:"H:i:s - d.m.y" }}</td>
-                    <td>{{ raider.earned_ep }}</td>
                     {% if user.member.is_officer %}
                       {% if not raid.done %}
                         <td>
                           {% if not raider.done %}
-                            <button type="button" class="btn btn-sm btn-danger" onclick="window.location.href='remove_raider/{{ raider.id }}/';">Remove</button>
+                            <button type="button" class="btn btn-xs btn-danger" onclick="window.location.href='remove_raider/{{ raider.id }}/';">Remove</button>
                           {% endif %}
                         </td>
                       {% endif %}
@@ -224,15 +221,15 @@
 
           <div class="card-body">
             <div class="table-responsive">
-              <table class="table table-bordered table-striped table-sm" id="dataTable3" width="100%" cellspacing="0">
+              <table class="table table-bordered table-striped table-sm table-xs" id="dataTable3" width="100%" cellspacing="0">
                 <thead>
                   <tr>
                     <th>Name</th>
                     <th>Character</th>
                     <th>Class</th>
+                    <th>EP Gained</th>
                     <th style="width: 10%">Joined</th>
                     <th style="width: 10%">Left</th>
-                    <th>EP Gained</th>
                     {% if user.member.is_officer and not raid.done %}
                     <th style="width: 5%">Remove</th>
                     {% endif %}
@@ -243,9 +240,9 @@
                     <th>Name</th>
                     <th>Character</th>
                     <th>Class</th>
+                    <th>EP Gained</th>
                     <th>Joined</th>
                     <th>Left</th>
-                    <th>EP Gained</th>
                     {% if user.member.is_officer and not raid.done %}
                     <th style="width: 5%">Remove</th>
                     {% endif %}
@@ -257,13 +254,13 @@
                     <td><a href="#">{{ benched_raider.character.owner.name }}</a></td>
                     <td><a href="#">{{ benched_raider.character.name }}</a></td>
                     <td>{{ benched_raider.character.get_character_class_display }}</td>
+                    <td>{{ benched_raider.earned_ep }}</td>
                     <td>{{ benched_raider.start|date:"H:i:s - d.m.y" }}</td>
                     <td>{{ benched_raider.end|date:"H:i:s - d.m.y" }}</td>
-                    <td>{{ benched_raider.earned_ep }}</td>
                     {% if user.member.is_officer and not raid.done %}
                       <td>
                         {% if benched_raider.waiting %}
-                        <button type="button" class="btn btn-sm btn-danger" onclick="window.location.href='remove_benched_raider/{{ member.id }}/';">Remove</button>
+                        <button type="button" class="btn btn-xs btn-danger" onclick="window.location.href='remove_benched_raider/{{ member.id }}/';">Remove</button>
                         {% endif %}
                       </td>
                     {% endif %}
