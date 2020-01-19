@@ -3,16 +3,19 @@ from django.urls import reverse
 from django.http import HttpResponse, HttpResponseRedirect
 from django.db.models import F
 from django.utils.timezone import datetime
-from members.models import Member, DecayLog
+from members.models import Member, Character, DecayLog
 from guildmaster9000.decorators import *
-from officers.forms import DecayForm
+from officers.forms import DecayForm, NewMemberForm
+from django.contrib.auth.models import User
 
 
 @officers('/')
 def index(request):
     form = DecayForm()
+    new_member_form = NewMemberForm()
     context = {
         'form': form,
+        'new_member_form': new_member_form,
     }
     return render(request, "officers/index.html", context)
 
@@ -27,4 +30,41 @@ def decay_epgp(request):
         decay = DecayLog.objects.create(percentage=decay, time=datetime.now())
         decay.affected_members.set(members)
         decay.save()
+    return HttpResponseRedirect(reverse('officers_index'))
+
+
+@officers('/')
+def new_member(request):
+    form = NewMemberForm(request.POST)
+    print(form.is_valid())
+    if form.is_valid():
+        username = form.cleaned_data.get('username')
+        password = form.cleaned_data.get('password')
+        character_name = form.cleaned_data.get('character_name')
+        character_class = form.cleaned_data.get('character_class')
+        discord_id = form.cleaned_data.get('discord_id')
+        starting_ep = form.cleaned_data.get('starting_ep')
+        starting_gp = form.cleaned_data.get('starting_gp')
+        user = User(username=username, password=password)
+        member = Member(
+            user=user, 
+            discord_id=discord_id, 
+            name=character_name, 
+            rank=Member.Rank.MEMBER, 
+            ep=starting_ep, 
+            gp=starting_gp
+        )
+        character = Character(
+            name=character_name,
+            owner=member,
+            character_class=character_class,
+        )
+        user.save()
+        member.save()
+        character.save()
+        print(user)
+        print(member)
+        print(character)
+
+
     return HttpResponseRedirect(reverse('officers_index'))
