@@ -47,7 +47,7 @@ def get_raid(request, raid_id):
     benched_characters = BenchedRaidCharacter.objects.filter(raid=raid).select_related('character__owner')
     
     all_characters_query = Character.objects.all()
-    raid_characters_query = characters.filter(end=None).order_by('character__name')
+    raid_characters_query = characters.order_by('character__name')
 
     min_priority = 9999999
     max_priority = -1
@@ -58,7 +58,8 @@ def get_raid(request, raid_id):
         if character.character.owner.priority > max_priority:
             max_priority = character.character.owner.priority
 
-    if not raid.done:
+
+    if not raid.done or raid.editing:
         form = GiveItemForm()
         form.fields['character'].queryset = raid_characters_query
         form_ep = GiveEPForm()
@@ -80,7 +81,7 @@ def get_raid(request, raid_id):
         'form_add_benched_raiders': form_add_benched_raiders,
         'item_types': ItemInfo.ItemSlot.choices,
         'breadcrumbs': [
-            'Raids' if (referer is not None and 'raids' in referer)else 'Loot',
+            'Raids' if (referer is not None and 'raids' in referer) else 'Loot',
             raid.dungeon.name,
         ]
     }
@@ -185,33 +186,39 @@ def give_item(request, raid_id):
 @officers('/raids/')
 def complete_raid(request, raid_id):
     raid = get_object_or_404(Raid, pk=raid_id)
-    raid.end = datetime.now()
+    was_editing = raid.state == Raid.State.EDITING
     raid.state = Raid.State.SUCCESS
+    if not was_editing:
+        raid.end = datetime.now()
+        RaidCharacter.objects.filter(raid=raid, end=None).update(closed=True, end=datetime.now())
+        BenchedRaidCharacter.objects.filter(raid=raid, end=None).update(closed=True, end=datetime.now())
     raid.save()
-    RaidCharacter.objects.filter(raid=raid, end=None).update(closed=True, end=datetime.now())
-    BenchedRaidCharacter.objects.filter(raid=raid, end=None).update(closed=True, end=datetime.now())
     return HttpResponseRedirect(reverse('raid', args=(raid_id,)))
 
 
 @officers('/raids/')
 def pause_raid(request, raid_id):
     raid = get_object_or_404(Raid, pk=raid_id)
-    raid.end = datetime.now()
+    was_editing = raid.state == Raid.State.EDITING
     raid.state = Raid.State.PAUSED
+    if not was_editing:
+        raid.end = datetime.now()
+        RaidCharacter.objects.filter(raid=raid, end=None).update(closed=True, end=datetime.now())
+        BenchedRaidCharacter.objects.filter(raid=raid, end=None).update(closed=True, end=datetime.now())
     raid.save()
-    RaidCharacter.objects.filter(raid=raid, end=None).update(closed=True, end=datetime.now())
-    BenchedRaidCharacter.objects.filter(raid=raid, end=None).update(closed=True, end=datetime.now())
     return HttpResponseRedirect(reverse('raid', args=(raid_id,)))
 
 
 @officers('/raids/')
 def fail_raid(request, raid_id):
     raid = get_object_or_404(Raid, pk=raid_id)
-    raid.end = datetime.now()
+    was_editing = raid.state == Raid.State.EDITING
     raid.state = Raid.State.FAILED
+    if not was_editing:
+        raid.end = datetime.now()
+        RaidCharacter.objects.filter(raid=raid, end=None).update(closed=True, end=datetime.now())
+        BenchedRaidCharacter.objects.filter(raid=raid, end=None).update(closed=True, end=datetime.now())
     raid.save()
-    RaidCharacter.objects.filter(raid=raid, end=None).update(closed=True, end=datetime.now())
-    BenchedRaidCharacter.objects.filter(raid=raid, end=None).update(closed=True, end=datetime.now())
     return HttpResponseRedirect(reverse('raid', args=(raid_id,)))
 
 
@@ -249,8 +256,7 @@ def give_ep(request, raid_id):
         ep = form.cleaned_data.get('ep')
         character = form.cleaned_data.get('character')
         raid = get_object_or_404(Raid, pk=raid_id)
-
-        print(character)
+        only_present = form.cleaned_data.get('only_present')
 
         if character is not None:
             character.character.owner.ep = F('ep') + ep
@@ -258,13 +264,17 @@ def give_ep(request, raid_id):
             character.earned_ep = F('earned_ep') + ep
             character.save()
         else:
-            raiders = RaidCharacter.objects.filter(raid=raid, end=None).select_related('character__owner')
+            raiders = RaidCharacter.objects.filter(raid=raid).select_related('character__owner')
+            if only_present:
+                raiders = raiders.filter(end=None)
             raiders.update(earned_ep=F('earned_ep') + ep)
             for raider in raiders:
                 raider.character.owner.ep = F('ep') + ep
                 raider.character.owner.save()
             
-            benched_raiders = BenchedRaidCharacter.objects.filter(raid=raid, end=None).select_related('character__owner')
+            benched_raiders = BenchedRaidCharacter.objects.filter(raid=raid).select_related('character__owner')
+            if only_present:
+                benched_raiders = benched_raiders.filter(end=None)
             benched_raiders.update(earned_ep=F('earned_ep') + ep)
             for benched_raider in benched_raiders:
                 benched_raider.character.owner.ep = F('ep') + ep
@@ -328,5 +338,13 @@ def get_items(request, raid_id):
     data = []
     for i in items:
         data.append(i)
-    print(data)
     return JsonResponse(data, safe=False)
+
+
+@officers('/raids/')
+def unlock_raid(request, raid_id):
+    raid = get_object_or_404(Raid, pk=raid_id)
+    raid.state = Raid.State.EDITING
+    raid.save()
+    return HttpResponseRedirect(reverse('raid', args=(raid_id,)))
+

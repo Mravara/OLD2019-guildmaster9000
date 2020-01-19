@@ -22,7 +22,7 @@
 </style>
 
 <ul class="" style="list-style: none; padding-left: 0;">
-{% if not raid.done %}
+{% if not raid.done or raid.editing %}
     {% if user.member.is_officer %}
   <div class="card float-left" style="width: 150px;">
     <div class="btn-group" role="group">
@@ -58,6 +58,9 @@
         <button type="button auto" class="btn btn-success"><i class="fas fa-check-circle" aria-hidden="true"></i> Completed</button>
       </div>
     {% endif %}
+  </div>
+  <div class="float-right" role="">
+    <button type="button" class="btn btn-primary float-right" onclick="window.location.href='unlock_raid/';"><i class="fas fa-unlock" aria-hidden="true"></i> Unlock</button>
   </div>
 {% endif %}
 </ul>
@@ -281,7 +284,7 @@
         </div>
 <!-- End of Benched Members Table -->
 
-{% if raid.end is None and user.member.is_officer %}
+{% if not raid.done or raid.editing and user.member.is_officer %}
 {% load crispy_forms_tags %}
 <!-- Give Item Modal-->
   <div class="modal fade bd-example-modal-xl" id="giveItemModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -370,6 +373,7 @@
             </button>
           </div>
           <div class="modal-body">
+            {{ form_ep.only_present|as_crispy_field }}
             {{ form_ep.character|as_crispy_field }}
             {{ form_ep.ep|as_crispy_field }}
           </div>
@@ -422,8 +426,8 @@
             </button>
           </div>
           <div class="modal-body">
-            {{ form_add_raiders.character|as_crispy_field }}
-            {{ form_add_raiders.members|as_crispy_field }}
+            {{ form_add_benched_raiders.character|as_crispy_field }}
+            {{ form_add_benched_raiders.members|as_crispy_field }}
           </div>
           <div class="modal-footer">
             <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
@@ -442,7 +446,7 @@
 {% block scripts %}
 <script>
 
-{% if not raid.done %}
+{% if not raid.done or raid.editing %}
 
   // remove modal input values
   $('#giveItemModal').on('show.bs.modal', function (e) {

@@ -18,4 +18,5 @@ urlpatterns = [
     path('<int:raid_id>/remove_benched_raider/<int:raider_id>/', views.remove_benched_raider, name='remove_benched_raider'),
     path('<int:raid_id>/ping/', views.ping, name='ping'),
     path('<int:raid_id>/get_items/', views.get_items, name='get_items'),
+    path('<int:raid_id>/unlock_raid/', views.unlock_raid, name='unlock_raid'),
 ]

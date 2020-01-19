@@ -40,6 +40,7 @@ class GiveItemForm(forms.Form):
 
 class GiveEPForm(forms.Form):
     character = forms.ModelChoiceField(queryset=RaidCharacter.objects.all(), required=False)
+    only_present = forms.BooleanField(required=False)
     ep = forms.IntegerField(required=True)
 
 

@@ -10,6 +10,7 @@ class Raid(models.Model):
         PAUSED = 1
         FAILED = 2
         SUCCESS = 3
+        EDITING = 4
 
     dungeon = models.ForeignKey('dungeons.Dungeon', on_delete=models.PROTECT)
     leader = models.ForeignKey('members.Member', related_name='leader', on_delete=models.PROTECT)
@@ -22,8 +23,11 @@ class Raid(models.Model):
 
     @property
     def done(self):
-        return self.end is not None
+        return self.state != Raid.State.IN_PROGRESS
 
+    @property
+    def editing(self):
+        return self.state == Raid.State.EDITING
 
 
 class RaidCharacter(models.Model):
