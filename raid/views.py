@@ -5,6 +5,7 @@ from django.conf import settings
 from django.urls import reverse
 from django.db.models import Count, F, Sum
 from django.core import serializers
+from django.contrib import messages
 import requests
 
 from guildmaster9000.decorators import *
@@ -141,7 +142,7 @@ def new_raid(request):
             #     'content': data
             # }
             # requests.post(webhook_url, webhook_data)
-
+            messages.success(request, "Raid created.")
             return HttpResponseRedirect(reverse('raid', args=(raid.id,)))
 
         return redirect(request.path)
@@ -180,6 +181,7 @@ def give_item(request, raid_id):
             loot.save()
             character.character.owner.gp = F('gp') + loot.gp
             character.character.owner.save()
+            messages.success(request, "Item <strong>{0}</strong> given to <strong>{1}</strong> for <strong>{2}%</strong> of the price.".format(item.name, character.character.name, price_percentage))
         return HttpResponseRedirect(reverse('raid', args=(raid_id,)))
 
 
@@ -228,6 +230,7 @@ def remove_raider(request, raid_id, raider_id):
     raider = RaidCharacter.objects.get(id=raider_id, raid=raid)
     raider.end = datetime.now()
     raider.save()
+    messages.success(request, "<strong>{0}</strong> has been removed from the raid.".format(raider.character.name))
     return HttpResponseRedirect(reverse('raid', args=(raid_id,)))
 
 
@@ -237,6 +240,7 @@ def remove_benched_raider(request, raid_id, raider_id):
     raider = BenchedRaidCharacter.objects.get(id=raider_id, raid=raid)
     raider.end = datetime.now()
     raider.save()
+    messages.success(request, "<strong>{0}</strong> has been removed from the raid.".format(raider.character.name))
     return HttpResponseRedirect(reverse('raid', args=(raid_id,)))
 
 
@@ -246,6 +250,8 @@ def delete_loot(request, raid_id, loot_id):
     loot.character.owner.gp = F('gp') - loot.gp
     loot.character.owner.save()
     loot.delete()
+    item_name = loot.item.name
+    messages.success(request, "<strong>{0}</strong> has been deleted from the loot table.".format(item_name))
     return HttpResponseRedirect(reverse('raid', args=(raid_id,)))
 
 
@@ -281,6 +287,16 @@ def give_ep(request, raid_id):
                 benched_raider.character.owner.save()
         
         EPLog.objects.create(raid=raid, amount=ep)
+
+        if character is None:
+            if only_present:
+                messages.success(request, "<strong>{0} EP </strong> has been given to every <strong>currently present</strong> raid member.".format(ep))
+            else:
+                messages.success(request, "<strong>{0} EP </strong> has been given to <strong>every</strong> raid member.".format(ep))
+        else:
+            messages.success(request, "<strong>{0} EP </strong> has been given to <strong>{1}</strong>.".format(ep, character.character.name))
+    else:
+        messages.error(request, "Something went wrong :(")
     return HttpResponseRedirect(reverse('raid', args=(raid_id,)))
 
 
@@ -293,6 +309,7 @@ def add_raiders(request, raid_id):
 
         if character is not None:
             RaidCharacter.objects.create(character=character, raid=raid)
+            messages.success(request, "<strong>{0}</strong> has been added to the raid.".format(character.name))
         else:
             text_members = form.cleaned_data.get('members')
             text_members_list = text_members.splitlines()
@@ -301,7 +318,10 @@ def add_raiders(request, raid_id):
 
             characters = Character.objects.filter(name__in=text_members_list)
             RaidCharacter.objects.bulk_create([RaidCharacter(character=c, raid=raid) for c in characters])
-
+            messages.success(request, "<strong>{0}</strong> new raiders have been added to the raid.".format(len(text_members_list)))
+    else:
+        messages.error(request, "Something went wrong :(")
+        
     return HttpResponseRedirect(reverse('raid', args=(raid_id,)))
 
 
@@ -314,12 +334,16 @@ def add_benched_raiders(request, raid_id):
 
         if character is not None:
             BenchedRaidCharacter.objects.create(character=character, raid=raid)
+            messages.success(request, "<strong>{0}</strong> has been added to the raid.".format(character.name))
         else:
             text_members = form.cleaned_data.get('members')
             text_members_list = text_members.splitlines()
             text_members_list = list(dict.fromkeys(text_members_list)) # removes duplicates
             characters = Character.objects.filter(name__in=text_members_list)
             BenchedRaidCharacter.objects.bulk_create([BenchedRaidCharacter(character=c, raid=raid) for c in characters])
+            messages.success(request, "<strong>{0}</strong> new raiders have been added to the raid (benched).".format(len(text_members_list)))
+    else:
+        messages.error(request, "Something went wrong :(")
     
     return HttpResponseRedirect(reverse('raid', args=(raid_id,)))
 

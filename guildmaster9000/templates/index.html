@@ -30,31 +30,19 @@
 
 <body id="page-top">
 
-  {% if messages %}
-    {% for message in messages %}
-      <div class="alert alert-success show fade position-absolute alert-toast" role="alert" style="z-index:1000; left:50%; transform: translateX(-50%); -webkit-transform: translateX(-50%); top:3px;">
-        <button type="button" class="close position-absolute" style="position:absolute; right:0;" data-dismiss="alert" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-        {{ message  }}
-      </div>
-    {% endfor %}
-  {% endif %}
-
-  <div class="container-fluid position-absolute" style="z-index:1000; top:3px; left:200px;">
-    <div class="alert alert-success show fade alert-toast" role="alert" style="display: inline-block;">
-      <button type="button" class="close" data-dismiss="alert" aria-label="Close" style="margin-left:20px;">
-        <span aria-hidden="true">&times;</span>
+{% if messages %}
+<div style="position: absolute; top:0px; left:50%; z-index:1000; width:800px; transform:translate(-50%)">
+  {% for message in messages %}
+    <div class="alert alert-success fade in alert-dismissible show alert-toast" style="margin-top:18px;">
+      <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true" style="font-size:20px">×</span>
       </button>
-      123 jshakjh djahs djkahjskdh kashkd 
+      
+      {{ message|safe }}
     </div>
-    <div class="alert alert-success show fade alert-toast" role="alert" style="display: inline-block;">
-      <button type="button" class="close" data-dismiss="alert" aria-label="Close" style="margin-left:20px;">
-        <span aria-hidden="true">&times;</span>
-      </button>
-      123
-    </div>
-  </div>
+  {% endfor %}
+</div>
+{% endif %}
 
   <nav class="navbar navbar-expand navbar-dark bg-dark static-top">
 

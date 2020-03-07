@@ -28,9 +28,12 @@ def decay_epgp(request):
         decay = form.cleaned_data.get('decay')
         members = Member.objects.all()
         members.update(ep=F('ep') * (1 - decay/100), gp=F('gp') * (1 - decay/100))
-        decay = DecayLog.objects.create(percentage=decay, time=datetime.now())
-        decay.affected_members.set(members)
-        decay.save()
+        decay_log = DecayLog.objects.create(percentage=decay, time=datetime.now())
+        decay_log.affected_members.set(members)
+        decay_log.save()
+        messages.success(request, "Decay of {0}% slammed!".format(decay))
+    else:
+        messages.error(request, "Something went wrong :(")
     return HttpResponseRedirect(reverse('officers_index'))
 
 
