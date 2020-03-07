@@ -31,9 +31,9 @@
 <body id="page-top">
 
 {% if messages %}
-<div style="position: absolute; top:0px; left:50%; z-index:1000; width:800px; transform:translate(-50%)">
+<div style="position: fixed; top:0px; left:50%; z-index:1000; width:800px; transform:translate(-50%)">
   {% for message in messages %}
-    <div class="alert alert-success fade in alert-dismissible show alert-toast" style="margin-top:18px;">
+    <div class="alert {% if message.level == DEFAULT_MESSAGE_LEVELS.SUCCESS %}alert-success{% elif message.level == DEFAULT_MESSAGE_LEVELS.WARNING %}alert-warning{% elif message.level == DEFAULT_MESSAGE_LEVELS.ERROR%}alert-danger{% endif %} fade in alert-dismissible show alert-toast" style="margin-top:18px;">
       <button type="button" class="close" data-dismiss="alert" aria-label="Close">
         <span aria-hidden="true" style="font-size:20px">×</span>
       </button>

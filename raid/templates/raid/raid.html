@@ -268,7 +268,7 @@
                     {% if user.member.is_officer and not raid.done %}
                       <td>
                         {% if benched_raider.waiting %}
-                        <button type="button" class="btn btn-xs btn-danger" onclick="window.location.href='remove_benched_raider/{{ member.id }}/';">Remove</button>
+                        <button type="button" class="btn btn-xs btn-danger" onclick="window.location.href='remove_benched_raider/{{ benched_raider.id }}/';">Remove</button>
                         {% endif %}
                       </td>
                     {% endif %}

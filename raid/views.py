@@ -47,7 +47,7 @@ def get_raid(request, raid_id):
     
     benched_characters = BenchedRaidCharacter.objects.filter(raid=raid).select_related('character__owner')
     
-    all_characters_query = Character.objects.all()
+    all_characters_query = Character.objects.all().order_by('name')
     raid_characters_query = characters.order_by('character__name')
 
     min_priority = 9999999
@@ -240,7 +240,7 @@ def remove_benched_raider(request, raid_id, raider_id):
     raider = BenchedRaidCharacter.objects.get(id=raider_id, raid=raid)
     raider.end = datetime.now()
     raider.save()
-    messages.success(request, "<strong>{0}</strong> has been removed from the raid.".format(raider.character.name))
+    messages.success(request, "<strong>{0}</strong> has been removed from the raid bench.".format(raider.character.name))
     return HttpResponseRedirect(reverse('raid', args=(raid_id,)))
 
 
@@ -290,11 +290,11 @@ def give_ep(request, raid_id):
 
         if character is None:
             if only_present:
-                messages.success(request, "<strong>{0} EP </strong> has been given to every <strong>currently present</strong> raid member.".format(ep))
+                messages.success(request, "<strong>{0} EP</strong> has been given to every <strong>currently present</strong> raid member.".format(ep))
             else:
-                messages.success(request, "<strong>{0} EP </strong> has been given to <strong>every</strong> raid member.".format(ep))
+                messages.success(request, "<strong>{0} EP</strong> has been given to <strong>every</strong> raid member.".format(ep))
         else:
-            messages.success(request, "<strong>{0} EP </strong> has been given to <strong>{1}</strong>.".format(ep, character.character.name))
+            messages.success(request, "<strong>{0} EP</strong> has been given to <strong>{1}</strong>.".format(ep, character.character.name))
     else:
         messages.error(request, "Something went wrong :(")
     return HttpResponseRedirect(reverse('raid', args=(raid_id,)))
@@ -308,7 +308,10 @@ def add_raiders(request, raid_id):
         character = form.cleaned_data.get('character')
 
         if character is not None:
-            RaidCharacter.objects.create(character=character, raid=raid)
+            obj, created = RaidCharacter.objects.get_or_create(character=character, raid=raid, end__isnull=True)
+            if not created:
+                messages.error(request, "<strong>{0}</strong> is already in this raid.".format(character.name))
+                return HttpResponseRedirect(reverse('raid', args=(raid_id,)))
             messages.success(request, "<strong>{0}</strong> has been added to the raid.".format(character.name))
         else:
             text_members = form.cleaned_data.get('members')
@@ -317,8 +320,17 @@ def add_raiders(request, raid_id):
             text_members_list = [x.capitalize().strip() for x in text_members_list]
 
             characters = Character.objects.filter(name__in=text_members_list)
-            RaidCharacter.objects.bulk_create([RaidCharacter(character=c, raid=raid) for c in characters])
-            messages.success(request, "<strong>{0}</strong> new raiders have been added to the raid.".format(len(text_members_list)))
+
+            count = 0
+            for c in characters:
+                obj, created = RaidCharacter.objects.get_or_create(character=c, raid=raid, end__isnull=True)
+                if not created:
+                    messages.error(request, "<strong>{0}</strong> is already in this raid.".format(c.name))
+                else:
+                    count += 1
+
+            if count > 0:
+                messages.success(request, "<strong>{0}</strong> new raiders have been added to the raid.".format(count))
     else:
         messages.error(request, "Something went wrong :(")
         
@@ -333,15 +345,25 @@ def add_benched_raiders(request, raid_id):
         character = form.cleaned_data.get('character')
 
         if character is not None:
-            BenchedRaidCharacter.objects.create(character=character, raid=raid)
+            obj, created = BenchedRaidCharacter.objects.get_or_create(character=character, raid=raid, end__isnull=True)
+            if not created:
+                messages.error(request, "<strong>{0}</strong> is already in this raid.".format(character.name))
+                return HttpResponseRedirect(reverse('raid', args=(raid_id,)))
             messages.success(request, "<strong>{0}</strong> has been added to the raid.".format(character.name))
         else:
             text_members = form.cleaned_data.get('members')
             text_members_list = text_members.splitlines()
             text_members_list = list(dict.fromkeys(text_members_list)) # removes duplicates
             characters = Character.objects.filter(name__in=text_members_list)
-            BenchedRaidCharacter.objects.bulk_create([BenchedRaidCharacter(character=c, raid=raid) for c in characters])
-            messages.success(request, "<strong>{0}</strong> new raiders have been added to the raid (benched).".format(len(text_members_list)))
+            count = 0
+            for c in characters:
+                obj, created = BenchedRaidCharacter.objects.get_or_create(character=c, raid=raid, end__isnull=True)
+                if not created:
+                    messages.error(request, "<strong>{0}</strong> is already in this raid.".format(c.name))
+                else:
+                    count += 1
+            if count > 0:
+                messages.success(request, "<strong>{0}</strong> new raiders have been added to the raid (benched).".format(count))
     else:
         messages.error(request, "Something went wrong :(")
     

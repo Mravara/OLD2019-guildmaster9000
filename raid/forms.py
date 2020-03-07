@@ -27,7 +27,7 @@ class NewRaidForm(forms.Form):
 
 class GiveItemForm(forms.Form):
     character = forms.ModelChoiceField(
-        queryset=RaidCharacter.objects.all(),
+        queryset=RaidCharacter.objects.all().order_by('character__name'),
         label="",
         required=True
         )
@@ -39,16 +39,16 @@ class GiveItemForm(forms.Form):
 
 
 class GiveEPForm(forms.Form):
-    character = forms.ModelChoiceField(queryset=RaidCharacter.objects.all(), required=False)
+    character = forms.ModelChoiceField(queryset=RaidCharacter.objects.all().order_by('character__name'), required=False)
     only_present = forms.BooleanField(required=False)
     ep = forms.IntegerField(required=True)
 
 
 class AddRaidersForm(forms.Form):
-    character = forms.ModelChoiceField(queryset=Character.objects.all(), required=False)
+    character = forms.ModelChoiceField(queryset=Character.objects.all().order_by('name'), required=False)
     members = forms.CharField(required=False, widget=forms.Textarea)
 
 
 class AddBenchedRaidersForm(forms.Form):
-    character = forms.ModelChoiceField(queryset=Character.objects.all(), required=False)
+    character = forms.ModelChoiceField(queryset=Character.objects.all().order_by('name'), required=False)
     members = forms.CharField(required=False, widget=forms.Textarea)
