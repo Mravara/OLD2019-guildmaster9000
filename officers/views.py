@@ -7,6 +7,7 @@ from members.models import Member, Character, DecayLog
 from guildmaster9000.decorators import *
 from officers.forms import DecayForm, NewMemberForm
 from django.contrib.auth.models import User
+from django.contrib import messages
 
 
 @officers('/')
@@ -36,7 +37,6 @@ def decay_epgp(request):
 @officers('/')
 def new_member(request):
     form = NewMemberForm(request.POST)
-    print(form.is_valid())
     if form.is_valid():
         username = form.cleaned_data.get('username')
         password = form.cleaned_data.get('password')
@@ -59,12 +59,8 @@ def new_member(request):
             owner=member,
             character_class=character_class,
         )
-        user.save()
-        member.save()
-        character.save()
-        print(user)
-        print(member)
-        print(character)
-
+        messages.success(request, "Member {0} created. Good job.".format(character_name))
+    else:
+        messages.error(request, "Something went wrong :(")
 
     return HttpResponseRedirect(reverse('officers_index'))

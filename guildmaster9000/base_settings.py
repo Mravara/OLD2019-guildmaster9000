@@ -165,3 +165,6 @@ LOGIN_URL = '/accounts/login/'
 LOGIN_EXEMPT_URLS = (
     r'^accounts/login/$',
 )
+
+# message storage https://stackoverflow.com/questions/14999134/how-to-pass-a-message-from-httpresponseredirect-in-django
+MESSAGE_STORAGE = 'django.contrib.messages.storage.session.SessionStorage'

@@ -30,6 +30,32 @@
 
 <body id="page-top">
 
+  {% if messages %}
+    {% for message in messages %}
+      <div class="alert alert-success show fade position-absolute alert-toast" role="alert" style="z-index:1000; left:50%; transform: translateX(-50%); -webkit-transform: translateX(-50%); top:3px;">
+        <button type="button" class="close position-absolute" style="position:absolute; right:0;" data-dismiss="alert" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+        {{ message  }}
+      </div>
+    {% endfor %}
+  {% endif %}
+
+  <div class="container-fluid position-absolute" style="z-index:1000; top:3px; left:200px;">
+    <div class="alert alert-success show fade alert-toast" role="alert" style="display: inline-block;">
+      <button type="button" class="close" data-dismiss="alert" aria-label="Close" style="margin-left:20px;">
+        <span aria-hidden="true">&times;</span>
+      </button>
+      123 jshakjh djahs djkahjskdh kashkd 
+    </div>
+    <div class="alert alert-success show fade alert-toast" role="alert" style="display: inline-block;">
+      <button type="button" class="close" data-dismiss="alert" aria-label="Close" style="margin-left:20px;">
+        <span aria-hidden="true">&times;</span>
+      </button>
+      123
+    </div>
+  </div>
+
   <nav class="navbar navbar-expand navbar-dark bg-dark static-top">
 
     <a class="navbar-brand mr-1" href="/">PRIMAL</a>
@@ -264,6 +290,13 @@
     table.on('draw', function () {
       $WowheadPower.refreshLinks();
     });
+
+    function autoCloseAlert(selector, delay) {
+      var alert = $(selector).alert();
+      window.setTimeout(function() { alert.alert('close') }, delay);
+    }
+
+    autoCloseAlert(".alert-toast", 5000);
   </script>
 
 </body>
