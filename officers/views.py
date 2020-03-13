@@ -63,6 +63,13 @@ def new_member(request):
             owner=member,
             character_class=character_class,
         )
+
+        Log(
+            writer=request.user.member, 
+            target=character, 
+            action=Log.Action.NEW_MEMBER
+        )
+
         messages.success(request, "Member {0} created. Good job.".format(character_name))
     else:
         messages.error(request, "Something went wrong :(")

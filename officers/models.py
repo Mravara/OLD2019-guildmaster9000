@@ -15,9 +15,9 @@ class Log(models.Model):
         DECAY = 7
 
     writer = models.ForeignKey('members.Member', related_name='writer', on_delete=models.PROTECT)
-    target = models.ForeignKey('members.Member', related_name='target',  on_delete=models.PROTECT)
+    target = models.ForeignKey('members.Character', related_name='target',  on_delete=models.PROTECT)
     action = models.IntegerField(choices=Action.choices)
     raid = models.ForeignKey('raid.Raid', related_name='raid', on_delete=models.PROTECT, null=True, blank=True)
     item = models.ForeignKey('items.Item', related_name='item', on_delete=models.PROTECT, null=True, blank=True)
-    value = models.CharField(max_length=128)
+    value = models.CharField(max_length=128, blank=True, null=True)
     timestamp = models.DateTimeField(default=datetime.now)
