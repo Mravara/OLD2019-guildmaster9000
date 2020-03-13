@@ -3,7 +3,7 @@ from django.urls import reverse
 from django.http import HttpResponse, HttpResponseRedirect
 from django.db.models import F
 from django.utils.timezone import datetime
-from members.models import Member, Character, DecayLog
+from members.models import Member, Character
 from officers.models import Log
 from guildmaster9000.decorators import *
 from officers.forms import DecayForm, NewMemberForm
@@ -29,9 +29,13 @@ def decay_epgp(request):
         decay = form.cleaned_data.get('decay')
         members = Member.objects.all()
         members.update(ep=F('ep') * (1 - decay/100), gp=F('gp') * (1 - decay/100))
-        decay_log = DecayLog.objects.create(percentage=decay, time=datetime.now())
-        decay_log.affected_members.set(members)
-        decay_log.save()
+        for m in members:
+            Log.objects.create(
+                writer=request.user.member,
+                target_member=m,
+                action=Log.Action.DECAY,
+                value='{0}'.format(decay)
+            )
         messages.success(request, "Decay of {0}% slammed!".format(decay))
     else:
         messages.error(request, "Something went wrong :(")
@@ -50,6 +54,8 @@ def new_member(request):
         starting_ep = form.cleaned_data.get('starting_ep')
         starting_gp = form.cleaned_data.get('starting_gp')
         user = User(username=username, password=password)
+        user.save()
+
         member = Member(
             user=user, 
             discord_id=discord_id, 
@@ -58,17 +64,22 @@ def new_member(request):
             ep=starting_ep, 
             gp=starting_gp
         )
+        member.save()
+
         character = Character(
             name=character_name,
             owner=member,
             character_class=character_class,
         )
+        character.save()
 
-        Log(
+        log = Log(
             writer=request.user.member, 
             target=character, 
+            target_member=member, 
             action=Log.Action.NEW_MEMBER
         )
+        log.save()
 
         messages.success(request, "Member {0} created. Good job.".format(character_name))
     else:

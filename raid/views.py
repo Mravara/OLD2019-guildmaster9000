@@ -11,11 +11,12 @@ import requests
 from guildmaster9000.decorators import *
 from itertools import chain
 
-from members.models import Member, Character, EPLog
+from members.models import Member, Character
 from raid.models import Raid, RaidCharacter, BenchedRaidCharacter
 from loot.models import Loot
 from items.models import Item, ItemInfo
 from dungeons.models import Dungeon
+from officers.models import Log
 from raid.forms import NewRaidForm, GiveItemForm, GiveEPForm, AddRaidersForm, AddBenchedRaidersForm
 
 
@@ -100,6 +101,12 @@ def new_raid(request):
             raid = Raid(dungeon=dung, leader=leader)
             raid.save()
 
+            Log.objects.create(
+                writer=request.user.member,
+                action=Log.Action.CREATE_RAID,
+                raid=raid
+            )
+
             text_members = form.cleaned_data.get('members')
             text_members_list = text_members.splitlines()
             text_members_list.append('Primalbank')
@@ -181,6 +188,17 @@ def give_item(request, raid_id):
             loot.save()
             character.character.owner.gp = F('gp') + loot.gp
             character.character.owner.save()
+
+            Log.objects.create(
+                writer=request.user.member,
+                target=character.character,
+                target_member=character.character.owner,
+                action=Log.Action.GIVE_LOOT,
+                raid=raid,
+                item=item,
+                value='Price Percentage: {0}, GP: {1}, Comment: {2}'.format(price_percentage, loot.gp, comment)
+            )
+
             messages.success(request, "Item <strong>{0}</strong> given to <strong>{1}</strong> for <strong>{2}%</strong> of the price.".format(item.name, character.character.name, price_percentage))
         return HttpResponseRedirect(reverse('raid', args=(raid_id,)))
 
@@ -195,6 +213,14 @@ def complete_raid(request, raid_id):
         RaidCharacter.objects.filter(raid=raid, end=None).update(closed=True, end=datetime.now())
         BenchedRaidCharacter.objects.filter(raid=raid, end=None).update(closed=True, end=datetime.now())
     raid.save()
+
+    Log.objects.create(
+        writer=request.user.member,
+        action=Log.Action.END_RAID,
+        raid=raid,
+        value='complete'
+    )
+
     return HttpResponseRedirect(reverse('raid', args=(raid_id,)))
 
 
@@ -208,6 +234,14 @@ def pause_raid(request, raid_id):
         RaidCharacter.objects.filter(raid=raid, end=None).update(closed=True, end=datetime.now())
         BenchedRaidCharacter.objects.filter(raid=raid, end=None).update(closed=True, end=datetime.now())
     raid.save()
+
+    Log.objects.create(
+        writer=request.user.member,
+        action=Log.Action.END_RAID,
+        raid=raid,
+        value='pause'
+    )
+
     return HttpResponseRedirect(reverse('raid', args=(raid_id,)))
 
 
@@ -221,6 +255,14 @@ def fail_raid(request, raid_id):
         RaidCharacter.objects.filter(raid=raid, end=None).update(closed=True, end=datetime.now())
         BenchedRaidCharacter.objects.filter(raid=raid, end=None).update(closed=True, end=datetime.now())
     raid.save()
+
+    Log.objects.create(
+        writer=request.user.member,
+        action=Log.Action.END_RAID,
+        raid=raid,
+        value='fail'
+    )
+
     return HttpResponseRedirect(reverse('raid', args=(raid_id,)))
 
 
@@ -230,6 +272,15 @@ def remove_raider(request, raid_id, raider_id):
     raider = RaidCharacter.objects.get(id=raider_id, raid=raid)
     raider.end = datetime.now()
     raider.save()
+
+    Log.objects.create(
+        writer=request.user.member, 
+        target=raider.character, 
+        target_member=raider.character.owner, 
+        action=Log.Action.REMOVE_FROM_RAID,
+        raid=raid
+    )
+
     messages.success(request, "<strong>{0}</strong> has been removed from the raid.".format(raider.character.name))
     return HttpResponseRedirect(reverse('raid', args=(raid_id,)))
 
@@ -240,6 +291,16 @@ def remove_benched_raider(request, raid_id, raider_id):
     raider = BenchedRaidCharacter.objects.get(id=raider_id, raid=raid)
     raider.end = datetime.now()
     raider.save()
+
+    Log.objects.create(
+        writer=request.user.member, 
+        target=raider.character, 
+        target_member=raider.character.owner, 
+        action=Log.Action.REMOVE_FROM_RAID,
+        raid=raid,
+        value="bench"
+    )
+
     messages.success(request, "<strong>{0}</strong> has been removed from the raid bench.".format(raider.character.name))
     return HttpResponseRedirect(reverse('raid', args=(raid_id,)))
 
@@ -251,6 +312,16 @@ def delete_loot(request, raid_id, loot_id):
     loot.character.owner.save()
     loot.delete()
     item_name = loot.item.name
+
+    Log.objects.create(
+        writer=request.user.member, 
+        target=loot.character, 
+        target_member=loot.character.owner, 
+        action=Log.Action.DELETE_LOOT,
+        raid=loot.raid,
+        value=str(-loot.gp)
+    )
+
     messages.success(request, "<strong>{0}</strong> has been deleted from the loot table.".format(item_name))
     return HttpResponseRedirect(reverse('raid', args=(raid_id,)))
 
@@ -269,6 +340,14 @@ def give_ep(request, raid_id):
             character.character.owner.save()
             character.earned_ep = F('earned_ep') + ep
             character.save()
+            Log.objects.create(
+                writer=request.user.member, 
+                target=character.character, 
+                target_member=character.character.owner, 
+                action=Log.Action.GIVE_EP,
+                raid=raid,
+                value=ep
+            )
         else:
             raiders = RaidCharacter.objects.filter(raid=raid).select_related('character__owner')
             if only_present:
@@ -277,6 +356,14 @@ def give_ep(request, raid_id):
             for raider in raiders:
                 raider.character.owner.ep = F('ep') + ep
                 raider.character.owner.save()
+                Log.objects.create(
+                    writer=request.user.member, 
+                    target=raider.character, 
+                    target_member=raider.character.owner, 
+                    action=Log.Action.GIVE_EP,
+                    raid=raid,
+                    value=ep
+                )
             
             benched_raiders = BenchedRaidCharacter.objects.filter(raid=raid).select_related('character__owner')
             if only_present:
@@ -285,8 +372,14 @@ def give_ep(request, raid_id):
             for benched_raider in benched_raiders:
                 benched_raider.character.owner.ep = F('ep') + ep
                 benched_raider.character.owner.save()
-        
-        EPLog.objects.create(raid=raid, amount=ep)
+                Log.objects.create(
+                    writer=request.user.member, 
+                    target=benched_raider.character, 
+                    target_member=benched_raider.character.owner, 
+                    action=Log.Action.GIVE_EP,
+                    raid=raid,
+                    value=ep
+                )
 
         if character is None:
             if only_present:
@@ -309,9 +402,19 @@ def add_raiders(request, raid_id):
 
         if character is not None:
             obj, created = RaidCharacter.objects.get_or_create(character=character, raid=raid, end__isnull=True)
+            
             if not created:
                 messages.error(request, "<strong>{0}</strong> is already in this raid.".format(character.name))
                 return HttpResponseRedirect(reverse('raid', args=(raid_id,)))
+
+            Log.objects.create(
+                    writer=request.user.member, 
+                    target=character, 
+                    target_member=character.owner, 
+                    action=Log.Action.ADD_TO_RAID,
+                    raid=raid
+                )
+
             messages.success(request, "<strong>{0}</strong> has been added to the raid.".format(character.name))
         else:
             text_members = form.cleaned_data.get('members')
@@ -328,6 +431,14 @@ def add_raiders(request, raid_id):
                     messages.error(request, "<strong>{0}</strong> is already in this raid.".format(c.name))
                 else:
                     count += 1
+
+                    Log.objects.create(
+                        writer=request.user.member, 
+                        target=c, 
+                        target_member=c.owner, 
+                        action=Log.Action.ADD_TO_RAID,
+                        raid=raid
+                    )
 
             if count > 0:
                 messages.success(request, "<strong>{0}</strong> new raiders have been added to the raid.".format(count))
@@ -349,6 +460,16 @@ def add_benched_raiders(request, raid_id):
             if not created:
                 messages.error(request, "<strong>{0}</strong> is already in this raid.".format(character.name))
                 return HttpResponseRedirect(reverse('raid', args=(raid_id,)))
+
+            Log.objects.create(
+                writer=request.user.member, 
+                target=character, 
+                target_member=character.owner, 
+                action=Log.Action.ADD_TO_RAID,
+                raid=raid,
+                value='bench'
+            )
+
             messages.success(request, "<strong>{0}</strong> has been added to the raid.".format(character.name))
         else:
             text_members = form.cleaned_data.get('members')
@@ -362,6 +483,16 @@ def add_benched_raiders(request, raid_id):
                     messages.error(request, "<strong>{0}</strong> is already in this raid.".format(c.name))
                 else:
                     count += 1
+
+                    Log.objects.create(
+                        writer=request.user.member, 
+                        target=c, 
+                        target_member=c.owner, 
+                        action=Log.Action.ADD_TO_RAID,
+                        raid=raid,
+                        value='bench'
+                    )
+
             if count > 0:
                 messages.success(request, "<strong>{0}</strong> new raiders have been added to the raid (benched).".format(count))
     else:
@@ -392,5 +523,12 @@ def unlock_raid(request, raid_id):
     raid = get_object_or_404(Raid, pk=raid_id)
     raid.state = Raid.State.EDITING
     raid.save()
+
+    Log.objects.create(
+        writer=request.user.member, 
+        action=Log.Action.UNLOCK_RAID,
+        raid=raid
+    )
+
     return HttpResponseRedirect(reverse('raid', args=(raid_id,)))
 

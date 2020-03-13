@@ -112,23 +112,3 @@ class Character(models.Model):
             return "#C79C6E60"
         else:
             return "#FFFFFF"
-
-
-
-class DecayLog(models.Model):
-    affected_members = models.ManyToManyField('members.Member', related_name='decays')
-    percentage = models.FloatField()
-    time = models.DateTimeField(default=timezone.now)
-
-    def __str__(self):
-        return str(self.time)
-
-
-
-class EPLog(models.Model):
-    raid = models.ForeignKey('raid.Raid', on_delete=models.CASCADE)
-    amount = models.FloatField()
-    time = models.DateTimeField(default=timezone.now)
-
-    def __str__(self):
-        return str(self.time)
