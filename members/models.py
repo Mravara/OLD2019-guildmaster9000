@@ -72,6 +72,27 @@ class Character(models.Model):
         return self.name
 
     @property
+    def class_string(self):
+        if self.character_class == 0:
+            return "Druid"
+        elif self.character_class == 1:
+            return "Hunter"
+        elif self.character_class == 2:
+            return "Mage"
+        elif self.character_class == 3:
+            return "Priest"
+        elif self.character_class == 4:
+            return "Rogue"
+        elif self.character_class == 5:
+            return "Shaman"
+        elif self.character_class == 6:
+            return "Warlock"
+        elif self.character_class == 7:
+            return "Warrior"
+        else:
+            return "Ne znam klasu :("
+
+    @property
     def class_color(self):
         if self.character_class == Character.MemberClass.DRUID:
             return "#FF7D0A60"

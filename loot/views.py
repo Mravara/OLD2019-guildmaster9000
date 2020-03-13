@@ -32,7 +32,7 @@ def get_page(request):
             l.raid.dungeon.name, 
             l.character.owner.name, 
             l.character.name, 
-            l.character.character_class, 
+            l.character.class_string, 
             "<a href='https://classic.wowhead.com/item={}' class='q1'>{}</a>".format(l.item.wow_id, l.item.name),
             round(l.gp, 2),
             l.timestamp.strftime("%Y-%m-%d %H:%Mh")

@@ -17,5 +17,5 @@ class Loot(models.Model):
 
     @property
     def gp(self):
-        return ((self.item.get_item_value**2) * 0.04 * self.item_info.slot_value) * (self.price_percentage / 100)
+        return (((self.item.get_item_value**2) * 0.04 * self.item_info.slot_value) * self.raid.dungeon.gp_modifier) * (self.price_percentage / 100)
 
