@@ -1,0 +1,48 @@
+{% extends 'index.html' %}
+
+{% block content %}
+
+{% load crispy_forms_tags %}
+
+<!-- Logs Table -->
+        <div class="card mb-3">
+          <div class="card-header">
+            <i class="fas fa-gavel"></i>
+            <b>Logs</b>
+            </div>
+          <div class="card-body">
+            <div class="table-responsive">
+              <table class="table table-bordered table-striped table-sm table-xs" id="dataTable" width="100%" cellspacing="0">
+                <thead>
+                  <tr>
+                    <th>Item</th>
+                    <th>Type</th>
+                    <th>Given To</th>
+                    <th>GP</th>
+                    <th>Price</th>
+                    <th>Time</th>
+                    <th>Given By</th>
+                  </tr>
+                </thead>
+                <tfoot>
+                  <tr>
+                    <th>Item</th>
+                    <th>Type</th>
+                    <th>Given To</th>
+                    <th>GP</th>
+                    <th>Price</th>
+                    <th>Time</th>
+                    <th>Given By</th>
+                  </tr>
+                </tfoot>
+                <tbody>
+                
+                </tbody>
+              </table>
+            </div>
+          </div>
+          {% comment %} <div class="card-footer"><span class="badge badge-success">Success</span> <span class="badge badge-warning">Paused</span> <span class="badge badge-danger">Failed</span></div> {% endcomment %}
+        </div>
+<!-- End of Logs Table -->
+{% endblock %}
+

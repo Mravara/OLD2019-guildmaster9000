@@ -4,6 +4,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.db.models import F
 from django.utils.timezone import datetime
 from members.models import Member, Character, DecayLog
+from officers.models import Log
 from guildmaster9000.decorators import *
 from officers.forms import DecayForm, NewMemberForm
 from django.contrib.auth.models import User
@@ -67,3 +68,8 @@ def new_member(request):
         messages.error(request, "Something went wrong :(")
 
     return HttpResponseRedirect(reverse('officers_index'))
+
+
+@officers('/')
+def logs(request):
+    pass
