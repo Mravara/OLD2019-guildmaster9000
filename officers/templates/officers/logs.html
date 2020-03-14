@@ -12,27 +12,29 @@
             </div>
           <div class="card-body">
             <div class="table-responsive">
-              <table class="table table-bordered table-striped table-sm table-xs" id="dataTable" width="100%" cellspacing="0">
+              <table class="table table-bordered table-striped table-sm table-xs" id="dataTable0" width="100%" cellspacing="0">
                 <thead>
                   <tr>
+                    <th>Writer</th>
+                    <th>Target</th>
+                    <th>Target Owner</th>
+                    <th>Action</th>
+                    <th>Raid</th>
                     <th>Item</th>
-                    <th>Type</th>
-                    <th>Given To</th>
-                    <th>GP</th>
-                    <th>Price</th>
-                    <th>Time</th>
-                    <th>Given By</th>
+                    <th>Value</th>
+                    <th>Timestamp</th>
                   </tr>
                 </thead>
                 <tfoot>
                   <tr>
+                    <th>Writer</th>
+                    <th>Target</th>
+                    <th>Target Owner</th>
+                    <th>Action</th>
+                    <th>Raid</th>
                     <th>Item</th>
-                    <th>Type</th>
-                    <th>Given To</th>
-                    <th>GP</th>
-                    <th>Price</th>
-                    <th>Time</th>
-                    <th>Given By</th>
+                    <th>Value</th>
+                    <th>Timestamp</th>
                   </tr>
                 </tfoot>
                 <tbody>
@@ -46,3 +48,22 @@
 <!-- End of Logs Table -->
 {% endblock %}
 
+{% block scripts %}
+
+  <script charset="UTF-8">
+
+    var table = $('#dataTable0').DataTable({
+      "order": [[ 6, "desc" ]],
+      "lengthMenu": [[10, 25, 50], [10, 25, 50]],
+      "processing": true,
+      "serverSide": true,
+      "ajax": "page/",
+    });
+
+    table.on('draw', function () {
+      $WowheadPower.refreshLinks();
+    });
+
+  </script>
+
+{% endblock %}
