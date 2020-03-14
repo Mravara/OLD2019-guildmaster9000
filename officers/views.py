@@ -117,7 +117,7 @@ def get_page(request):
             l.writer.name, 
             "" if l.target == None else l.target.name, 
             "" if l.target == None else l.target.owner.name, 
-            l.action, 
+            l.string_action, 
             "" if l.raid == None else l.raid.dungeon.name, 
             "" if l.item == None else "<a href='https://classic.wowhead.com/item={}' class='q1'>{}</a>".format(l.item.wow_id, l.item.name),
             l.value, 

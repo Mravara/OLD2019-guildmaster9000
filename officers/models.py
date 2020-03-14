@@ -24,3 +24,27 @@ class Log(models.Model):
     item = models.ForeignKey('items.Item', related_name='item', on_delete=models.PROTECT, null=True, blank=True)
     value = models.CharField(max_length=128, blank=True, null=True)
     timestamp = models.DateTimeField(default=datetime.now)
+
+    @property
+    def string_action(self):
+        if self.action == 0:
+            return 'New Member'
+        elif self.action == 1:
+            return 'Give Loot'
+        elif self.action == 2:
+            return 'Give EP'
+        elif self.action == 3:
+            return 'Create Raid'
+        elif self.action == 4:
+            return 'End Raid'
+        elif self.action == 5:
+            return 'Add To Raid'
+        elif self.action == 6:
+            return 'Remove From Raid'
+        elif self.action == 7:
+            return 'Decay'
+        elif self.action == 8:
+            return 'Unlock Raid'
+        elif self.action == 9:
+            return 'Delete Loot'
+        
