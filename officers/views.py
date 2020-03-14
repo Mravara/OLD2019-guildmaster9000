@@ -134,4 +134,4 @@ def get_page(request):
         'data': columns,
     }
     
-    return JsonResponse(data)
+    #return JsonResponse(data)
