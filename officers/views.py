@@ -95,6 +95,7 @@ def logs(request):
     context = {
         'logs': logs,
         'breadcrumbs': [
+            'Officers',
             'Logs',
         ]
     }
