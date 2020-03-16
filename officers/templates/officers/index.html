@@ -1,5 +1,21 @@
 {% extends 'index.html' %}
 
+{% block breadcrumbs %}
+        <!-- Breadcrumbs-->
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item">
+            <a href="/officers/">Officers</a>
+          </li>
+          {% for b in breadcrumbs %}
+          {% if not forloop.last %}
+            <li class="breadcrumb-item"><a href="/{{ b|lower }}">{{ b }}</a></li>
+          {% else %}
+            <li class="breadcrumb-item "><a href="{{ request.path }}">{{ b }}</a></li>
+          {% endif %}
+          {% endfor %}
+        </ol>
+{% endblock %}
+
 {% block content %}
 
 {% load crispy_forms_tags %}
