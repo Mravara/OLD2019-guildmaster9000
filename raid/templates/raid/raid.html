@@ -152,6 +152,7 @@
                 <thead>
                   <tr>
                     <th>Character</th>
+                    <th>Rank</th>
                     <th>Priority</th>
                     <th>EP</th>
                     <th>GP</th>
@@ -166,6 +167,7 @@
                 <tfoot>
                   <tr>
                     <th>Character</th>
+                    <th>Rank</th>
                     <th>Priority</th>
                     <th>EP</th>
                     <th>GP</th>
@@ -183,6 +185,7 @@
                 {% for raider in raid_characters %}
                   <tr class="{% if not raid.done and raider.done or raid.done and not raider.closed %}table-danger{% endif %} {% if raid.done and raider.closed %}table-success{% endif %}">
                     <td style="background-color: {{ raider.character.class_color }};"><img width="20px" class="mr-1" src="{% static 'classes/' %}{{ raider.character.get_character_class_display }}.png" class="rounded float-left" alt=""> {{ raider.character.name }}</td>
+                    <td>{{ raider.character.owner.rank_display }}</td>
                     <td  style="background-color: {% call_method raider 'get_priority_color' min_priority max_priority raider.character.owner.priority %};">{{ raider.character.owner.priority|floatformat:2 }}</td>
                     {% comment %} <td><img width="20px" class="mr-1" src="{% static 'classes/' %}{{ raider.character.get_character_class_display }}.png" class="rounded float-left" alt=""> {{ raider.character.get_character_class_display }}</td> {% endcomment %}
                     <td>{{ raider.character.owner.ep|floatformat:2 }}</td>

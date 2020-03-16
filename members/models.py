@@ -14,7 +14,7 @@ class Member(models.Model):
         RAIDER = 5
         RAID_LEADER = 10
         OFFICER = 100
-        ADMIN = 1000
+        GUILD_MASTER = 1000
 
 
     user = models.OneToOneField(User, related_name='member', on_delete=models.CASCADE, blank=True, null=True)
@@ -47,6 +47,19 @@ class Member(models.Model):
         for l in loot:
             gp += l.gp
         return gp
+
+    @property
+    def rank_display(self):
+        if self.rank == self.Rank.MEMBER:
+            return "Member"
+        elif self.rank == self.Rank.OFFICER:
+            return "Officer"
+        elif self.rank == self.Rank.RAID_LEADER:
+            return "Raid Leader"
+        elif self.rank == self.Rank.RAIDER:
+            return "Raider"
+        elif self.rank == self.Rank.GUILD_MASTER:
+            return "Guild Master"
 
 
 
