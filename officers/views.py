@@ -108,16 +108,20 @@ def get_page(request):
     start = int(request.GET.get('start'))
     end = start + int(request.GET.get('length'))
     search = request.GET.get('search[value]')
+    # order_column = request.GET.get('order[0][column]')
+    # order_direction = request.GET.get('order[0][dir]')
 
-    all_logs = Log.objects.all()
+    all_logs = Log.objects.all().order_by('-timestamp')
 
-    logs = all_logs.filter(Q(writer__name__icontains=search) | Q(target__name__icontains=search))[start:end]
+    logs = all_logs.filter(Q(writer__name__icontains=search) | 
+    Q(target__name__icontains=search) | 
+    Q(target_member__name__icontains=search))[start:end]
 
     for l in logs:
         row = [
             l.writer.name, 
             "" if l.target == None else l.target.name, 
-            "" if l.target == None else l.target.owner.name, 
+            "" if l.target_member == None else l.target_member.name, 
             l.string_action, 
             "" if l.raid == None else l.raid.dungeon.name, 
             "" if l.item == None else "<a href='https://classic.wowhead.com/item={}' class='q1'>{}</a>".format(l.item.wow_id, l.item.name),
