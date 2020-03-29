@@ -15,6 +15,9 @@
                   <th>EP</th>
                   <th>GP</th>
                   <th>Rank</th>
+                  {% if user.member.is_officer %}
+                  <th>Comment</th>
+                  {% endif %}
                 </tr>
               </thead>
               <tfoot>
@@ -24,6 +27,9 @@
                   <th>EP</th>
                   <th>GP</th>
                   <th>Rank</th>
+                  {% if user.member.is_officer %}
+                  <th>Comment</th>
+                  {% endif %}
                 </tr>
               </tfoot>
               <tbody>
@@ -35,6 +41,9 @@
                   <td>{{ member.ep|floatformat:2 }}</td>
                   <td>{{ member.gp|floatformat:2 }}</td>
                   <td>{{ member.get_rank_display }}</td>
+                  {% if user.member.is_officer %}
+                  <td>{{ member.comment }}</td>
+                  {% endif %}
                 </tr>
               {% endfor %}
               </tbody>
