@@ -22,8 +22,8 @@ class Member(models.Model):
     name = models.CharField(max_length=64)
     rank = models.IntegerField(choices=Rank.choices, default=Rank.MEMBER, null=True)
     joined = models.DateTimeField(default=timezone.now)
-    ep = models.IntegerField(default=0)
-    gp = models.IntegerField(default=0)
+    ep = models.FloatField(default=0)
+    gp = models.FloatField(default=0)
 
     def __str__(self):
         return self.name
