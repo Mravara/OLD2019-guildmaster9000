@@ -24,7 +24,7 @@ class Member(models.Model):
     joined = models.DateTimeField(default=timezone.now)
     ep = models.FloatField(default=0)
     gp = models.FloatField(default=0)
-    comment = models.CharField(max_length=256, null=True, blank=True)
+    comment = models.CharField(max_length=256, null=True, blank=True, default="")
 
     def __str__(self):
         return self.name

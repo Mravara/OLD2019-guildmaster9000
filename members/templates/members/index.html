@@ -42,7 +42,7 @@
                   <td>{{ member.gp|floatformat:2 }}</td>
                   <td>{{ member.get_rank_display }}</td>
                   {% if user.member.is_officer %}
-                  <td>{{ member.comment }}</td>
+                  <td>{{ member.comment|default:"" }}</td>
                   {% endif %}
                 </tr>
               {% endfor %}
