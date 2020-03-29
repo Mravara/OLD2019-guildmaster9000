@@ -11,19 +11,19 @@
               <thead>
                 <tr>
                   <th>Name</th>
-                  <th>Rank</th>
+                  <th>Priority</th>
                   <th>EP</th>
                   <th>GP</th>
-                  <th>Priority</th>
+                  <th>Rank</th>
                 </tr>
               </thead>
               <tfoot>
                 <tr>
                   <th>Name</th>
-                  <th>Rank</th>
+                  <th>Priority</th>
                   <th>EP</th>
                   <th>GP</th>
-                  <th>Priority</th>
+                  <th>Rank</th>
                 </tr>
               </tfoot>
               <tbody>
@@ -31,10 +31,10 @@
                 <tr>
                   <td><a href="{% url 'member' member.id %}">{{ member.name }}</a></td>
                   {% comment %} <td><img width="20px" class="mr-1" src="{% static 'classes/' %}{{ member.get_member_class_display }}.png" class="rounded float-left" alt="">  {{ member.get_member_class_display }}</td> {% endcomment %}
-                  <td>{{ member.get_rank_display }}</td>
+                  <td>{{ member.priority|floatformat:2 }}</td>
                   <td>{{ member.ep|floatformat:2 }}</td>
                   <td>{{ member.gp|floatformat:2 }}</td>
-                  <td>{{ member.priority|floatformat:2 }}</td>
+                  <td>{{ member.get_rank_display }}</td>
                 </tr>
               {% endfor %}
               </tbody>
