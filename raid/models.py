@@ -11,11 +11,12 @@ class Raid(models.Model):
         FAILED = 2
         SUCCESS = 3
         EDITING = 4
+        READY = 5
 
     dungeon = models.ForeignKey('dungeons.Dungeon', on_delete=models.PROTECT)
     leader = models.ForeignKey('members.Member', related_name='leader', on_delete=models.PROTECT)
-    state = models.IntegerField(choices=State.choices, default=State.IN_PROGRESS)
-    start = models.DateTimeField(default=datetime.now)
+    state = models.IntegerField(choices=State.choices, default=State.READY)
+    start = models.DateTimeField(null=True, blank=True)
     end = models.DateTimeField(null=True, blank=True)
 
     def __str__(self):
@@ -23,11 +24,19 @@ class Raid(models.Model):
 
     @property
     def done(self):
-        return self.state != Raid.State.IN_PROGRESS
+        return self.state != Raid.State.IN_PROGRESS and self.state != Raid.State.READY
 
     @property
     def editing(self):
         return self.state == Raid.State.EDITING
+
+    @property
+    def is_ready(self):
+        return self.state == Raid.State.READY
+
+    @property
+    def is_in_progress(self):
+        return self.state == Raid.State.IN_PROGRESS
 
 
 class RaidCharacter(models.Model):
@@ -48,18 +57,6 @@ class RaidCharacter(models.Model):
     @property
     def closed_raid(self):
         return self.closed
-
-    def get_priority_color(self, minp, maxp, currentp):
-        priority = round(self.remap(currentp, minp, maxp, 0, 99))
-        str_prio = ""
-        if priority < 10:
-            str_prio = "0{0}".format(priority)
-        else:
-            str_prio = str(priority)
-        return "#0000ff{}".format(str_prio)
-
-    def remap(self, value, from1, to1, from2, to2):
-        return (value - from1) / (to1 - from1) * (to2 - from2) + from2;
 
 
 class BenchedRaidCharacter(models.Model):

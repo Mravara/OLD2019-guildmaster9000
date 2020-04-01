@@ -1,5 +1,7 @@
 {% extends 'index.html' %}
 {% load static %}
+{% load call_method %}
+
 {% block content %}
 <!-- DataTables Example -->
         <div class="card mb-3">
@@ -37,7 +39,7 @@
                 <tr>
                   <td><a href="{% url 'member' member.id %}">{{ member.name }}</a></td>
                   {% comment %} <td><img width="20px" class="mr-1" src="{% static 'classes/' %}{{ member.get_member_class_display }}.png" class="rounded float-left" alt="">  {{ member.get_member_class_display }}</td> {% endcomment %}
-                  <td>{{ member.priority|floatformat:2 }}</td>
+                  <td style="background-color: {% call_method member 'get_priority_color' min_priority max_priority member.priority %};">{{ member.priority|floatformat:2 }}</td>
                   <td>{{ member.ep|floatformat:2 }}</td>
                   <td>{{ member.gp|floatformat:2 }}</td>
                   <td>{{ member.get_rank_display }}</td>
@@ -60,7 +62,8 @@
 
   // auto order table
   $('#dataTable').DataTable( {
-    "order": [[ 1, "desc" ]]
+    "order": [[ 1, "desc" ]],
+    "paging": false
   });
 
   </script>

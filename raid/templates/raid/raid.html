@@ -35,20 +35,26 @@
 </style>
 
 <ul class="" style="list-style: none; padding-left: 0;">
-{% if not raid.done or raid.editing %}
+{% if raid.is_ready or raid.is_in_progress or raid.editing %}
     {% if user.member.is_officer %}
-  <div class="card float-left" style="width: 150px;">
-    <div class="btn-group" role="group">
-      <button type="button" class="btn btn-success" data-toggle="modal" data-target="#giveEPModal"><i class="fas fa-thumbs-up" aria-hidden="true"></i> Give EP</button>
-    </div>
-  </div>
-  <div class="card float-right" style="width: 300px;">
-    <div class="btn-group" role="group">
-      <button type="button" class="btn btn-success" data-toggle="modal" data-target="#endRaidModal" name="complete"><i class="fas fa-check-circle" aria-hidden="true"></i> Complete</button>
-      <button type="button" class="btn btn-warning text-white" data-toggle="modal" data-target="#endRaidModal" name="pause"><i class="fas fa-pause-circle" aria-hidden="true"></i> Pause</button>
-      <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#endRaidModal" name="fail"><i class="fas fa-ban" aria-hidden="true"></i> Fail</button>
-    </div>
-  </div>
+      {% if raid.is_ready %}
+        <div class="btn-group" role="group">
+          <button type="button" class="btn btn-success" onclick="window.location.href='start/';"><i class="fas fa-clock" aria-hidden="true"></i> Start Raid</button>
+        </div>
+      {% else %}
+        <div class="card float-left" style="width: 150px;">
+        <div class="btn-group" role="group">
+          <button type="button" class="btn btn-success" data-toggle="modal" data-target="#giveEPModal"><i class="fas fa-thumbs-up" aria-hidden="true"></i> Give EP</button>
+        </div>
+        </div>
+        <div class="card float-right" style="width: 300px;">
+          <div class="btn-group" role="group">
+            <button type="button" class="btn btn-success" data-toggle="modal" data-target="#endRaidModal" name="complete"><i class="fas fa-check-circle" aria-hidden="true"></i> Complete</button>
+            {% comment %} <button type="button" class="btn btn-warning text-white" data-toggle="modal" data-target="#endRaidModal" name="pause"><i class="fas fa-pause-circle" aria-hidden="true"></i> Pause</button> {% endcomment %}
+            {% comment %} <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#endRaidModal" name="fail"><i class="fas fa-ban" aria-hidden="true"></i> Fail</button> {% endcomment %}
+          </div>
+        </div>
+      {% endif %}
     {% else %}
       <div class="btn-group btn-group-justified" role="group" aria-label="...">
         <div class="btn-group" role="group">
@@ -85,8 +91,8 @@
         <div class="card mb-3">
           <div class="card-header">
             <i class="fas fa-users"></i>
-            <b>{{ raid.dungeon.name }} - Raid Members </b> 
-            {% if user.member.is_officer and not raid.done %}
+            <b>{{ raid.dungeon.name }} - Raid Members </b> {{ raid.start|date:"d-m-Y - H:i:s" }}
+            {% if user.member.is_officer and raid.is_ready or raid.is_in_progress %}
             <button type="button" class="btn btn-sm btn-primary float-right" data-toggle="modal" data-target="#addRaiders" name="addRaiders">
             <i class="fas fa-plus-circle" aria-hidden="true"></i> Add</button>
             {% endif %}
@@ -105,7 +111,7 @@
                     <th>EP Gained</th>
                     <th style="width: 10%">Joined</th>
                     <th style="width: 10%">Left</th>
-                    {% if user.member.is_officer and not raid.done%}
+                    {% if user.member.is_officer and raid.is_ready or raid.is_in_progress %}
                       <th style="width: 5%">Remove</th>
                     {% endif %}
                   </tr>
@@ -121,7 +127,7 @@
                     <th>Joined</th>
                     <th>Left</th>
                     {% if user.member.is_officer %}
-                      {% if not raider.done and not raid.done %}
+                      {% if not raider.done and raid.is_ready or raid.is_in_progress %}
                         <th style="width: 5%">Remove</th>
                       {% endif %}
                     {% endif %}
@@ -131,7 +137,7 @@
                 {% for raider in raid_characters %}
                   <tr class="{% if not raid.done and raider.done or raid.done and not raider.closed %}table-danger{% endif %} {% if raid.done and raider.closed %}table-success{% endif %}">
                     <td style="background-color: {{ raider.character.class_color }};"><img width="15px" class="mr-1" src="{% static 'classes/' %}{{ raider.character.get_character_class_display }}.png" class="rounded float-left" alt=""> {{ raider.character.name }}</td>
-                    <td  style="background-color: {% call_method raider 'get_priority_color' min_priority max_priority raider.character.owner.priority %};">{{ raider.character.owner.priority|floatformat:2 }}</td>
+                    <td style="background-color: {% call_method raider.character.owner 'get_priority_color' min_priority max_priority raider.character.owner.priority %};">{{ raider.character.owner.priority|floatformat:2 }}</td>
                     <td>{{ raider.character.owner.rank_display }}</td>
                     {% comment %} <td><img width="20px" class="mr-1" src="{% static 'classes/' %}{{ raider.character.get_character_class_display }}.png" class="rounded float-left" alt=""> {{ raider.character.get_character_class_display }}</td> {% endcomment %}
                     <td>{{ raider.character.owner.ep|floatformat:2 }}</td>
@@ -140,7 +146,7 @@
                     <td>{{ raider.start|date:"H:i:s - d.m.y" }}</td>
                     <td>{{ raider.end|date:"H:i:s - d.m.y" }}</td>
                     {% if user.member.is_officer %}
-                      {% if not raid.done %}
+                      {% if raid.is_ready or raid.is_in_progress %}
                         <td>
                           {% if not raider.done %}
                             <a href="remove_raider/{{ raider.id }}/">Remove</a>
@@ -166,8 +172,8 @@
         <div class="card mb-3">
           <div class="card-header">
             <i class="fas fa-gavel"></i>
-            <b>{{ raid.dungeon.name }} - Loot</b>  {{ raid.start|date:"d-m-Y - H:i:s" }}
-            {% if user.member.is_officer and not raid.done %}
+            <b>{{ raid.dungeon.name }} - Loot</b>
+            {% if user.member.is_officer and raid.is_ready or raid.is_in_progress %}
             <button type="button auto" class="btn btn-primary btn-sm float-right" data-toggle="modal" data-target="#giveItemModal">
             <i class="fas fa-gavel" aria-hidden="true"></i> Give</button>
             {% endif %}
@@ -184,7 +190,7 @@
                     <th>Given To</th>
                     <th>Time</th>
                     <th>Given By</th>
-                    {% if user.member.is_officer and not raid.done %}
+                    {% if user.member.is_officer and raid.is_ready or raid.is_in_progress %}
                     <th style="width: 5%">Delete</th>
                     {% endif %}
                   </tr>
@@ -198,7 +204,7 @@
                     <th>Given To</th>
                     <th>Time</th>
                     <th>Given By</th>
-                    {% if user.member.is_officer and not raid.done %}
+                    {% if user.member.is_officer and raid.is_ready or raid.is_in_progress %}
                     <th style="width: 5%">Delete</th>
                     {% endif %}
                   </tr>
@@ -213,7 +219,7 @@
                     <td><a href="#">{{ l.character.name }}</a></td>
                     <td>{{ l.timestamp|date:"H:i:s d-m-y" }}</td>
                     <td><a href="#">{{ l.given_by.name }}</a></td>
-                    {% if not raid.done and user.member.is_officer %}
+                    {% if raid.is_ready or raid.is_in_progress and user.member.is_officer %}
                     <td>
                       <a href="delete_loot/{{ l.id }}/">Delete</a>
                     </td>
@@ -235,7 +241,7 @@
           <div class="card-header">
             <i class="fas fa-users-cog"></i>
             <b>{{ raid.dungeon.name }} - Benched Raid Members </b> 
-            {% if user.member.is_officer and not raid.done %}
+            {% if user.member.is_officer and raid.is_ready or raid.is_in_progress %}
             <button type="button" class="btn btn-sm btn-primary float-right" onclick="window.location.href='ping/';">
             <i class="fas fa-exclamation-circle" aria-hidden="true"></i> Ping</button>
 
@@ -255,7 +261,7 @@
                     <th>EP Gained</th>
                     <th style="width: 10%">Joined</th>
                     <th style="width: 10%">Left</th>
-                    {% if user.member.is_officer and not raid.done %}
+                    {% if user.member.is_officer and raid.is_ready or raid.is_in_progress %}
                     <th style="width: 5%">Remove</th>
                     {% endif %}
                   </tr>
@@ -268,7 +274,7 @@
                     <th>EP Gained</th>
                     <th>Joined</th>
                     <th>Left</th>
-                    {% if user.member.is_officer and not raid.done %}
+                    {% if user.member.is_officer and raid.is_ready or raid.is_in_progress %}
                     <th style="width: 5%">Remove</th>
                     {% endif %}
                   </tr>
@@ -282,7 +288,7 @@
                     <td>{{ benched_raider.earned_ep }}</td>
                     <td>{{ benched_raider.start|date:"H:i:s - d.m.y" }}</td>
                     <td>{{ benched_raider.end|date:"H:i:s - d.m.y" }}</td>
-                    {% if user.member.is_officer and not raid.done %}
+                    {% if user.member.is_officer and raid.is_ready or raid.is_in_progress %}
                       <td>
                         {% if benched_raider.waiting %}
                         <button type="button" class="btn btn-xs btn-danger" onclick="window.location.href='remove_benched_raider/{{ benched_raider.id }}/';">Remove</button>
@@ -301,7 +307,7 @@
         </div>
 <!-- End of Benched Members Table -->
 
-{% if not raid.done or raid.editing and user.member.is_officer %}
+{% if raid.is_ready or raid.is_in_progress or raid.editing and user.member.is_officer %}
 {% load crispy_forms_tags %}
 <!-- Give Item Modal-->
   <div class="modal fade bd-example-modal-xl" id="giveItemModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
