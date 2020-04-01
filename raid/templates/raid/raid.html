@@ -18,6 +18,19 @@
 
   .table tbody tr:hover {
     background-color: #ffff0050 !important;
+    font-style: bold;
+  }
+
+  #dataTable {
+    font-size: 14px;
+  } 
+  
+  #dataTable2 {
+    font-size: 14px;
+  } 
+  
+  #dataTable3 {
+    font-size: 14px;
   }
 </style>
 
@@ -67,73 +80,6 @@
 
 <br/>
 <br/>
-<!-- Loot Table -->
-        <div class="card mb-3">
-          <div class="card-header">
-            <i class="fas fa-gavel"></i>
-            <b>{{ raid.dungeon.name }} - Loot</b>  {{ raid.start|date:"d-m-Y - H:i:s" }}
-            {% if user.member.is_officer and not raid.done %}
-            <button type="button auto" class="btn btn-primary btn-sm float-right" data-toggle="modal" data-target="#giveItemModal">
-            <i class="fas fa-gavel" aria-hidden="true"></i> Give</button>
-            {% endif %}
-            </div>
-          <div class="card-body">
-            <div class="table-responsive">
-              <table class="table table-bordered table-striped table-sm table-xs" id="dataTable" width="100%" cellspacing="0">
-                <thead>
-                  <tr>
-                    <th>Item</th>
-                    <th>Type</th>
-                    <th>Given To</th>
-                    <th>GP</th>
-                    <th>Price</th>
-                    <th>Time</th>
-                    <th>Given By</th>
-                    {% if user.member.is_officer and not raid.done %}
-                    <th style="width: 5%">Delete</th>
-                    {% endif %}
-                  </tr>
-                </thead>
-                <tfoot>
-                  <tr>
-                    <th>Item</th>
-                    <th>Type</th>
-                    <th>Given To</th>
-                    <th>GP</th>
-                    <th>Price</th>
-                    <th>Time</th>
-                    <th>Given By</th>
-                    {% if user.member.is_officer and not raid.done %}
-                    <th style="width: 5%">Delete</th>
-                    {% endif %}
-                  </tr>
-                </tfoot>
-                <tbody>
-                {% for l in loot %}
-                  <tr>
-                    <td><a href="https://classic.wowhead.com/item={{ l.item.wow_id }}" class="q1">{{ l.item.name }}</a></td>
-                    <td>{{ l.item_info.get_slot_ref_display }}</td>
-                    <td><a href="#">{{ l.character.name }}</a></td>
-                    <td>{{ l.gp|floatformat:2 }}</td>
-                    <td>{{ l.price_percentage|floatformat:2 }}%</td>
-                    <td>{{ l.timestamp|date:"H:i:s d-m-y" }}</td>
-                    <td><a href="#">{{ l.given_by.name }}</a></td>
-                    {% if not raid.done and user.member.is_officer %}
-                    <td>
-                      <button type="button" class="btn btn-xs btn-danger" onclick="window.location.href='delete_loot/{{ l.id }}/';">Delete</button>
-                    </td>
-                    {% endif %}
-                  </tr>
-                {% endfor %}
-                </tbody>
-              </table>
-            </div>
-          </div>
-          {% comment %} <div class="card-footer"><span class="badge badge-success">Success</span> <span class="badge badge-warning">Paused</span> <span class="badge badge-danger">Failed</span></div> {% endcomment %}
-        </div>
-<!-- End of Loot Table -->
-
-<hr />
 
 <!-- Members Table -->
         <div class="card mb-3">
@@ -152,8 +98,8 @@
                 <thead>
                   <tr>
                     <th>Character</th>
-                    <th>Rank</th>
                     <th>Priority</th>
+                    <th>Rank</th>
                     <th>EP</th>
                     <th>GP</th>
                     <th>EP Gained</th>
@@ -167,8 +113,8 @@
                 <tfoot>
                   <tr>
                     <th>Character</th>
-                    <th>Rank</th>
                     <th>Priority</th>
+                    <th>Rank</th>
                     <th>EP</th>
                     <th>GP</th>
                     <th>EP Gained</th>
@@ -184,9 +130,9 @@
                 <tbody>
                 {% for raider in raid_characters %}
                   <tr class="{% if not raid.done and raider.done or raid.done and not raider.closed %}table-danger{% endif %} {% if raid.done and raider.closed %}table-success{% endif %}">
-                    <td style="background-color: {{ raider.character.class_color }};"><img width="20px" class="mr-1" src="{% static 'classes/' %}{{ raider.character.get_character_class_display }}.png" class="rounded float-left" alt=""> {{ raider.character.name }}</td>
-                    <td>{{ raider.character.owner.rank_display }}</td>
+                    <td style="background-color: {{ raider.character.class_color }};"><img width="15px" class="mr-1" src="{% static 'classes/' %}{{ raider.character.get_character_class_display }}.png" class="rounded float-left" alt=""> {{ raider.character.name }}</td>
                     <td  style="background-color: {% call_method raider 'get_priority_color' min_priority max_priority raider.character.owner.priority %};">{{ raider.character.owner.priority|floatformat:2 }}</td>
+                    <td>{{ raider.character.owner.rank_display }}</td>
                     {% comment %} <td><img width="20px" class="mr-1" src="{% static 'classes/' %}{{ raider.character.get_character_class_display }}.png" class="rounded float-left" alt=""> {{ raider.character.get_character_class_display }}</td> {% endcomment %}
                     <td>{{ raider.character.owner.ep|floatformat:2 }}</td>
                     <td>{{ raider.character.owner.gp|floatformat:2 }}</td>
@@ -197,7 +143,7 @@
                       {% if not raid.done %}
                         <td>
                           {% if not raider.done %}
-                            <button type="button" class="btn btn-xs btn-danger" onclick="window.location.href='remove_raider/{{ raider.id }}/';">Remove</button>
+                            <a href="remove_raider/{{ raider.id }}/">Remove</a>
                           {% endif %}
                         </td>
                       {% endif %}
@@ -213,6 +159,74 @@
           {% endif %}
         </div>
 <!-- End of Members Table -->
+
+<hr />
+
+<!-- Loot Table -->
+        <div class="card mb-3">
+          <div class="card-header">
+            <i class="fas fa-gavel"></i>
+            <b>{{ raid.dungeon.name }} - Loot</b>  {{ raid.start|date:"d-m-Y - H:i:s" }}
+            {% if user.member.is_officer and not raid.done %}
+            <button type="button auto" class="btn btn-primary btn-sm float-right" data-toggle="modal" data-target="#giveItemModal">
+            <i class="fas fa-gavel" aria-hidden="true"></i> Give</button>
+            {% endif %}
+            </div>
+          <div class="card-body">
+            <div class="table-responsive">
+              <table class="table table-bordered table-striped table-sm table-xs" id="dataTable" width="100%" cellspacing="0">
+                <thead>
+                  <tr>
+                    <th>Item</th>
+                    <th>GP</th>
+                    <th>Price</th>
+                    <th>Type</th>
+                    <th>Given To</th>
+                    <th>Time</th>
+                    <th>Given By</th>
+                    {% if user.member.is_officer and not raid.done %}
+                    <th style="width: 5%">Delete</th>
+                    {% endif %}
+                  </tr>
+                </thead>
+                <tfoot>
+                  <tr>
+                    <th>Item</th>
+                    <th>GP</th>
+                    <th>Price</th>
+                    <th>Type</th>
+                    <th>Given To</th>
+                    <th>Time</th>
+                    <th>Given By</th>
+                    {% if user.member.is_officer and not raid.done %}
+                    <th style="width: 5%">Delete</th>
+                    {% endif %}
+                  </tr>
+                </tfoot>
+                <tbody>
+                {% for l in loot %}
+                  <tr>
+                    <td><a href="https://classic.wowhead.com/item={{ l.item.wow_id }}" class="q1">{{ l.item.name }}</a></td>
+                    <td>{{ l.gp|floatformat:2 }}</td>
+                    <td>{{ l.price_percentage|floatformat:2 }}%</td>
+                    <td>{{ l.item_info.get_slot_ref_display }}</td>
+                    <td><a href="#">{{ l.character.name }}</a></td>
+                    <td>{{ l.timestamp|date:"H:i:s d-m-y" }}</td>
+                    <td><a href="#">{{ l.given_by.name }}</a></td>
+                    {% if not raid.done and user.member.is_officer %}
+                    <td>
+                      <a href="delete_loot/{{ l.id }}/">Delete</a>
+                    </td>
+                    {% endif %}
+                  </tr>
+                {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          </div>
+          {% comment %} <div class="card-footer"><span class="badge badge-success">Success</span> <span class="badge badge-warning">Paused</span> <span class="badge badge-danger">Failed</span></div> {% endcomment %}
+        </div>
+<!-- End of Loot Table -->
 
 <hr />
 
@@ -520,17 +534,25 @@
 
   // auto order table loot
   $('#dataTable').DataTable( {
-    "order": [[ 5, "desc" ]]
+    "order": [[ 5, "desc" ]],
+    "paging": false,
+    "searching": false
   });
 
   // auto order table members
   $('#dataTable2').DataTable( {
-    "order": [[ 1, "desc" ]]
+    "order": [[ 1, "desc" ]],
+    "paging": false,
+    "searching": false
   });
 
   // auto order table benched members
   $('#dataTable3').DataTable( {
-    "order": [[ 2, "asc" ]]
+    "order": [[ 2, "asc" ]],
+    "paging": false,
+    "searching": false
   });
+
+  setTimeout("location.reload(true);", 30000);
   </script>
 {% endblock %}

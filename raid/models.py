@@ -50,7 +50,8 @@ class RaidCharacter(models.Model):
         return self.closed
 
     def get_priority_color(self, minp, maxp, currentp):
-        priority = round((currentp - minp) / (maxp - minp) * 100)
+        priority = round((currentp - minp) / max((maxp - minp) * 100, 0.01))
+        print((currentp - minp) / max((maxp - minp) * 100, 0.01))
         priority = max(10, min(priority, 99))
         
         return "#0000ff{}".format(priority)

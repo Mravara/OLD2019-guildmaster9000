@@ -109,7 +109,7 @@ def new_raid(request):
 
             text_members = form.cleaned_data.get('members')
             text_members_list = text_members.splitlines()
-            text_members_list.append('Primalbank')
+            text_members_list.append('GuildBank')
             text_members_list = list(dict.fromkeys(text_members_list)) # removes duplicates
             text_members_list = [x.capitalize().strip() for x in text_members_list]
 
