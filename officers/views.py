@@ -29,7 +29,9 @@ def decay_epgp(request):
     if form.is_valid():
         decay = form.cleaned_data.get('decay')
         members = Member.objects.all()
-        members.update(ep=F('ep') * (1 - decay/100), gp=F('gp') * (1 - decay/100))
+        new_gp = max(100, F('gp') * (1 - decay/100))
+        new_ep = max(100, F('ep') * (1 - decay/100))
+        members.update(ep=new_ep, gp=new_gp)
         for m in members:
             Log.objects.create(
                 writer=request.user.member,
@@ -63,7 +65,7 @@ def new_member(request):
             name=character_name, 
             rank=Member.Rank.MEMBER, 
             ep=starting_ep, 
-            gp=starting_gp
+            gp=max(starting_gp, 100)
         )
         member.save()
 

@@ -38,7 +38,7 @@ with open(file, 'r') as f:
 		try:
 			member = Member.objects.get(name=m.get('name'))
 			member.ep = m.get('ep')
-			member.gp = m.get('gp')
+			member.set_gp(m.get('gp'))
 		except Member.DoesNotExist:
 			member = Member.objects.create(name=m.get('name'), ep=m.get('ep'), gp=m.get('gp'))
 			print("created new member {}".format(member))

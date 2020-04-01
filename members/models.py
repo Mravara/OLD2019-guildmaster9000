@@ -35,7 +35,7 @@ class Member(models.Model):
 
     @property
     def priority(self):
-        return self.ep / max(self.gp, 1)
+        return self.ep / max(self.gp, 100)
 
     @property
     def is_officer(self):
@@ -48,6 +48,9 @@ class Member(models.Model):
         for l in loot:
             gp += l.gp
         return gp
+
+    def set_gp(self, gp):
+        self.gp = max(gp, 100)
 
     @property
     def rank_display(self):

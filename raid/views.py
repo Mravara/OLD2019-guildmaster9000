@@ -186,7 +186,7 @@ def give_item(request, raid_id):
                 comment=comment,
             )
             loot.save()
-            character.character.owner.gp = F('gp') + loot.gp
+            character.character.owner.set_gp(F('gp') + loot.gp)
             character.character.owner.save()
 
             Log.objects.create(
@@ -308,7 +308,7 @@ def remove_benched_raider(request, raid_id, raider_id):
 @officers('/raids/')
 def delete_loot(request, raid_id, loot_id):
     loot = get_object_or_404(Loot, pk=loot_id)
-    loot.character.owner.gp = F('gp') - loot.gp
+    loot.character.owner.set_gp(F('gp') - loot.gp)
     loot.character.owner.save()
     loot.delete()
     item_name = loot.item.name

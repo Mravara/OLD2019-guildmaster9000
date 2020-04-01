@@ -50,12 +50,16 @@ class RaidCharacter(models.Model):
         return self.closed
 
     def get_priority_color(self, minp, maxp, currentp):
-        priority = round((currentp - minp) / max((maxp - minp) * 100, 0.01))
-        print((currentp - minp) / max((maxp - minp) * 100, 0.01))
-        priority = max(10, min(priority, 99))
-        
-        return "#0000ff{}".format(priority)
+        priority = round(self.remap(currentp, minp, maxp, 0, 99))
+        str_prio = ""
+        if priority < 10:
+            str_prio = "0{0}".format(priority)
+        else:
+            str_prio = str(priority)
+        return "#0000ff{}".format(str_prio)
 
+    def remap(self, value, from1, to1, from2, to2):
+        return (value - from1) / (to1 - from1) * (to2 - from2) + from2;
 
 
 class BenchedRaidCharacter(models.Model):
