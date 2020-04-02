@@ -112,6 +112,7 @@
                     <th style="width: 10%">Joined</th>
                     <th style="width: 10%">Left</th>
                     {% if user.member.is_officer and raid.is_ready or raid.is_in_progress %}
+                      <th style="width: 5%">Bench</th>
                       <th style="width: 5%">Remove</th>
                     {% endif %}
                   </tr>
@@ -128,6 +129,7 @@
                     <th>Left</th>
                     {% if user.member.is_officer %}
                       {% if not raider.done and raid.is_ready or raid.is_in_progress %}
+                        <th style="width: 5%">Bench</th>
                         <th style="width: 5%">Remove</th>
                       {% endif %}
                     {% endif %}
@@ -147,6 +149,11 @@
                     <td>{{ raider.end|date:"H:i:s - d.m.y" }}</td>
                     {% if user.member.is_officer %}
                       {% if raid.is_ready or raid.is_in_progress %}
+                        <td>
+                          {% if not raider.done %}
+                            <a href="bench_raider/{{ raider.id }}/">Bench</a>
+                          {% endif %}
+                        </td>
                         <td>
                           {% if not raider.done %}
                             <a href="remove_raider/{{ raider.id }}/">Remove</a>
@@ -262,6 +269,7 @@
                     <th style="width: 10%">Joined</th>
                     <th style="width: 10%">Left</th>
                     {% if user.member.is_officer and raid.is_ready or raid.is_in_progress %}
+                    <th style="width: 5%">Unbench</th>
                     <th style="width: 5%">Remove</th>
                     {% endif %}
                   </tr>
@@ -275,6 +283,7 @@
                     <th>Joined</th>
                     <th>Left</th>
                     {% if user.member.is_officer and raid.is_ready or raid.is_in_progress %}
+                    <th style="width: 5%">Unbench</th>
                     <th style="width: 5%">Remove</th>
                     {% endif %}
                   </tr>
@@ -291,7 +300,12 @@
                     {% if user.member.is_officer and raid.is_ready or raid.is_in_progress %}
                       <td>
                         {% if benched_raider.waiting %}
-                        <button type="button" class="btn btn-xs btn-danger" onclick="window.location.href='remove_benched_raider/{{ benched_raider.id }}/';">Remove</button>
+                          <a href="unbench_raider/{{ benched_raider.id }}/">Unbench</a>
+                        {% endif %}
+                      </td>
+                      <td>
+                        {% if benched_raider.waiting %}
+                          <a href="remove_benched_raider/{{ benched_raider.id }}/">Remove</a>
                         {% endif %}
                       </td>
                     {% endif %}
@@ -559,6 +573,12 @@
     "searching": false
   });
 
-  setTimeout("location.reload(true);", 30000);
+
+  setInterval(function() {
+    if (!$('.modal').is(':visible'))
+    {
+      location.reload(true);
+    }
+  }, 30000);
   </script>
 {% endblock %}

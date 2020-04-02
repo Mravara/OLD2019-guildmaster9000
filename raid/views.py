@@ -225,27 +225,29 @@ def complete_raid(request, raid_id):
         raid.end = datetime.now()
         raid_duration = (raid.end - raid.start).total_seconds() / 60.0
         
-        raiders = RaidCharacter.objects.filter(raid=raid, end=None)
-        benched_raiders = BenchedRaidCharacter.objects.filter(raid=raid, end=None)
+        raiders = RaidCharacter.objects.filter(raid=raid)
+        benched_raiders = BenchedRaidCharacter.objects.filter(raid=raid)
 
         for raider in raiders:
-            raider.end = raid.end
+            if raider.end is None:
+                raider.end = raid.end
+                raider.closed = True
             duration = (raider.end - raider.start).total_seconds() / 60.0
             end_ep = (duration/raid_duration) * raid.dungeon.ep_worth
             ep = raider.earned_ep + end_ep
             raider.earned_ep = ep
-            raider.closed = True
             raider.save()
             raider.character.owner.ep = raider.character.owner.ep + end_ep
             raider.character.owner.save()
 
         for benched_raider in benched_raiders:
-            benched_raider.end = raid.end
+            if benched_raider.end is None:
+                benched_raider.end = raid.end
+                benched_raider.closed = True
             duration = (benched_raider.end - benched_raider.start).total_seconds() / 60.0
             end_ep = (duration/raid_duration) * raid.dungeon.ep_worth
             ep = benched_raider.earned_ep + end_ep
             benched_raider.earned_ep = ep
-            benched_raider.closed = True
             benched_raider.save()
             benched_raider.character.owner.ep = benched_raider.character.owner.ep + end_ep
             benched_raider.character.owner.save()
@@ -304,6 +306,54 @@ def complete_raid(request, raid_id):
 #     )
 
 #     return HttpResponseRedirect(reverse('raid', args=(raid_id,)))
+
+
+@officers('/raids/')
+def bench_raider(request, raid_id, raider_id):
+    raid = get_object_or_404(Raid, pk=raid_id)
+    raider = RaidCharacter.objects.get(id=raider_id, raid=raid)
+    end = datetime.now()
+    raider.end = end
+    raider.save()
+    obj, created = BenchedRaidCharacter.objects.get_or_create(character=raider.character, raid=raid, end__isnull=True)
+    if not created:
+        messages.error(request, "<strong>{0}</strong> is already on the bench.".format(raider.character.name))
+    else:
+        messages.success(request, "<strong>{0}</strong> is warming the bench.".format(raider.character.name))
+
+        Log.objects.create(
+            writer=request.user.member, 
+            target=raider.character, 
+            target_member=raider.character.owner, 
+            action=Log.Action.BENCH,
+            raid=raid
+        )
+
+    return HttpResponseRedirect(reverse('raid', args=(raid_id,)))
+
+
+@officers('/raids/')
+def unbench_raider(request, raid_id, raider_id):
+    raid = get_object_or_404(Raid, pk=raid_id)
+    raider = BenchedRaidCharacter.objects.get(id=raider_id, raid=raid)
+    end = datetime.now()
+    raider.end = end
+    raider.save()
+    obj, created = RaidCharacter.objects.get_or_create(character=raider.character, raid=raid, end__isnull=True)
+    if not created:
+        messages.error(request, "<strong>{0}</strong> is already in the raid.".format(raider.character.name))
+    else:
+        messages.success(request, "<strong>{0}</strong> is now in the raid.".format(raider.character.name))
+
+        Log.objects.create(
+            writer=request.user.member, 
+            target=raider.character, 
+            target_member=raider.character.owner, 
+            action=Log.Action.UNBENCH,
+            raid=raid
+        )
+
+    return HttpResponseRedirect(reverse('raid', args=(raid_id,)))
 
 
 @officers('/raids/')

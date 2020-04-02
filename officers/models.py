@@ -15,6 +15,8 @@ class Log(models.Model):
         DECAY = 7
         UNLOCK_RAID = 8
         DELETE_LOOT = 9
+        BENCH = 10
+        UNBENCH = 11
 
     writer = models.ForeignKey('members.Member', related_name='writer', on_delete=models.PROTECT)
     target = models.ForeignKey('members.Character', related_name='target',  on_delete=models.PROTECT, null=True, blank=True)
@@ -47,4 +49,8 @@ class Log(models.Model):
             return 'Unlock Raid'
         elif self.action == 9:
             return 'Delete Loot'
+        elif self.action == 10:
+            return 'Bench'
+        elif self.action == 11:
+            return 'Unbench'
         
