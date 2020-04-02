@@ -234,6 +234,7 @@ def complete_raid(request, raid_id):
             end_ep = (duration/raid_duration) * raid.dungeon.ep_worth
             ep = raider.earned_ep + end_ep
             raider.earned_ep = ep
+            raider.closed = True
             raider.save()
             raider.character.owner.ep = raider.character.owner.ep + end_ep
             raider.character.owner.save()
@@ -244,6 +245,7 @@ def complete_raid(request, raid_id):
             end_ep = (duration/raid_duration) * raid.dungeon.ep_worth
             ep = benched_raider.earned_ep + end_ep
             benched_raider.earned_ep = ep
+            benched_raider.closed = True
             benched_raider.save()
             benched_raider.character.owner.ep = benched_raider.character.owner.ep + end_ep
             benched_raider.character.owner.save()
